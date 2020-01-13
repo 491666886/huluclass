@@ -1,0 +1,31 @@
+.DS_Store
+node_modules
+/dist
+/dist.zip
+/dist.uc
+/dist.uc.zip
+# local env files
+.env.local
+.env.*.local
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+
+
+/single_page/node_modules
+/single_page/package-lock.json
+
+/single_page/src/pages/*/css
+/single_page/src/pages/*/js
