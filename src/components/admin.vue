@@ -11,7 +11,19 @@
         </div>
       </div>
     </div>
-    <div class="main">视频列表</div>
+    <div class="main">
+       <div
+          class="videolist"
+          v-for="video in videolist"
+          :key="video.cId"
+          @click="getDescribe(video.id)"
+        >
+          <img src="./img/admin.png" />
+          <p>{{video.vName}}</p>
+          <a>{{video.teacher}} I</a>
+          <b>{{video.endTime}}</b>
+        </div>
+    </div>
     <page-footer></page-footer>
   </div>
 </template>
@@ -26,6 +38,7 @@ export default {
   },
   data: function() {
     return {
+      videolist: [],
       tableData: [],
       list: [1, 2, 3, 4, 5, 6],
       username: JSON.parse(sessionStorage.getItem("SESSION_USER")).name,
@@ -34,32 +47,71 @@ export default {
   },
 
   methods: {
-    handleOpen() {
+       getvideolist() {
       axios({
         headers: {
-          "Content-Type": "application/json"
+          "User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
+            .loginId,
+          Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
+            .sessionId
         },
         method: "post",
-        url:
-          "https://hulu.ehualu.com:28080/gourdbaby/gourdChildUser/findVideoByChildCard.action?childCard=2"
+        url: "/hlkt/resource/findSearchVideo.action",
+        data: {
+          pageNum: 1,
+          
+        }
       }).then(res => {
-        if (res.data.status == "error") {
+        if (res.data.resultCode == "200") {
+          this.count = res.data.resultLineNum;
+          this.videolist = res.data.resultData;
+          console.log(this.videolist);
+        } else {
           this.$message({
             type: "error",
             message: res.data.resultMsg
           });
         }
-        if (res.status == "200") {
-          this.tableData = res.data.t;
-        }
       });
-    },
-    handleClose() {}
+    }
+  },
+  mounted(){
+    this.getvideolist();
   }
 };
 </script>
 <style scoped lang="scss">
 @import "src/plugins/px2vw";
+.videolist img {
+  width: px2vw(232px);
+  height: px2vw(132px);
+  overflow: hidden;
+}
+.videolist {
+  float: left;
+  margin-left: px2vw(21px);
+  margin-top: px2vw(21px);
+  width: px2vw(233px);
+  height: px2vw(233px);
+  box-shadow: 0px 2px 10px 0px rgba(78, 78, 78, 0.21);
+  border-radius: 6px;
+  p {
+    margin: 0;
+    padding: px2vw(19px);
+    font-size: px2vw(18px);
+    font-weight: bold;
+    color: rgba(51, 51, 51, 1);
+    overflow: hidden;
+  }
+  a {
+    font-size: px2vw(13px);
+    padding-left: px2vw(19px);
+  }
+  b {
+    font-size: px2vw(10px);
+    font-weight: 400;
+  }
+}
 .main {
   background-color: #ffffff;
   width: px2vw(980px);

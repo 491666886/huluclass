@@ -103,7 +103,7 @@ export default {
             sessionStorage.setItem("isLogin", true);
             this.$store.dispatch("userLogin", true);
             localStorage.setItem("Flag", "isLogin"); //储存登陆信息
-            this.$router.push("/admin");
+            this.$router.push("/login");
           } else {
             this.loginerror = res.data.resultMsg;
             this.showerror = true;

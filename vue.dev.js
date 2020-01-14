@@ -1,7 +1,7 @@
 
-// const URL_BACKEND_SERVICE = 'http://10.150.27.126:8080'
+const URL_BACKEND_SERVICE = 'http://10.150.27.126:8080'
 
-const URL_BACKEND_SERVICE = 'http://172.16.0.37:8080'
+// const URL_BACKEND_SERVICE = 'http://172.16.0.37:8080'
 //const URL_BACKEND_SERVICE = 'http://39.100.237.151:8100/uc';
 
 // const URL_BACKEND_SERVICE = 'https://hulu.ehualu.com:28080'

@@ -21,12 +21,25 @@
       </el-aside>
 
       <el-main>
-        <div class="videolist" v-for="video in videolist" :key="video.cId">
+        <div
+          class="videolist"
+          v-for="video in videolist"
+          :key="video.cId"
+          @click="getDescribe(video.id)"
+        >
           <img src="./img/admin.png" />
           <p>{{video.vName}}</p>
           <a>{{video.teacher}} I</a>
           <b>{{video.endTime}}</b>
         </div>
+        <el-pagination
+          class="page"
+          layout="prev, pager, next"
+          :page-size="12"
+          :current-page="currentPage"
+          @current-change="handleCurrentChange"
+          :total="parseInt(this.count)"
+        ></el-pagination>
       </el-main>
     </el-container>
   </el-container>
@@ -42,231 +55,90 @@ export default {
   },
   data: function() {
     return {
+      count: "",
+      currentPage: 1, // 默认显示第几页
       tableData: [],
       activeIndex: "aa",
-      videolist:[],
-      subjects:'',
-      grade:'',
-      menuData: [
-        {
-          //一级
-          entity: {
-            id: 0,
-            name: "数学",
-            icon: "el-icon-message",
-            alias: "一级菜单"
-          }
-        },
-        {
-          //一级
-          entity: {
-            id: 1,
-            name: "语文",
-            icon: "el-icon-message",
-            alias: "语文"
-          },
-          //二级
-          childs: [
-            {
-              entity: {
-                id: 3,
-                name: "2年级",
-                icon: "el-icon-loading",
-                alias: "2222"
-              }
-            },
-            {
-              entity: {
-                id: 4,
-                name: "1年级",
-                icon: "el-icon-bell",
-                alias: "语文1年级"
-              }
-            },
-            {
-              entity: {
-                id: 2,
-                name: "menuManage",
-                icon: "el-icon-edit",
-                alias: "菜单管理",
-                value: "/system/menu"
-              }
-            },
-            {
-              entity: {
-                id: 5,
-                name: "groupManage",
-                icon: "el-icon-mobile-phone\r\n",
-                alias: "分组管理",
-                value: "/system/group"
-              }
-            }
-          ]
-        },
-        {
-          //一级
-          entity: {
-            id: 6,
-            name: "userManage",
-            icon: "el-icon-news",
-            alias: "三级菜单"
-          },
-          //二级
-          childs: [
-            {
-              entity: {
-                id: 7,
-                name: "accountManage",
-                icon: "el-icon-phone-outline\r\n",
-                alias: "帐号管理",
-                value: ""
-              },
-              //三级
-              childs: [
-                {
-                  entity: {
-                    id: 14,
-                    name: "emailManage",
-                    icon: "el-icon-sold-out\r\n",
-                    alias: "邮箱管理",
-                    value: "/content/email"
-                  }
-                },
-                {
-                  entity: {
-                    id: 13,
-                    name: "passManage",
-                    icon: "el-icon-service\r\n",
-                    alias: "密码管理",
-                    value: "/content/pass"
-                  }
-                }
-              ]
-            },
-            {
-              entity: {
-                id: 8,
-                name: "integralManage",
-                icon: "el-icon-picture",
-                alias: "积分管理",
-
-                value: "/user/integral"
-              }
-            }
-          ]
-        },
-        {
-          //一级
-          entity: {
-            id: 40,
-
-            name: "contentManage",
-            icon: "el-icon-rank",
-            alias: "四级菜单"
-          },
-          //er级
-          childs: [
-            {
-              entity: {
-                id: 41,
-                name: "classifyManage2",
-                icon: "el-icon-printer",
-                alias: "分类管理"
-              },
-              //三级
-              childs: [
-                {
-                  entity: {
-                    id: 42,
-                    name: "classifyManage3",
-                    icon: "el-icon-printer",
-                    alias: "分类管理"
-                  },
-                  //四级
-                  childs: [
-                    {
-                      entity: {
-                        id: 43,
-                        name: "classifyManage4",
-                        icon: "el-icon-printer",
-                        alias: "分类管理",
-                        value: "/content/classify"
-                      }
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ]
+      videolist: [],
+      subjects: "",
+      grade: "",
+      pageNum: "1",
+      menuData: []
     };
   },
 
   methods: {
-    getItem(){
+    getDescribe(id) {
+      this.$router.push({
+        path: `/describe/${id}`
+      });
+    },
+    getItem() {
       axios({
-        headers: {
-        
-        },
+        headers: {},
         method: "get",
-        url:
-          "/hlkt/resource/findMenusTree.action",
-          data: {
-
-}
+        url: "/hlkt/resource/findMenusTree.action",
+        data: {}
       }).then(res => {
         if (res.data.resultCode == "200") {
-          this.videolist = res.data.resultData;
-              console.log(this.videolist)
-        }else{
+          this.menuData = res.data.resultData;
+          console.log(this.menuData);
+        } else {
           this.$message({
             type: "error",
             message: res.data.resultMsg
           });
         }
       });
-    
     },
+     handleCurrentChange(val) {
+                // 改变默认的页数
+                this.currentPage = val;
+                // 切换页码时，要获取每页显示的条数
+                this.getuserlist(this.PageSize, (val) * (this.pageSize))
+            },
     handleOpen(key, keyPath) {
-       console.log(keyPath[0]);
-       this.subjects =keyPath[0];
-       this.getvideolist()
+      console.log(keyPath[0]);
+      this.subjects = keyPath[0];
+      this.getvideolist();
     },
     handleClose(key, keyPath) {},
     handleselect(key, keyPath) {
       console.log(keyPath[0]);
-      this.grade =keyPath[1];
-      this.getvideolist()
+      this.grade = keyPath[1];
+      this.getvideolist();
     },
-    getvideolist(){
-  axios({
+    getvideolist() {
+      axios({
         headers: {
-          "User-Info":  JSON.parse(sessionStorage.getItem("SESSION_USER")).loginId,
-          "Authorization":JSON.parse(sessionStorage.getItem("SESSION_USER")).sessionId,
+          "User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
+            .loginId,
+          Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
+            .sessionId
         },
         method: "post",
-        url:
-          "/hlkt/resource/findSearchVideo.action",
-          data: {
-      
-      subjects:this.subjects,
-       grade:this.grade,
-}
+        url: "/hlkt/resource/findSearchVideo.action",
+        data: {
+          pageNum: this.pageNum,
+          subjects: this.subjects,
+          grade: this.grade
+        }
       }).then(res => {
         if (res.data.resultCode == "200") {
+          this.count = res.data.resultLineNum;
           this.videolist = res.data.resultData;
-              console.log(this.videolist)
-        }else{
+          console.log(this.videolist);
+        } else {
           this.$message({
             type: "error",
             message: res.data.resultMsg
           });
         }
       });
-    },
+    }
   },
-  mounted(){
+  mounted() {
+    console.log(this.menuData);
     this.getvideolist();
     this.getItem();
   }
@@ -274,7 +146,12 @@ export default {
 </script>
 <style scoped lang="scss">
 @import "src/plugins/px2vw";
-
+.page {
+  float: right;
+  margin-right: 10%;
+  position: relative;
+  top: px2vw(770px);
+}
 .videolist img {
   width: px2vw(232px);
   height: px2vw(132px);
@@ -340,7 +217,9 @@ export default {
   position: relative;
   top: px2vw(134px);
   padding: 0;
-  min-height: 100px;
+  min-height: px2vw(820px);
+  width: px2vw(1034px);
+  flex: none;
 }
 
 body > .el-container {
