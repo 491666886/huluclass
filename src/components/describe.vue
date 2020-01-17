@@ -4,10 +4,13 @@
     <div class="det">
       <p>当前位置：{{video[0].subjects}}>{{video[0].grade}}>{{video[0].unit}}</p>
       <b> {{video[0].vName}}</b>
-      <dd>teacheer：</dd>
+      <dd>教师：{{video[0].teacher}}</dd>
       <div class="vid">
-        <video src="https://media.w3.org/2010/05/sintel/trailer.mp4" controls="controls"></video>
-        <div class="tec">知识点快速索引</div>
+        <video ref="videoPlay" :src="videoURL" controls="controls"></video>
+        <div class="tec">知识点快速索引
+          <div class="index" @click="index()">{{video[0].vName}}</div>
+        </div>
+          
         <el-button class="button" type="primary" plain @click="collect()">收藏该课程</el-button>
       </div>
     </div>
@@ -26,10 +29,14 @@ export default {
   },
   data: function() {
     return {
+        videoURL: '',
       video: {}
     };
   },
   methods: {
+    index(){
+      
+    },
     getvideo() {
       axios({
         headers: {
@@ -46,6 +53,12 @@ export default {
       }).then(res => {
         if (res.data.resultCode == "200") {
           this.video = res.data.resultData;
+           this.videoURL  = this.video[0].vUrl;
+             this.$nextTick(() => {
+
+                        this.$refs.videoPlay.load()
+
+                   });
           console.log(this.video[0]);
         } else {
           this.$message({
@@ -101,6 +114,7 @@ export default {
   margin-top: px2vw(19px);
 }
 .tec {
+  line-height: px2vw(50px);
   color: #209cff;
   float: left;
   margin-left: px2vw(22px);

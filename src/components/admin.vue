@@ -58,6 +58,7 @@ export default {
         method: "post",
         url: "/hlkt/user/selectCollect.action",
         data: {
+          pageSize:12,
           pageNum: 1,
           uId:JSON.parse(sessionStorage.getItem("SESSION_USER"))
             .userId,
