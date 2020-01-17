@@ -206,7 +206,7 @@ export default {
   margin-bottom: px2vw(13px);
 }
 .body-bg {
-  width: 100vw;
+  width: 100%;
   height: px2vw(1080px);
   background-image: url(./img/backg.png);
   background-size: 100%;

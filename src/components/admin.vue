@@ -40,7 +40,7 @@ export default {
     return {
       videolist: [],
       tableData: [],
-      list: [1, 2, 3, 4, 5, 6],
+     
       username: JSON.parse(sessionStorage.getItem("SESSION_USER")).name,
       loginId: JSON.parse(sessionStorage.getItem("SESSION_USER")).loginId
     };
@@ -56,10 +56,11 @@ export default {
             .sessionId
         },
         method: "post",
-        url: "/hlkt/resource/findSearchVideo.action",
+        url: "/hlkt/user/selectCollect.action",
         data: {
           pageNum: 1,
-          
+          uId:JSON.parse(sessionStorage.getItem("SESSION_USER"))
+            .userId,
         }
       }).then(res => {
         if (res.data.resultCode == "200") {
@@ -95,26 +96,32 @@ export default {
   height: px2vw(233px);
   box-shadow: 0px 2px 10px 0px rgba(78, 78, 78, 0.21);
   border-radius: 6px;
+  overflow: hidden;
+  cursor: pointer;
   p {
     margin: 0;
     padding: px2vw(19px);
     font-size: px2vw(18px);
     font-weight: bold;
     color: rgba(51, 51, 51, 1);
-    overflow: hidden;
+     overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   a {
+    white-space:nowrap;
     font-size: px2vw(13px);
     padding-left: px2vw(19px);
   }
   b {
+    white-space:nowrap;
     font-size: px2vw(10px);
     font-weight: 400;
   }
 }
 .main {
   background-color: #ffffff;
-  width: px2vw(980px);
+  width: px2vw(1050px);
   height: px2vw(850px);
   position: relative;
   left: px2vw(609px);

@@ -20,17 +20,19 @@
         </el-row>
       </el-aside>
 
-      <el-main>
+      <div class="main">
         <div
           class="videolist"
+         
           v-for="video in videolist"
-          :key="video.cId"
+          :key="video.Id"
           @click="getDescribe(video.id)"
         >
           <img src="./img/admin.png" />
           <p>{{video.vName}}</p>
           <a>{{video.teacher}} I</a>
           <b>{{video.endTime}}</b>
+          
         </div>
         <el-pagination
           class="page"
@@ -40,7 +42,7 @@
           @current-change="handleCurrentChange"
           :total="parseInt(this.count)"
         ></el-pagination>
-      </el-main>
+       </div>
     </el-container>
   </el-container>
 </template>
@@ -91,11 +93,15 @@ export default {
         }
       });
     },
+     serchlist(vap) {//改变页数
+                this.currentPage = vap;
+                this.getvideolist()
+            },
      handleCurrentChange(val) {
                 // 改变默认的页数
                 this.currentPage = val;
                 // 切换页码时，要获取每页显示的条数
-                this.getuserlist(this.PageSize, (val) * (this.pageSize))
+                this.getvideolist(this.PageSize, (val) * (this.pageSize))
             },
     handleOpen(key, keyPath) {
       console.log(keyPath[0]);
@@ -119,16 +125,20 @@ export default {
         method: "post",
         url: "/hlkt/resource/findSearchVideo.action",
         data: {
-          pageNum: this.pageNum,
+          pageSize:12,
+          pageNum: this.currentPage,
           subjects: this.subjects,
+
           grade: this.grade
         }
       }).then(res => {
         if (res.data.resultCode == "200") {
           this.count = res.data.resultLineNum;
           this.videolist = res.data.resultData;
-          console.log(this.videolist);
+          
         } else {
+           this.videolist = [];
+           console.log(this.videolist);
           this.$message({
             type: "error",
             message: res.data.resultMsg
@@ -146,11 +156,20 @@ export default {
 </script>
 <style scoped lang="scss">
 @import "src/plugins/px2vw";
-.page {
-  float: right;
-  margin-right: 10%;
+.main {
+  background-color: #ffffff;
+  width: px2vw(1050px);
+  height: px2vw(850px);
   position: relative;
-  top: px2vw(770px);
+ 
+  top: px2vw(125px);
+  margin-bottom: px2vw(90px);
+}
+.page {
+  
+  position: absolute;
+  top: px2vw(800px);
+  left: 85%;
 }
 .videolist img {
   width: px2vw(232px);
@@ -165,19 +184,26 @@ export default {
   height: px2vw(233px);
   box-shadow: 0px 2px 10px 0px rgba(78, 78, 78, 0.21);
   border-radius: 6px;
+  overflow: hidden;
+  cursor: pointer;
   p {
     margin: 0;
     padding: px2vw(19px);
     font-size: px2vw(18px);
     font-weight: bold;
     color: rgba(51, 51, 51, 1);
-    overflow: hidden;
+     overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
   }
   a {
+    white-space:nowrap;
     font-size: px2vw(13px);
     padding-left: px2vw(19px);
   }
   b {
+    white-space:nowrap;
     font-size: px2vw(10px);
     font-weight: 400;
   }
@@ -211,16 +237,7 @@ export default {
 .el-col-12 {
   width: 100% !important;
 }
-.el-main {
-  background-color: #ffffff;
-  color: #333;
-  position: relative;
-  top: px2vw(134px);
-  padding: 0;
-  min-height: px2vw(820px);
-  width: px2vw(1034px);
-  flex: none;
-}
+
 
 body > .el-container {
   margin-bottom: 40px;

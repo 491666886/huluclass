@@ -21,6 +21,16 @@ export default new Router({
             name: 'Describe',
             component: () => import('@/components/describe')
           },
+          {
+            path: '/search/:id',
+            name: 'search',
+            component: () => import('@/components/search')
+          },
+          {
+            path: '/search',
+            name: 'search',
+            component: () => import('@/components/search')
+          },
         {
             path: '/admin',
             name: 'admin',

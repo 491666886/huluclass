@@ -27,9 +27,8 @@ export default {
   },
   methods: {
     search() {
-      this.$router.push({
-        path: `/search/${this.input3}`
-      });
+     
+      this.$parent.research(this.input3);//高级搜索
     },
     quitid() {
       sessionStorage.clear();
