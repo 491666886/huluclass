@@ -4,7 +4,7 @@
 
     <div class="main">
       <div class="dan">
-        <el-radio-group v-model="radio1" class="line" @change="getValue">
+        <el-radio-group v-model="radio1" class="line" @change="search">
           <div class="grate1">学科:</div>
           <el-radio-button label>不限</el-radio-button>
           <el-radio-button label="数学"></el-radio-button>
@@ -15,7 +15,7 @@
         </el-radio-group>
       </div>
       <div class="dan">
-        <el-radio-group v-model="radio2" class="line" @change="getValue">
+        <el-radio-group v-model="radio2" class="line" @change="search">
           <div class="grate">年级:</div>
           <el-radio-button label border>不限</el-radio-button>
           <el-radio-button label="一年级上"></el-radio-button>
@@ -35,7 +35,7 @@
       <div class="dan">
         <el-radio-group v-model="radio2" class="line">
           教师：
-          <el-select v-model="value" placeholder="选择教师" @change="getValue">
+          <el-select v-model="value" placeholder="选择教师" @change="search">
             <el-option
               v-for="item in options"
               :key="item.name"
