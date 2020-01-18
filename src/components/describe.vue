@@ -6,7 +6,10 @@
       <b> {{video[0].vName}}</b>
       <dd>教师：{{video[0].teacher}}</dd>
       <div class="vid">
-        <video ref="videoPlay" :src="videoURL" controls="controls"></video>
+         <div class="alert" id="alert" >若视频存于蓝光中，预计等待观看时间最长为60分钟，建议收藏该课程</div>
+        <video ref="videoPlay" :src="videoURL" controls="controls" @play="myFunction()">
+         
+        </video>
         <div class="tec">知识点快速索引
           <div class="index" @click="index()">{{video[0].vName}}</div>
         </div>
@@ -39,8 +42,8 @@ export default {
     };
   },
   methods: {
-    index(){
-      
+    myFunction(){
+      document.getElementById('alert').style.display = 'none'
     },
     getvideo() {
       axios({
@@ -96,7 +99,8 @@ export default {
       });
       }
   },
-  mounted() {
+  created() {
+
     console.log(this.$route.params.id);
     this.getvideo();
   }
@@ -104,6 +108,13 @@ export default {
 </script>
 <style scoped lang="scss">
 @import "src/plugins/px2vw";
+.alert{
+  position: relative;
+    top: px2vw(140px);
+    left: px2vw(100px);
+    font-size: px2vw(20px);
+    color: white;
+}
 .vid {
   margin-top: px2vw(35px);
 }

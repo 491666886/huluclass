@@ -28,7 +28,7 @@
           :key="video.Id"
           @click="getDescribe(video.id)"
         >
-          <img src="./img/admin.png" />
+          <img :src="'http://'+video.vSite" />
           <p>{{video.vName}}</p>
           <a>{{video.teacher}} I</a>
           <b>{{video.endTime}}</b>
@@ -57,6 +57,7 @@ export default {
   },
   data: function() {
     return {
+      vSite: "",
       count: "",
       currentPage: 1, // 默认显示第几页
       tableData: [],
