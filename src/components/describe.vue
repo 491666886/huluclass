@@ -30,7 +30,12 @@ export default {
   data: function() {
     return {
         videoURL: '',
-      video: {}
+      //  src: require('http://10.150.27.126:8080/video/shuxue.mp4'),
+      video: {
+         subjects: '',
+         grade: '',
+         unit: '',
+      }
     };
   },
   methods: {
@@ -53,12 +58,7 @@ export default {
       }).then(res => {
         if (res.data.resultCode == "200") {
           this.video = res.data.resultData;
-           this.videoURL  ='/'+ this.video[0].vUrl;
-             this.$nextTick(() => {
-
-                        this.$refs.videoPlay.load()
-
-                   });
+           this.videoURL  = 'http://'+this.video[0].vUrl;
           console.log(this.video[0]);
         } else {
           this.$message({

@@ -188,6 +188,7 @@ export default {
           this.radio1 = res.data.cName;
           this.getteacher();
         } else {
+          this.videolist=[],
           this.$message({
             type: "error",
             message: res.data.resultMsg
