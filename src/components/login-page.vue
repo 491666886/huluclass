@@ -64,6 +64,7 @@ export default {
       videolist: [],
       subjects: "",
       grade: "",
+      unit:'',
       pageNum: "1",
       menuData: []
     };
@@ -104,14 +105,19 @@ export default {
                 this.getvideolist(this.PageSize, (val) * (this.pageSize))
             },
     handleOpen(key, keyPath) {
-      console.log(keyPath[0]);
+      console.log(keyPath[1]);
       this.subjects = keyPath[0];
+      this.grade =keyPath[1];
       this.getvideolist();
     },
-    handleClose(key, keyPath) {},
+    handleClose(key, keyPath) {
+       this.subjects ='';
+      this.grade ='';
+      this.unit = '';
+    },
     handleselect(key, keyPath) {
       console.log(keyPath[0]);
-      this.grade = keyPath[1];
+      this.unit = keyPath[2];
       this.getvideolist();
     },
     getvideolist() {
@@ -128,7 +134,7 @@ export default {
           pageSize:12,
           pageNum: this.currentPage,
           subjects: this.subjects,
-
+unit:this.unit,
           grade: this.grade
         }
       }).then(res => {

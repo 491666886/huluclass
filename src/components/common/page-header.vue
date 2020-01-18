@@ -5,7 +5,12 @@
       <img src="../img/home.png" />首页
     </div>
     <div class="search">
-      <el-input placeholder="知识点/教师/学科/年级" v-model="input3" class="input-with-select">
+      <el-input
+        placeholder="知识点/教师/学科/年级"
+        v-model="input3"
+        class="input-with-select"
+        @keyup.enter.native="search()"
+      >
         <el-button slot="append" icon="el-icon-search" @click="search()"></el-button>
       </el-input>
     </div>
@@ -20,6 +25,8 @@
 </template>
 <script>
 export default {
+  name: "page-header",
+  props: ["message1"],
   data: function() {
     return {
       input3: ""
@@ -41,6 +48,11 @@ export default {
     },
     home() {
       this.$router.push("/login");
+    }
+  },
+  created() {
+    if (this.message1 != undefined) {
+      this.input3 = this.message1;
     }
   }
 };

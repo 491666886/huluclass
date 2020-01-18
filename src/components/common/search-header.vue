@@ -5,7 +5,7 @@
       <img src="../img/home.png" />首页
     </div>
     <div class="search">
-      <el-input placeholder="知识点/教师/学科/年级" v-model="input3" class="input-with-select">
+      <el-input placeholder="知识点/教师/学科/年级" v-model="input3"  class="input-with-select">
         <el-button slot="append" icon="el-icon-search" @click="search()"></el-button>
       </el-input>
     </div>
@@ -28,7 +28,7 @@ export default {
   methods: {
     search() {
      
-      this.$parent.research(this.input3);//高级搜索
+      this.$parent.search(this.input3);//高级搜索
     },
     quitid() {
       sessionStorage.clear();

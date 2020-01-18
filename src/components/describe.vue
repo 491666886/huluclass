@@ -53,7 +53,7 @@ export default {
       }).then(res => {
         if (res.data.resultCode == "200") {
           this.video = res.data.resultData;
-           this.videoURL  = this.video[0].vUrl;
+           this.videoURL  ='/'+ this.video[0].vUrl;
              this.$nextTick(() => {
 
                         this.$refs.videoPlay.load()

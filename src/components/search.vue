@@ -1,6 +1,6 @@
 <template>
   <div class="search">
-    <search-header></search-header>
+    <page-header :message1="input"></page-header>
 
     <div class="main">
       <div class="dan">
@@ -71,15 +71,17 @@
 <script>
 import axios from "axios";
 import searchHeader from "./common/search-header";
-
+import pageHeader from "./common/page-header";
 import pageFooter from "./common/page-footer";
 export default {
   components: {
+    pageHeader,
     searchHeader,
     pageFooter
   },
   data: function() {
     return {
+      input:this.$route.params.id,
       value: "",
       radio1: "",
       radio2: "",
@@ -114,15 +116,14 @@ export default {
         data: {
           pageNum: 1,
           pageSize: 15,
-          teacher: this.value,
-          subjects: this.radio1,
-          grade: this.radio2
+       
         }
       }).then(res => {
         if (res.data.resultCode == "200") {
           this.count = res.data.resultLineNum;
+          this.radio1 = res.data.cName;
           this.videolist = res.data.resultData;
-          console.log(this.videolist);
+         
         } else {
           this.$message({
             type: "error",
@@ -131,36 +132,7 @@ export default {
         }
       });
     },
-    research(param) {
-      //点击搜索按键
-      console.log(param);
-      axios({
-        headers: {
-          "User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
-            .loginId,
-          Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
-            .sessionId
-        },
-        method: "post",
-        url: "/hlkt/resource/advancedSearch.action",
-        data: {
-          pageNum: 1,
-          pageSize: 15,
-          search: param
-        }
-      }).then(res => {
-        if (res.data.resultCode == "200") {
-          this.count = res.data.resultLineNum;
-          this.videolist = res.data.resultData;
-          console.log(this.videolist);
-        } else {
-          this.$message({
-            type: "error",
-            message: res.data.resultMsg
-          });
-        }
-      });
-    },
+   
     getteacher() {
       axios({
         headers: {
@@ -170,7 +142,7 @@ export default {
             .sessionId
         },
         method: "post",
-        url: "hlkt/resource/findTeacher.action",
+        url: "/hlkt/resource/findTeacher.action",
         data: {
           job:this.radio1,
         }
@@ -198,17 +170,21 @@ export default {
             .sessionId
         },
         method: "post",
-        url: "/hlkt/resource/advancedSearch.action",
+        url: "/hlkt/resource/findSearchVideo..action",
         data: {
           pageNum: 1,
           pageSize: 15,
-          search: this.$route.params.id
+          search: this.$route.params.id,
+             teacher: this.value,
+          subjects: this.radio1,
+          grade: this.radio2
         }
       }).then(res => {
         if (res.data.resultCode == "200") {
           this.count = res.data.resultLineNum;
           this.videolist = res.data.resultData;
-          console.log(this.videolist);
+          this.radio1 = res.data.cName;
+          this.getteacher();
         } else {
           this.$message({
             type: "error",
