@@ -4,7 +4,7 @@
 
     <div class="main">
       <div class="dan">
-        <el-radio-group v-model="radio1" class="line" @change="search">
+        <el-radio-group v-model="radio1" class="line" @change="getValue">
           <div class="grate1">学科:</div>
           <el-radio-button label>不限</el-radio-button>
           <el-radio-button label="数学"></el-radio-button>
@@ -15,7 +15,7 @@
         </el-radio-group>
       </div>
       <div class="dan">
-        <el-radio-group v-model="radio2" class="line" @change="search">
+        <el-radio-group v-model="radio2" class="line" @change="getValue">
           <div class="grate">年级:</div>
           <el-radio-button label border>不限</el-radio-button>
           <el-radio-button label="一年级上"></el-radio-button>
@@ -35,7 +35,7 @@
       <div class="dan">
         <el-radio-group v-model="radio2" class="line">
           教师：
-          <el-select v-model="value" placeholder="选择教师" @change="search">
+          <el-select v-model="value" placeholder="选择教师" @change="getValue">
             <el-option
               v-for="item in options"
               :key="item.name"
@@ -81,7 +81,7 @@ export default {
   },
   data: function() {
     return {
-      input:this.$route.params.id,
+      input: this.$route.params.id,
       value: "",
       radio1: "",
       radio2: "",
@@ -102,7 +102,6 @@ export default {
       });
     },
     getValue() {
-      console.log(this.value);
       this.getteacher();
       axios({
         headers: {
@@ -112,18 +111,21 @@ export default {
             .sessionId
         },
         method: "post",
-        url: "/hlkt/resource/findSearchVideo.action",
+        url: "/hlkt/resource/findSearchVideo..action",
         data: {
           pageNum: 1,
           pageSize: 15,
-       
+          search: this.$route.params.id,
+          teacher: this.value,
+          subjects: this.radio1,
+          grade: this.radio2
         }
       }).then(res => {
         if (res.data.resultCode == "200") {
           this.count = res.data.resultLineNum;
-          this.radio1 = res.data.cName;
           this.videolist = res.data.resultData;
-         
+          this.radio1 = res.data.cName;
+          this.getteacher();
         } else {
           this.$message({
             type: "error",
@@ -132,7 +134,7 @@ export default {
         }
       });
     },
-   
+
     getteacher() {
       axios({
         headers: {
@@ -144,7 +146,7 @@ export default {
         method: "post",
         url: "/hlkt/resource/findTeacher.action",
         data: {
-          job:this.radio1,
+          job: this.radio1
         }
       }).then(res => {
         if (res.data.resultCode == "200") {
@@ -174,10 +176,10 @@ export default {
         data: {
           pageNum: 1,
           pageSize: 15,
-          search: this.$route.params.id,
-             teacher: this.value,
-          subjects: this.radio1,
-          grade: this.radio2
+          search: this.$route.params.id
+          //    teacher: this.value,
+          // subjects: this.radio1,
+          // grade: this.radio2
         }
       }).then(res => {
         if (res.data.resultCode == "200") {
@@ -198,6 +200,15 @@ export default {
       this.currentPage = val;
       // 切换页码时，要获取每页显示的条数
       this.getuserlist(this.PageSize, val * this.pageSize);
+    }
+  },
+  watch: {
+    $route: {
+      handler: function(val, oldVal) {
+        this.search();
+      },
+      // 深度观察监听
+      deep: true
     }
   },
   created() {
