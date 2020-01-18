@@ -205,6 +205,8 @@ export default {
   watch: {
     $route: {
       handler: function(val, oldVal) {
+        this.radio1='';
+        this.radio2 ='';
         this.search();
       },
       // 深度观察监听
