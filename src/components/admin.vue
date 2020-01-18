@@ -12,17 +12,17 @@
       </div>
     </div>
     <div class="main">
-       <div
-          class="videolist"
-          v-for="video in videolist"
-          :key="video.cId"
-          @click="getDescribe(video.id)"
-        >
-          <img src="./img/admin.png" />
-          <p>{{video.vName}}</p>
-          <a>{{video.teacher}} I</a>
-          <b>{{video.endTime}}</b>
-        </div>
+      <div
+        class="videolist"
+        v-for="video in videolist"
+        :key="video.cId"
+        @click="getDescribe(video.vId)"
+      >
+        <img :src="'http://'+video.vSite" />
+        <p>{{video.vName}}</p>
+        <a>{{video.teacher}} I</a>
+        <b>{{video.endTime}}</b>
+      </div>
     </div>
     <page-footer></page-footer>
   </div>
@@ -40,14 +40,19 @@ export default {
     return {
       videolist: [],
       tableData: [],
-     
+
       username: JSON.parse(sessionStorage.getItem("SESSION_USER")).name,
       loginId: JSON.parse(sessionStorage.getItem("SESSION_USER")).loginId
     };
   },
 
   methods: {
-       getvideolist() {
+    getDescribe(id) {
+      this.$router.push({
+        path: `/describe/${id}`
+      });
+    },
+    getvideolist() {
       axios({
         headers: {
           "User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
@@ -58,10 +63,9 @@ export default {
         method: "post",
         url: "/hlkt/user/selectCollect.action",
         data: {
-          pageSize:12,
+          pageSize: 12,
           pageNum: 1,
-          uId:JSON.parse(sessionStorage.getItem("SESSION_USER"))
-            .userId,
+          uId: JSON.parse(sessionStorage.getItem("SESSION_USER")).userId
         }
       }).then(res => {
         if (res.data.resultCode == "200") {
@@ -77,7 +81,7 @@ export default {
       });
     }
   },
-  mounted(){
+  mounted() {
     this.getvideolist();
   }
 };
@@ -105,17 +109,17 @@ export default {
     font-size: px2vw(18px);
     font-weight: bold;
     color: rgba(51, 51, 51, 1);
-     overflow: hidden;
+    overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
   a {
-    white-space:nowrap;
+    white-space: nowrap;
     font-size: px2vw(13px);
     padding-left: px2vw(19px);
   }
   b {
-    white-space:nowrap;
+    white-space: nowrap;
     font-size: px2vw(10px);
     font-weight: 400;
   }

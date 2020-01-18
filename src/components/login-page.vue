@@ -5,7 +5,7 @@
       <el-aside class="aside">
         <el-row class="tac">
           <el-col :span="12">
-            <h5 class="h5">教学视频资源</h5>
+            <h5 class="h5" @click="regetvideolist()">教学视频资源</h5>
             <el-menu
               default-active="2"
               class="el-menu-vertical-demo"
@@ -21,9 +21,9 @@
       </el-aside>
 
       <div class="main">
+        <div v-if="videolist.length ===0" class="error">暂无关于 {{subjects}}{{grade}} 的视频</div>
         <div
           class="videolist"
-         
           v-for="video in videolist"
           :key="video.Id"
           @click="getDescribe(video.id)"
@@ -32,7 +32,6 @@
           <p>{{video.vName}}</p>
           <a>{{video.teacher}} I</a>
           <b>{{video.endTime}}</b>
-          
         </div>
         <el-pagination
           class="page"
@@ -42,7 +41,7 @@
           @current-change="handleCurrentChange"
           :total="parseInt(this.count)"
         ></el-pagination>
-       </div>
+      </div>
     </el-container>
   </el-container>
 </template>
@@ -65,7 +64,7 @@ export default {
       videolist: [],
       subjects: "",
       grade: "",
-      unit:'',
+      unit: "",
       pageNum: "1",
       menuData: []
     };
@@ -95,26 +94,27 @@ export default {
         }
       });
     },
-     serchlist(vap) {//改变页数
-                this.currentPage = vap;
-                this.getvideolist()
-            },
-     handleCurrentChange(val) {
-                // 改变默认的页数
-                this.currentPage = val;
-                // 切换页码时，要获取每页显示的条数
-                this.getvideolist(this.PageSize, (val) * (this.pageSize))
-            },
+    serchlist(vap) {
+      //改变页数
+      this.currentPage = vap;
+      this.getvideolist();
+    },
+    handleCurrentChange(val) {
+      // 改变默认的页数
+      this.currentPage = val;
+      // 切换页码时，要获取每页显示的条数
+      this.getvideolist(this.PageSize, val * this.pageSize);
+    },
     handleOpen(key, keyPath) {
       console.log(keyPath[1]);
       this.subjects = keyPath[0];
-      this.grade =keyPath[1];
+      this.grade = keyPath[1];
       this.getvideolist();
     },
     handleClose(key, keyPath) {
-       this.subjects ='';
-      this.grade ='';
-      this.unit = '';
+      this.subjects = "";
+      this.grade = "";
+      this.unit = "";
     },
     handleselect(key, keyPath) {
       console.log(keyPath[0]);
@@ -132,24 +132,48 @@ export default {
         method: "post",
         url: "/hlkt/resource/findSearchVideo.action",
         data: {
-          pageSize:12,
+          pageSize: 12,
           pageNum: this.currentPage,
           subjects: this.subjects,
-unit:this.unit,
+          unit: this.unit,
           grade: this.grade
         }
       }).then(res => {
         if (res.data.resultCode == "200") {
+
           this.count = res.data.resultLineNum;
           this.videolist = res.data.resultData;
-          
+          console.log(this.videolist)
         } else {
-           this.videolist = [];
-           console.log(this.videolist);
-          this.$message({
-            type: "error",
-            message: res.data.resultMsg
-          });
+          this.videolist = [];
+        }
+      });
+    },
+    regetvideolist(){
+       axios({
+        headers: {
+          "User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
+            .loginId,
+          Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
+            .sessionId
+        },
+        method: "post",
+        url: "/hlkt/resource/findSearchVideo.action",
+        data: {
+          pageSize: 12,
+          pageNum: 1,
+          subjects: '',
+          unit:'',
+          grade: ''
+        }
+      }).then(res => {
+        if (res.data.resultCode == "200") {
+
+          this.count = res.data.resultLineNum;
+          this.videolist = res.data.resultData;
+          console.log(this.videolist)
+        } else {
+          this.videolist = [];
         }
       });
     }
@@ -163,17 +187,21 @@ unit:this.unit,
 </script>
 <style scoped lang="scss">
 @import "src/plugins/px2vw";
+.error {
+  position: relative;
+  text-align: center;
+  top: 182px;
+}
 .main {
   background-color: #ffffff;
   width: px2vw(1050px);
   height: px2vw(850px);
   position: relative;
- 
+
   top: px2vw(125px);
   margin-bottom: px2vw(90px);
 }
 .page {
-  
   position: absolute;
   top: px2vw(800px);
   left: 85%;
@@ -199,23 +227,23 @@ unit:this.unit,
     font-size: px2vw(18px);
     font-weight: bold;
     color: rgba(51, 51, 51, 1);
-     overflow: hidden;
+    overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-
   }
   a {
-    white-space:nowrap;
+    white-space: nowrap;
     font-size: px2vw(13px);
     padding-left: px2vw(19px);
   }
   b {
-    white-space:nowrap;
+    white-space: nowrap;
     font-size: px2vw(10px);
     font-weight: 400;
   }
 }
 .h5 {
+  cursor:pointer;
   background: linear-gradient(
     -30deg,
     rgba(79, 172, 254, 1) 0%,
@@ -244,7 +272,6 @@ unit:this.unit,
 .el-col-12 {
   width: 100% !important;
 }
-
 
 body > .el-container {
   margin-bottom: 40px;

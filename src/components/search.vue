@@ -45,16 +45,17 @@
           </el-select>
         </el-radio-group>
       </div>
+         <div v-if="videolist.length ===0" class="error">暂无关于 {{this.$route.params.id}} 的视频</div>
       <div
         class="videolist"
         v-for="video in videolist"
         :key="video.cId"
         @click="getDescribe(video.id)"
       >
-        <img src="./img/admin.png" />
+        <img :src="'http://'+video.vSite" />
         <p>{{video.vName}}</p>
         <a>{{video.teacher}} I</a>
-        <b>{{video.endTime}}</b>
+        <b>{{video.vTime}}</b>
       </div>
       <el-pagination
         class="page"
@@ -222,6 +223,11 @@ export default {
 </script>
 <style scoped lang="scss">
 @import "src/plugins/px2vw";
+.error {
+  position: relative;
+  text-align: center;
+  top: 182px;
+}
 .grate {
   height: px2vw(80px);
 

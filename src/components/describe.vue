@@ -111,7 +111,7 @@ export default {
 .alert{
   position: relative;
     top: px2vw(140px);
-    left: px2vw(100px);
+    left: px2vw(160px);
     font-size: px2vw(20px);
     color: white;
 }
