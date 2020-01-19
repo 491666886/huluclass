@@ -3,17 +3,20 @@
     <page-header></page-header>
     <div class="det">
       <p>当前位置：{{video[0].subjects}}>{{video[0].grade}}>{{video[0].unit}}</p>
-      <b> {{video[0].vName}}</b>
+      <b>{{video[0].vName}}</b>
       <dd>教师：{{video[0].teacher}}</dd>
       <div class="vid">
-         <div class="alert" id="alert" >若视频存于蓝光中，预计等待观看时间最长为60分钟，建议收藏该课程</div>
-        <video ref="videoPlay" :src="videoURL" controls="controls" @play="myFunction()">
-         
-        </video>
-        <div class="tec">知识点快速索引
-          <div class="index" @click="index()">{{video[0].vName}}</div>
+        <div class="alert" id="alert" v-if="this.$route.params.id==10">此视频存于蓝光中，预计等待观看时间较长，建议收藏</div>
+        <video ref="videoPlay" :src="videoURL" controls="controls" @play="myFunction()" id="video"></video>
+        <div class="tec">
+          知识点快速索引
+          <div class="index" @click="index()" v-if="this.$route.params.id!=22">{{video[0].vName}}</div>
+          <div class="zsd" v-if="this.$route.params.id==22">
+            <div class="index" @click="setTime1()">公顷</div>
+            <div class="index" @click="setTime2()">平方千米</div>
+          </div>
         </div>
-          
+
         <el-button class="button" type="primary" plain @click="collect()">收藏该课程</el-button>
       </div>
     </div>
@@ -32,18 +35,26 @@ export default {
   },
   data: function() {
     return {
-        videoURL: '',
+      videoURL: "",
       //  src: require('http://10.150.27.126:8080/video/shuxue.mp4'),
       video: {
-         subjects: '',
-         grade: '',
-         unit: '',
+        subjects: "",
+        grade: "",
+        unit: ""
       }
     };
   },
   methods: {
-    myFunction(){
-      document.getElementById('alert').style.display = 'none'
+    setTime1() {
+      var $video = document.getElementById("video");
+      $video.currentTime = 115;
+    },
+    setTime2() {
+      var $video = document.getElementById("video");
+      $video.currentTime = 580;
+    },
+    myFunction() {
+      document.getElementById("alert").style.display = "none";
     },
     getvideo() {
       axios({
@@ -61,7 +72,7 @@ export default {
       }).then(res => {
         if (res.data.resultCode == "200") {
           this.video = res.data.resultData;
-           this.videoURL  = 'http://'+this.video[0].vUrl;
+          this.videoURL = "http://" + this.video[0].vUrl;
           console.log(this.video[0]);
         } else {
           this.$message({
@@ -71,8 +82,8 @@ export default {
         }
       });
     },
-      collect(){
-         axios({
+    collect() {
+      axios({
         headers: {
           "User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
             .loginId,
@@ -82,8 +93,7 @@ export default {
         method: "post",
         url: "/hlkt/user/newCollect.action",
         data: {
-           uId:JSON.parse(sessionStorage.getItem("SESSION_USER"))
-            .userId,
+          uId: JSON.parse(sessionStorage.getItem("SESSION_USER")).userId,
           vId: this.$route.params.id
         }
       }).then(res => {
@@ -97,10 +107,9 @@ export default {
           });
         }
       });
-      }
+    }
   },
   created() {
-
     console.log(this.$route.params.id);
     this.getvideo();
   }
@@ -108,12 +117,18 @@ export default {
 </script>
 <style scoped lang="scss">
 @import "src/plugins/px2vw";
-.alert{
+.alert {
+  width: 380px;
   position: relative;
-    top: px2vw(140px);
-    left: px2vw(160px);
-    font-size: px2vw(20px);
-    color: white;
+  top: px2vw(140px);
+  left: px2vw(200px);
+  font-size: px2vw(20px);
+  color: white;
+  z-index: 111;
+}
+.index {
+  height: 30px;
+  cursor: pointer;
 }
 .vid {
   margin-top: px2vw(35px);

@@ -21,7 +21,7 @@
       </el-aside>
 
       <div class="main">
-        <div v-if="videolist.length ===0" class="error">暂无关于 {{subjects}}{{grade}} 的视频</div>
+        <div v-if="videolist.length ===0" class="error">该选项下暂无视频</div>
         <div
           class="videolist"
           v-for="video in videolist"
@@ -143,6 +143,12 @@ export default {
 
           this.count = res.data.resultLineNum;
           this.videolist = res.data.resultData;
+          for(var video of videolist){
+            if(video.teacher==="李丽娟"){
+
+            }
+          }
+          
           console.log(this.videolist)
         } else {
           this.videolist = [];
@@ -221,6 +227,13 @@ export default {
   border-radius: 6px;
   overflow: hidden;
   cursor: pointer;
+  .corner{
+    width: 45px;
+    height: 30px;
+    position: absolute;
+    left: 243px;
+    bottom: 102px;
+  }
   p {
     margin: 0;
     padding: px2vw(19px);

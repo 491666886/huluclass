@@ -6,7 +6,7 @@
     </div>
     <div class="search">
       <el-input
-        placeholder="知识点/教师/学科/年级"
+        placeholder="知识点/教师/学科/年级 例:公顷"
         v-model="input3"
         class="input-with-select"
         @keyup.enter.native="search()"

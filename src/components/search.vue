@@ -155,10 +155,10 @@ export default {
           this.options = res.data.resultData;
           console.log(this.options);
         } else {
-          this.$message({
-            type: "error",
-            message: res.data.resultMsg
-          });
+          // this.$message({
+          //   type: "error",
+          //   message: res.data.resultMsg
+          // });
         }
       });
     },
@@ -189,11 +189,8 @@ export default {
           this.radio1 = res.data.cName;
           this.getteacher();
         } else {
-          this.videolist=[],
-          this.$message({
-            type: "error",
-            message: res.data.resultMsg
-          });
+          this.videolist=[];
+         
         }
       });
     },

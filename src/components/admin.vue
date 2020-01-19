@@ -21,7 +21,7 @@
         <img :src="'http://'+video.vSite" />
         <p>{{video.vName}}</p>
         <a>{{video.teacher}} I</a>
-        <b>{{video.endTime}}</b>
+        <b>{{video.vTime}}</b>
       </div>
     </div>
     <page-footer></page-footer>
