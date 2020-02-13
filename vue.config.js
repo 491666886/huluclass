@@ -25,7 +25,7 @@ module.exports = {
     assetsDir: 'static',
     runtimeCompiler: true,
     publicPath: './',
-    outputDir: 'dist.uc',
+    outputDir: 'dist',
     runtimeCompiler: true,
     devServer: require('./vue.dev').devServer,
     chainWebpack: config => {
