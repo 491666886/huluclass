@@ -27,8 +27,9 @@
           v-for="video in videolist"
           :key="video.Id"
           @click="getDescribe(video.id)"
-        >
+        > <div v-if="video.errorCode == '20303'" class="blue">蓝光</div>
           <img :src="'http://'+video.vSite" />
+           
           <p>{{video.vName}}</p>
           <a>{{video.teacher}} I</a>
           <b>{{video.endTime}}</b>
@@ -72,9 +73,10 @@ export default {
 
   methods: {
     getDescribe(id) {
-      this.$router.push({
-        path: `/describe/${id}`
-      });
+      console.log(id)
+      // this.$router.push({
+      //   path: `/describe/${id}`
+      // });
     },
     getItem() {
       axios({
@@ -193,6 +195,14 @@ export default {
 </script>
 <style scoped lang="scss">
 @import "src/plugins/px2vw";
+.blue{
+     display: inline;
+    float: right;
+    position: relative;
+  top: px2vw(130px);
+  background-color: #39AEEE;
+  font-size: px2vw(14px);
+}
 .error {
   position: relative;
   text-align: center;

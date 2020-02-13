@@ -19,6 +19,7 @@
         @click="getDescribe(video.vId)"
       >
         <img :src="'http://'+video.vSite" />
+      
         <p>{{video.vName}}</p>
         <a>{{video.teacher}} I</a>
         <b>{{video.vTime}}</b>
@@ -48,9 +49,10 @@ export default {
 
   methods: {
     getDescribe(id) {
-      this.$router.push({
-        path: `/describe/${id}`
-      });
+       console.log(id)
+      // this.$router.push({
+      //   path: `/describe/${id}`
+      // });
     },
     getvideolist() {
       axios({

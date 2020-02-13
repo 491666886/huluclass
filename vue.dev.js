@@ -1,5 +1,5 @@
 
-const URL_BACKEND_SERVICE = 'http://10.150.27.126:8080'
+const URL_BACKEND_SERVICE = 'http://hulukt.ehualu.com:18080'
 
 // const URL_BACKEND_SERVICE = 'http://192.168.2.228:8080'
 //const URL_BACKEND_SERVICE = 'http://39.100.237.151:8100/uc';
