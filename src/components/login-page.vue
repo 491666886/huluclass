@@ -27,12 +27,16 @@
           v-for="video in videolist"
           :key="video.Id"
           @click="getDescribe(video.id)"
-        > <div v-if="video.errorCode == '20303'" class="blue">蓝光</div>
+        >
+          <div v-if="video.errorCode == '20303'" class="blue">蓝光</div>
           <img :src="'http://'+video.vSite" />
-           
+
           <p>{{video.vName}}</p>
-          <a>{{video.teacher}} I</a>
-          <b>{{video.endTime}}</b>
+          <a>{{video.teacher}}</a>
+          <b>{{video.cTime.split(" ")[0]}}</b>
+          <br />
+          <c>磁平台</c>
+          <d>光平台</d>
         </div>
         <el-pagination
           class="page"
@@ -73,17 +77,23 @@ export default {
 
   methods: {
     getDescribe(id) {
-      console.log(id)
-      // this.$router.push({
-      //   path: `/describe/${id}`
-      // });
+      this.$router.push({
+        path: `/describe/${id}`
+      });
     },
     getItem() {
       axios({
-        headers: {},
-        method: "get",
+        headers: {
+          "User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
+            .loginId,
+          Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
+            .sessionId
+        },
+        method: "post",
         url: "/hlkt/resource/findMenusTree.action",
-        data: {}
+        data: {
+          sid: 2
+        }
       }).then(res => {
         if (res.data.resultCode == "200") {
           this.menuData = res.data.resultData;
@@ -134,6 +144,7 @@ export default {
         method: "post",
         url: "/hlkt/resource/findSearchVideo.action",
         data: {
+          sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
           pageSize: 12,
           pageNum: this.currentPage,
           subjects: this.subjects,
@@ -142,23 +153,22 @@ export default {
         }
       }).then(res => {
         if (res.data.resultCode == "200") {
-
           this.count = res.data.resultLineNum;
           this.videolist = res.data.resultData;
-          for(var video of videolist){
-            if(video.teacher==="李丽娟"){
-
+          console.log(this.videolist[0].cTime.split(" ")[0]);
+          for (var video of videolist) {
+            if (video.teacher === "李丽娟") {
             }
           }
-          
-          console.log(this.videolist)
+
+          console.log(this.videolist);
         } else {
           this.videolist = [];
         }
       });
     },
-    regetvideolist(){
-       axios({
+    regetvideolist() {
+      axios({
         headers: {
           "User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
             .loginId,
@@ -168,18 +178,18 @@ export default {
         method: "post",
         url: "/hlkt/resource/findSearchVideo.action",
         data: {
+          sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
           pageSize: 12,
           pageNum: 1,
-          subjects: '',
-          unit:'',
-          grade: ''
+          subjects: "",
+          unit: "",
+          grade: ""
         }
       }).then(res => {
         if (res.data.resultCode == "200") {
-
           this.count = res.data.resultLineNum;
           this.videolist = res.data.resultData;
-          console.log(this.videolist)
+          console.log(this.videolist);
         } else {
           this.videolist = [];
         }
@@ -195,12 +205,12 @@ export default {
 </script>
 <style scoped lang="scss">
 @import "src/plugins/px2vw";
-.blue{
-     display: inline;
-    float: right;
-    position: relative;
+.blue {
+  display: inline;
+  float: right;
+  position: relative;
   top: px2vw(130px);
-  background-color: #39AEEE;
+  background-color: #39aeee;
   font-size: px2vw(14px);
 }
 .error {
@@ -237,7 +247,7 @@ export default {
   border-radius: 6px;
   overflow: hidden;
   cursor: pointer;
-  .corner{
+  .corner {
     width: 45px;
     height: 30px;
     position: absolute;
@@ -246,8 +256,9 @@ export default {
   }
   p {
     margin: 0;
-    padding: px2vw(19px);
-    font-size: px2vw(18px);
+    padding: px2vw(9px);
+    font-size: px2vw(20px);
+    line-height: px2vw(19px);
     font-weight: bold;
     color: rgba(51, 51, 51, 1);
     overflow: hidden;
@@ -256,17 +267,40 @@ export default {
   }
   a {
     white-space: nowrap;
-    font-size: px2vw(13px);
-    padding-left: px2vw(19px);
+    font-size: px2vw(16px);
+    line-height: px2vw(16px);
+    padding: 0 px2vw(9px);
+    border-right: #666666 1px solid;
   }
   b {
     white-space: nowrap;
-    font-size: px2vw(10px);
+    font-size: px2vw(14px);
     font-weight: 400;
+    padding-left: px2vw(13px);
+  }
+  c {
+    font-size: px2vw(14px);
+    color: #ff9154;
+    border: 1px solid rgba(255, 145, 84, 1);
+    border-radius: 4px;
+    margin: px2vw(9px) ;
+    display: inline-block;
+    // margin-left: px2vw(9px);
+    padding: px2vw(4px);
+  }
+  d{
+     font-size: px2vw(14px);
+    color: #4CA4EF;
+    border: 1px solid #4CA4EF;
+    border-radius: 4px;
+    margin: px2vw(9px) ;
+    display: inline-block;
+    
+    padding: px2vw(4px);
   }
 }
 .h5 {
-  cursor:pointer;
+  cursor: pointer;
   background: linear-gradient(
     -30deg,
     rgba(79, 172, 254, 1) 0%,

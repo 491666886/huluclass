@@ -20,9 +20,12 @@
       >
         <img :src="'http://'+video.vSite" />
       
-        <p>{{video.vName}}</p>
-        <a>{{video.teacher}} I</a>
-        <b>{{video.vTime}}</b>
+         <p>{{video.vName}}</p>
+          <a>{{video.teacher}}</a>
+          <b>{{video.cTime.split(" ")[0]}}</b>
+          <br />
+          <c>磁平台</c>
+          <d>光平台</d>
       </div>
     </div>
     <page-footer></page-footer>
@@ -49,10 +52,10 @@ export default {
 
   methods: {
     getDescribe(id) {
-       console.log(id)
-      // this.$router.push({
-      //   path: `/describe/${id}`
-      // });
+     
+      this.$router.push({
+        path: `/describe/${id}`
+      });
     },
     getvideolist() {
       axios({
@@ -105,10 +108,18 @@ export default {
   border-radius: 6px;
   overflow: hidden;
   cursor: pointer;
+  .corner {
+    width: 45px;
+    height: 30px;
+    position: absolute;
+    left: 243px;
+    bottom: 102px;
+  }
   p {
     margin: 0;
-    padding: px2vw(19px);
-    font-size: px2vw(18px);
+    padding: px2vw(9px);
+    font-size: px2vw(20px);
+    line-height: px2vw(19px);
     font-weight: bold;
     color: rgba(51, 51, 51, 1);
     overflow: hidden;
@@ -117,13 +128,36 @@ export default {
   }
   a {
     white-space: nowrap;
-    font-size: px2vw(13px);
-    padding-left: px2vw(19px);
+    font-size: px2vw(16px);
+    line-height: px2vw(16px);
+    padding: 0 px2vw(9px);
+    border-right: #666666 1px solid;
   }
   b {
     white-space: nowrap;
-    font-size: px2vw(10px);
+    font-size: px2vw(14px);
     font-weight: 400;
+    padding-left: px2vw(13px);
+  }
+  c {
+    font-size: px2vw(14px);
+    color: #ff9154;
+    border: 1px solid rgba(255, 145, 84, 1);
+    border-radius: 4px;
+    margin: px2vw(9px) ;
+    display: inline-block;
+    // margin-left: px2vw(9px);
+    padding: px2vw(4px);
+  }
+  d{
+     font-size: px2vw(14px);
+    color: #4CA4EF;
+    border: 1px solid #4CA4EF;
+    border-radius: 4px;
+    margin: px2vw(9px) ;
+    display: inline-block;
+    
+    padding: px2vw(4px);
   }
 }
 .main {
