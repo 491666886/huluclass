@@ -34,10 +34,10 @@
         </div>
         <div class="banner">
           <LL @click="nocollect()" v-if="this.collectViode==1">
-            <i class="el-icon-star-off" id="i"></i>取消收藏
+            <i class="el-icon-star-on" id="i"></i>取消收藏
           </LL>
           <LL @click="collect()" v-if="this.collectViode==0">
-            <i class="el-icon-star-on" id="i"></i>收藏
+            <i class="el-icon-star-off" id="i"></i>收藏
           </LL>
         </div>
         <!-- <el-button

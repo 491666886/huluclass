@@ -92,7 +92,7 @@ export default {
         method: "post",
         url: "/hlkt/resource/findMenusTree.action",
         data: {
-          sid: 2
+          sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
         }
       }).then(res => {
         if (res.data.resultCode == "200") {
@@ -118,7 +118,7 @@ export default {
       this.getvideolist(this.PageSize, val * this.pageSize);
     },
     handleOpen(key, keyPath) {
-      console.log(keyPath[1]);
+      console.log(keyPath[0]);
       this.subjects = keyPath[0];
       this.grade = keyPath[1];
       this.getvideolist();
@@ -130,6 +130,7 @@ export default {
     },
     handleselect(key, keyPath) {
       console.log(keyPath[0]);
+       this.subjects = keyPath[0];
       this.unit = keyPath[2];
       this.getvideolist();
     },
@@ -242,7 +243,7 @@ export default {
   margin-left: px2vw(21px);
   margin-top: px2vw(21px);
   width: px2vw(233px);
-  height: px2vw(233px);
+  height: px2vw(243px);
   box-shadow: 0px 2px 10px 0px rgba(78, 78, 78, 0.21);
   border-radius: 6px;
   overflow: hidden;

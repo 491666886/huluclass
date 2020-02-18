@@ -12,6 +12,7 @@
       </div>
     </div>
     <div class="main">
+       <div v-if="videolist.length ===0" class="error">暂无收藏视频</div>
       <div
         class="videolist"
         v-for="video in videolist"
@@ -78,10 +79,10 @@ export default {
           this.videolist = res.data.resultData;
           console.log(this.videolist);
         } else {
-          this.$message({
-            type: "error",
-            message: res.data.resultMsg
-          });
+          // this.$message({
+          //   type: "error",
+          //   message: res.data.resultMsg
+          // });
         }
       });
     }
@@ -93,6 +94,11 @@ export default {
 </script>
 <style scoped lang="scss">
 @import "src/plugins/px2vw";
+.error {
+  position: relative;
+  text-align: center;
+  top: 182px;
+}
 .videolist img {
   width: px2vw(232px);
   height: px2vw(132px);
@@ -103,7 +109,7 @@ export default {
   margin-left: px2vw(21px);
   margin-top: px2vw(21px);
   width: px2vw(233px);
-  height: px2vw(233px);
+  height: px2vw(243px);
   box-shadow: 0px 2px 10px 0px rgba(78, 78, 78, 0.21);
   border-radius: 6px;
   overflow: hidden;

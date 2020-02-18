@@ -6,7 +6,7 @@
     </div>
     <div class="search">
       <el-input
-        placeholder="知识点/教师/学科/年级 "
+        placeholder="课程名称/教师/学科/年级 "
         v-model="input3"
         class="input-with-select"
         @keyup.enter.native="search()"
@@ -82,7 +82,7 @@ a {
   float: left;
   width: px2vw(692px);
   height: px2vw(55px);
-  margin-top: 34px;
+  margin-top: px2vw(25px);
   margin-left: px2vw(54px);
 }
 .home img,

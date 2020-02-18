@@ -7,44 +7,15 @@
         <el-radio-group v-model="radio1" class="line" @change="getValue">
           <div class="grate">学科:</div>
           <el-radio-button label>不限</el-radio-button>
-          <el-radio-button label="数学"></el-radio-button>
-          <el-radio-button label="语文"></el-radio-button>
-          <el-radio-button label="英语"></el-radio-button>
-          <el-radio-button label="物理"></el-radio-button>
-          <el-radio-button label="化学"></el-radio-button>
-          <el-radio-button label="生物"></el-radio-button>
-          <el-radio-button label="政治"></el-radio-button>
-          <el-radio-button label="历史"></el-radio-button>
-          <el-radio-button label="地理"></el-radio-button>
-          <el-radio-button label="信息技术"></el-radio-button>
-          <el-radio-button label="通用技术"></el-radio-button>
-          <el-radio-button label="音体美劳"></el-radio-button>
-          <el-radio-button label="综合实践活动"></el-radio-button>
+          <el-radio-button :label="item.subjects" :key="item.subjects" v-for="item in subjects"></el-radio-button>
         </el-radio-group>
       </div>
+
       <div class="dan">
         <el-radio-group v-model="radio2" class="line" @change="getValue">
           <div class="grate1">年级:</div>
           <el-radio-button label border>不限</el-radio-button>
-<el-radio-button label="高一上"></el-radio-button>
-<el-radio-button label="高一下"></el-radio-button>
-<el-radio-button label="高二上"></el-radio-button>
-<el-radio-button label="高二下"></el-radio-button>
-<el-radio-button label="高三上"></el-radio-button>
-<el-radio-button label="高三下"></el-radio-button>
-
-          <!-- <el-radio-button label="一年级上"></el-radio-button>
-          <el-radio-button label="一年级下"></el-radio-button>
-          <el-radio-button label="二年级上"></el-radio-button>
-          <el-radio-button label="二年级下"></el-radio-button>
-          <el-radio-button label="三年级上"></el-radio-button>
-          <el-radio-button label="三年级下"></el-radio-button>
-          <el-radio-button label="四年级上"></el-radio-button>
-          <el-radio-button label="四年级下"></el-radio-button>
-          <el-radio-button label="五年级上"></el-radio-button>
-          <el-radio-button label="五年级下"></el-radio-button>
-          <el-radio-button label="六年级上"></el-radio-button>
-          <el-radio-button label="六年级下"></el-radio-button> -->
+          <el-radio-button :label="items.subjects" :key="items.subjects" v-for="items in grades"></el-radio-button>
         </el-radio-group>
       </div>
       <div class="dan">
@@ -58,10 +29,17 @@
               :value="item.name"
             ></el-option>
           </el-select>
-          <el-date-picker v-model="year" type="year" placeholder="选择年"></el-date-picker>
+          <el-select v-model="year" placeholder="选择年份" @change="getValue">
+            <el-option
+              v-for="item in years"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
         </el-radio-group>
       </div>
-      <div v-if="videolist.length ===0" class="error">暂无关于 {{this.$route.params.id}} 的视频</div>
+      <div v-if="videolist.length ===0" class="error">暂无视频</div>
       <div
         class="videolist"
         v-for="video in videolist"
@@ -69,13 +47,12 @@
         @click="getDescribe(video.id)"
       >
         <img :src="'http://'+video.vSite" />
-         <p>{{video.vName}}</p>
-          <a>{{video.teacher}}</a>
-          <b>{{video.cTime.split(" ")[0]}}</b>
-          <br />
-          <c>磁平台</c>
-          <d>光平台</d>
-        
+        <p>{{video.vName}}</p>
+        <a>{{video.teacher}}</a>
+        <b>{{video.cTime.split(" ")[0]}}</b>
+        <br />
+        <c>磁平台</c>
+        <d>光平台</d>
       </div>
       <el-pagination
         class="page"
@@ -102,11 +79,20 @@ export default {
   },
   data: function() {
     return {
+       years: [{
+          value: '2019',
+          label: '2019'
+        }, {
+          value: '2020',
+          label: '2020'
+        },],
       year: "",
       input: this.$route.params.id,
       value: "",
       radio1: "",
+      subjects:[],
       radio2: "",
+      grades:[],
       count: "",
       options: [],
       currentPage: 1, // 默认显示第几页
@@ -118,6 +104,52 @@ export default {
     };
   },
   methods: {
+    getsubgect(){
+       axios({
+        headers: {
+          "User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
+            .loginId,
+          Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
+            .sessionId
+        },
+        method: "post",
+        url: "/hlkt/resource/findStairNavigation.action",
+        data: {
+           sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
+         
+        }
+      }).then(res => {
+        if (res.data.resultCode == "200") {
+         this.subjects=res.data.resultData,
+         console.log(this.subjects)
+        } else {
+          
+       
+        }
+      });
+      axios({
+        headers: {
+          "User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
+            .loginId,
+          Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
+            .sessionId
+        },
+        method: "post",
+        url: "/hlkt/resource/findSecondNavigation.action",
+        data: {
+           sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
+           subjects:this.radio1,
+        }
+      }).then(res => {
+        if (res.data.resultCode == "200") {
+         this.grades =res.data.resultData
+        
+        } else {
+          
+       
+        }
+      });
+    },
     getDescribe(id) {
       this.$router.push({
         path: `/describe/${id}`
@@ -135,11 +167,13 @@ export default {
         method: "post",
         url: "/hlkt/resource/findSearchVideo..action",
         data: {
+          year:this.year,
           pageNum: 1,
           pageSize: 15,
           search: this.$route.params.id,
           teacher: this.value,
           subjects: this.radio1,
+           sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
           grade: this.radio2
         }
       }).then(res => {
@@ -149,10 +183,8 @@ export default {
           this.radio1 = res.data.cName;
           this.getteacher();
         } else {
-          this.$message({
-            type: "error",
-            message: res.data.resultMsg
-          });
+          this.videolist = []
+       
         }
       });
     },
@@ -168,7 +200,8 @@ export default {
         method: "post",
         url: "/hlkt/resource/findTeacher.action",
         data: {
-          job: this.radio1
+          job: this.radio1,
+          sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
         }
       }).then(res => {
         if (res.data.resultCode == "200") {
@@ -196,9 +229,11 @@ export default {
         method: "post",
         url: "/hlkt/resource/findSearchVideo..action",
         data: {
+          year:this.year,
           pageNum: 1,
           pageSize: 15,
-          search: this.$route.params.id
+          search: this.$route.params.id,
+             sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
           //    teacher: this.value,
           // subjects: this.radio1,
           // grade: this.radio2
@@ -235,6 +270,7 @@ export default {
   created() {
     this.getteacher();
     this.search();
+    this.getsubgect();
   }
 };
 </script>
@@ -300,7 +336,7 @@ export default {
   margin-left: px2vw(21px);
   margin-top: px2vw(21px);
   width: px2vw(233px);
-  height: px2vw(233px);
+  height: px2vw(243px);
   box-shadow: 0px 2px 10px 0px rgba(78, 78, 78, 0.21);
   border-radius: 6px;
   overflow: hidden;
@@ -341,19 +377,19 @@ export default {
     color: #ff9154;
     border: 1px solid rgba(255, 145, 84, 1);
     border-radius: 4px;
-    margin: px2vw(9px) ;
+    margin: px2vw(9px);
     display: inline-block;
     // margin-left: px2vw(9px);
     padding: px2vw(4px);
   }
-  d{
-     font-size: px2vw(14px);
-    color: #4CA4EF;
-    border: 1px solid #4CA4EF;
+  d {
+    font-size: px2vw(14px);
+    color: #4ca4ef;
+    border: 1px solid #4ca4ef;
     border-radius: 4px;
-    margin: px2vw(9px) ;
+    margin: px2vw(9px);
     display: inline-block;
-    
+
     padding: px2vw(4px);
   }
 }

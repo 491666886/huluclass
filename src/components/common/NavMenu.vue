@@ -4,7 +4,7 @@
     <template v-for="navMenu in navMenus">
         <!-- 最后一级菜单 -->
       <el-menu-item v-if="!navMenu.getChilds"
-                    :key="navMenu.id" :data="navMenu" :index="navMenu.name" 
+                    :key="navMenu.id" :data="navMenu" :index="navMenu.id" 
                    >
       
         <span slot="title">{{navMenu.name}}</span>
@@ -12,7 +12,7 @@
 
       <!-- 此菜单下还有子菜单 -->
       <el-submenu v-if="navMenu.getChilds"
-                  :key="navMenu.id" :data="navMenu" :index="navMenu.name">
+                  :key="navMenu.id" :data="navMenu" :index="navMenu.id">
         <template slot="title">
        
           <span> {{navMenu.name}}</span>
