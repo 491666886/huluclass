@@ -8,6 +8,7 @@
             <h5 class="h5" @click="regetvideolist()">教学视频资源</h5>
             <el-menu
               default-active="2"
+              :unique-opened="true"
               class="el-menu-vertical-demo"
               @open="handleOpen"
               @close="handleClose"
@@ -28,17 +29,22 @@
           :key="video.Id"
           @click="getDescribe(video.id)"
         >
-          <div v-if="video.errorCode == '20303'" class="blue">蓝光</div>
+          <!-- <div v-if="video.errorCode == '20303'" class="blue">蓝光</div> -->
           <img :src="'http://'+video.vSite" />
 
           <p>{{video.vName}}</p>
           <a>{{video.teacher}}</a>
           <b>{{video.cTime.split(" ")[0]}}</b>
           <br />
-          <c>磁平台</c>
-          <d>光平台</d>
+          <div v-if="video.errorCode != '20303'" class="c">
+            <img src="./img/ci.png" />
+          </div>
+          <div class="d">
+            <img src="./img/guang.png" />
+          </div>
         </div>
         <el-pagination
+        hide-on-single-page=true
           class="page"
           layout="prev, pager, next"
           :page-size="12"
@@ -77,9 +83,10 @@ export default {
 
   methods: {
     getDescribe(id) {
-      this.$router.push({
+      let routeUrl = this.$router.resolve({
         path: `/describe/${id}`
       });
+      window.open(routeUrl.href, "_blank");
     },
     getItem() {
       axios({
@@ -92,12 +99,11 @@ export default {
         method: "post",
         url: "/hlkt/resource/findMenusTree.action",
         data: {
-          sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
+          sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid
         }
       }).then(res => {
         if (res.data.resultCode == "200") {
           this.menuData = res.data.resultData;
-          console.log(this.menuData);
         } else {
           this.$message({
             type: "error",
@@ -118,7 +124,8 @@ export default {
       this.getvideolist(this.PageSize, val * this.pageSize);
     },
     handleOpen(key, keyPath) {
-      console.log(keyPath[0]);
+      console.log(this.menuData);
+      console.log(key, keyPath);
       this.subjects = keyPath[0];
       this.grade = keyPath[1];
       this.getvideolist();
@@ -130,7 +137,7 @@ export default {
     },
     handleselect(key, keyPath) {
       console.log(keyPath[0]);
-       this.subjects = keyPath[0];
+      this.subjects = keyPath[0];
       this.unit = keyPath[2];
       this.getvideolist();
     },
@@ -156,13 +163,6 @@ export default {
         if (res.data.resultCode == "200") {
           this.count = res.data.resultLineNum;
           this.videolist = res.data.resultData;
-          console.log(this.videolist[0].cTime.split(" ")[0]);
-          for (var video of videolist) {
-            if (video.teacher === "李丽娟") {
-            }
-          }
-
-          console.log(this.videolist);
         } else {
           this.videolist = [];
         }
@@ -231,7 +231,7 @@ export default {
 .page {
   position: absolute;
   top: px2vw(800px);
-  left: 85%;
+  left: 70%;
 }
 .videolist img {
   width: px2vw(232px);
@@ -279,24 +279,30 @@ export default {
     font-weight: 400;
     padding-left: px2vw(13px);
   }
-  c {
+  .c {
+    img {
+      width: px2vw(20px);
+      height: px2vw(20px);
+    }
     font-size: px2vw(14px);
     color: #ff9154;
-    border: 1px solid rgba(255, 145, 84, 1);
-    border-radius: 4px;
-    margin: px2vw(9px) ;
+
+    margin: px2vw(9px);
     display: inline-block;
     // margin-left: px2vw(9px);
     padding: px2vw(4px);
   }
-  d{
-     font-size: px2vw(14px);
-    color: #4CA4EF;
-    border: 1px solid #4CA4EF;
-    border-radius: 4px;
-    margin: px2vw(9px) ;
+  .d {
+    img {
+      width: px2vw(20px);
+      height: px2vw(20px);
+    }
+    font-size: px2vw(14px);
+    color: #4ca4ef;
+
+    margin: px2vw(9px);
     display: inline-block;
-    
+
     padding: px2vw(4px);
   }
 }
@@ -325,7 +331,11 @@ export default {
   top: px2vw(134px);
   z-index: 1;
   // overflow-y: scroll;
-  overflow-x: hidden;
+  // overflow-x: hidden;
+  ul {
+    overflow-y: auto;
+    height: 300px;
+  }
 }
 .el-col-12 {
   width: 100% !important;

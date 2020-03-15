@@ -1,6 +1,6 @@
 <template>
   <div class="header">
-    <img class="logo" src="../img/logo.png" />
+    <img class="logo" @click="home" src="../img/logo.png" />
     <div class="home" @click="home">
       <img src="../img/home.png" />首页
     </div>
@@ -34,17 +34,39 @@ export default {
   },
   methods: {
     search() {
-      this.$router.push({
-        path: `/search/${this.input3}`
-      });
+        let routeUrl = this.$router.resolve({
+          path:`/search/${this.input3}`,
+          
+     });
+     window.open(routeUrl .href, '_blank');
+      
+     
     },
     quitid() {
-      sessionStorage.clear();
-      localStorage.removeItem("Flag"); //清除保存的登陆状态
-      this.$router.push(`/`);
+      this.$confirm("此操作将退出系统, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          sessionStorage.clear();
+          localStorage.removeItem("Flag"); //清除保存的登陆状态
+          this.$router.push(`/`);
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消"
+          });
+        });
     },
     user() {
-      this.$router.push("/admin");
+      let routeUrl = this.$router.resolve({
+          path: "/admin",
+          
+     });
+     window.open(routeUrl .href, '_blank');
+      // this.$router.push("/admin");
     },
     home() {
       this.$router.push("/login");
@@ -106,6 +128,7 @@ a {
   height: px2vw(37px);
   width: px2vw(172px);
   float: left;
+   cursor: pointer;
 }
 .header {
   position: absolute;

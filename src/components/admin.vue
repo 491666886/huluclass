@@ -6,13 +6,16 @@
         <img src="./img/touxiang.png" />
         您好，{{username}}老师
         <p>工号：{{loginId}}</p>
-        <div class="collo">
-          <el-button class="my" icon="el-icon-star-off">我的收藏</el-button>
-        </div>
       </div>
     </div>
     <div class="main">
-       <div v-if="videolist.length ===0" class="error">暂无收藏视频</div>
+      <div class="mine">
+        <h1>我的收藏</h1>
+        <el-input placeholder="在此搜索您收藏的内容" v-model="input3" class="input-with-select"   @keyup.enter.native="search()" >
+          <el-button slot="append" icon="el-icon-search" @click="search()"></el-button>
+        </el-input>
+      </div>
+      <div v-if="videolist.length ===0" class="error">该选项下暂无视频</div>
       <div
         class="videolist"
         v-for="video in videolist"
@@ -20,15 +23,28 @@
         @click="getDescribe(video.vId)"
       >
         <img :src="'http://'+video.vSite" />
-      
-         <p>{{video.vName}}</p>
-          <a>{{video.teacher}}</a>
-          <b>{{video.cTime.split(" ")[0]}}</b>
-          <br />
-          <c>磁平台</c>
-          <d>光平台</d>
+
+        <p>{{video.vName}}</p>
+        <a>{{video.teacher}}</a>
+        <b>{{video.cTime.split(" ")[0]}}</b>
+        <br />
+        <div class="c">
+          <img src="./img/ci.png" />
+        </div>
+        <div class="d">
+          <img src="./img/guang.png" />
+        </div>
       </div>
     </div>
+    <el-pagination
+    hide-on-single-page=true
+      class="page"
+      layout="prev, pager, next"
+      :page-size="12"
+      :current-page="currentPage"
+      @current-change="handleCurrentChange"
+      :total="parseInt(this.count)"
+    ></el-pagination>
     <page-footer></page-footer>
   </div>
 </template>
@@ -44,19 +60,60 @@ export default {
   data: function() {
     return {
       videolist: [],
+      currentPage: 1, // 默认显示第几页
+      count: "",
       tableData: [],
-
+      input3: "",
       username: JSON.parse(sessionStorage.getItem("SESSION_USER")).name,
       loginId: JSON.parse(sessionStorage.getItem("SESSION_USER")).loginId
     };
   },
 
   methods: {
+    serchlist(vap) {
+      //改变页数
+      this.currentPage = vap;
+      this.getvideolist();
+    },
+    handleCurrentChange(val) {
+      // 改变默认的页数
+      this.currentPage = val;
+      // 切换页码时，要获取每页显示的条数
+      this.getvideolist(this.PageSize, val * this.pageSize);
+    },
+    search() {
+      axios({
+        headers: {
+          "User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
+            .loginId,
+          Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
+            .sessionId
+        },
+        method: "post",
+        url: "/hlkt/user/searchVideoCollection.action",
+        data: {
+          pageSize: 12,
+          pageNum: 1,
+          uid: JSON.parse(sessionStorage.getItem("SESSION_USER")).userId,
+          sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
+          search: this.input3
+        }
+      }).then(res => {
+        if (res.data.resultCode == "200") {
+          this.count = res.data.resultLineNum;
+          this.videolist = res.data.resultData;
+          console.log(this.videolist);
+        } else {
+          this.videolist = [];
+        }
+      });
+    },
+
     getDescribe(id) {
-     
-      this.$router.push({
+      let routeUrl = this.$router.resolve({
         path: `/describe/${id}`
       });
+      window.open(routeUrl.href, "_blank");
     },
     getvideolist() {
       axios({
@@ -70,8 +127,9 @@ export default {
         url: "/hlkt/user/selectCollect.action",
         data: {
           pageSize: 12,
-          pageNum: 1,
-          uId: JSON.parse(sessionStorage.getItem("SESSION_USER")).userId
+          pageNum: this.currentPage,
+          uId: JSON.parse(sessionStorage.getItem("SESSION_USER")).userId,
+          sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid
         }
       }).then(res => {
         if (res.data.resultCode == "200") {
@@ -79,10 +137,7 @@ export default {
           this.videolist = res.data.resultData;
           console.log(this.videolist);
         } else {
-          // this.$message({
-          //   type: "error",
-          //   message: res.data.resultMsg
-          // });
+          this.videolist = [];
         }
       });
     }
@@ -94,6 +149,28 @@ export default {
 </script>
 <style scoped lang="scss">
 @import "src/plugins/px2vw";
+.page {
+  position: absolute;
+
+  left: 70%;
+}
+.mine {
+  background-color: #f5f5f5;
+  display: flow-root;
+  h1 {
+    float: left;
+    font-size: px2vw(36px);
+    font-family: PingFang SC;
+    font-weight: 400;
+    color: rgba(72, 71, 71, 1);
+  }
+  .input-with-select {
+    width: px2vw(343px);
+    float: right;
+    margin-top: px2vw(20px);
+  }
+}
+
 .error {
   position: relative;
   text-align: center;
@@ -145,31 +222,37 @@ export default {
     font-weight: 400;
     padding-left: px2vw(13px);
   }
-  c {
+  .c {
+    img {
+      width: px2vw(20px);
+      height: px2vw(20px);
+    }
     font-size: px2vw(14px);
     color: #ff9154;
-    border: 1px solid rgba(255, 145, 84, 1);
-    border-radius: 4px;
-    margin: px2vw(9px) ;
+
+    margin: px2vw(9px);
     display: inline-block;
     // margin-left: px2vw(9px);
     padding: px2vw(4px);
   }
-  d{
-     font-size: px2vw(14px);
-    color: #4CA4EF;
-    border: 1px solid #4CA4EF;
-    border-radius: 4px;
-    margin: px2vw(9px) ;
+  .d {
+    img {
+      width: px2vw(20px);
+      height: px2vw(20px);
+    }
+    font-size: px2vw(14px);
+    color: #4ca4ef;
+
+    margin: px2vw(9px);
     display: inline-block;
-    
+
     padding: px2vw(4px);
   }
 }
 .main {
   background-color: #ffffff;
   width: px2vw(1050px);
-  height: px2vw(850px);
+  height: px2vw(966px);
   position: relative;
   left: px2vw(609px);
   top: px2vw(125px);
@@ -213,8 +296,9 @@ export default {
   text-align: center;
 }
 .icon {
-  height: px2vw(384px);
+  height: px2vw(966px);
   background-image: url(./img/admin.png);
+  background-size: 100%;
   font-size: px2vw(20px);
   font-weight: 800;
   color: rgba(255, 255, 255, 1);

@@ -1,13 +1,13 @@
 <template>
   <div class="search">
-    <page-header :message1="input"></page-header>
+    <search-header :message1="input"  v-if="update"></search-header>
 
     <div class="main">
       <div class="dan">
         <el-radio-group v-model="radio1" class="line" @change="getValue">
           <div class="grate">学科:</div>
-          <el-radio-button label>不限</el-radio-button>
-          <el-radio-button :label="item.subjects" :key="item.subjects" v-for="item in subjects"></el-radio-button>
+          <el-radio-button label='' >不限</el-radio-button>
+          <el-radio-button :label="item.subjects"  :key="item.subjects"  v-for="item in subjects"></el-radio-button>
         </el-radio-group>
       </div>
 
@@ -18,13 +18,14 @@
           <el-radio-button :label="items.subjects" :key="items.subjects" v-for="items in grades"></el-radio-button>
         </el-radio-group>
       </div>
+      
       <div class="dan">
         <el-radio-group v-model="radio2" class="line">
           筛选条件：
           <el-select v-model="value" placeholder="选择教师" @change="getValue">
             <el-option
-              v-for="item in options"
-              :key="item.name"
+              v-for="(item,index) in options"
+              :key="index"
               :label="item.name"
               :value="item.name"
             ></el-option>
@@ -39,7 +40,7 @@
           </el-select>
         </el-radio-group>
       </div>
-      <div v-if="videolist.length ===0" class="error">暂无视频</div>
+      <div v-if="videolist.length ===0" class="error">该选项下暂无视频</div>
       <div
         class="videolist"
         v-for="video in videolist"
@@ -51,10 +52,15 @@
         <a>{{video.teacher}}</a>
         <b>{{video.cTime.split(" ")[0]}}</b>
         <br />
-        <c>磁平台</c>
-        <d>光平台</d>
+        <div class="c">
+          <img src="./img/ci.png" />
+        </div>
+        <div class="d">
+          <img src="./img/guang.png" />
+        </div>
       </div>
       <el-pagination
+      hide-on-single-page=true
         class="page"
         layout="prev, pager, next"
         :page-size="12"
@@ -79,20 +85,25 @@ export default {
   },
   data: function() {
     return {
-       years: [{
-          value: '2019',
-          label: '2019'
-        }, {
-          value: '2020',
-          label: '2020'
-        },],
+      years: [
+        {
+          value: "2019",
+          label: "2019"
+        },
+        {
+          value: "2020",
+          label: "2020"
+        }
+      ],
+    
       year: "",
       input: this.$route.params.id,
+      update: true,//搜索组件刷新
       value: "",
       radio1: "",
-      subjects:[],
+      subjects: [],
       radio2: "",
-      grades:[],
+      grades: [],
       count: "",
       options: [],
       currentPage: 1, // 默认显示第几页
@@ -104,8 +115,17 @@ export default {
     };
   },
   methods: {
-    getsubgect(){
-       axios({
+      reload() {
+            // 移除组件
+            this.update = false
+            // 在组件移除后，重新渲染组件
+            // this.$nextTick可实现在DOM 状态更新后，执行传入的方法。
+            this.$nextTick(() => {
+                this.update = true
+            })
+        },
+    getsubgect() {
+      axios({
         headers: {
           "User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
             .loginId,
@@ -115,16 +135,12 @@ export default {
         method: "post",
         url: "/hlkt/resource/findStairNavigation.action",
         data: {
-           sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-         
+          sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid
         }
       }).then(res => {
         if (res.data.resultCode == "200") {
-         this.subjects=res.data.resultData,
-         console.log(this.subjects)
+          (this.subjects = res.data.resultData), console.log(this.subjects);
         } else {
-          
-       
         }
       });
       axios({
@@ -137,16 +153,13 @@ export default {
         method: "post",
         url: "/hlkt/resource/findSecondNavigation.action",
         data: {
-           sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-           subjects:this.radio1,
+          sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
+          subjects: this.radio1
         }
       }).then(res => {
         if (res.data.resultCode == "200") {
-         this.grades =res.data.resultData
-        
+          this.grades = res.data.resultData;
         } else {
-          
-       
         }
       });
     },
@@ -157,6 +170,7 @@ export default {
     },
     getValue() {
       this.getteacher();
+      
       axios({
         headers: {
           "User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
@@ -167,24 +181,23 @@ export default {
         method: "post",
         url: "/hlkt/resource/findSearchVideo..action",
         data: {
-          year:this.year,
+          year: this.year,
           pageNum: 1,
           pageSize: 15,
           search: this.$route.params.id,
           teacher: this.value,
           subjects: this.radio1,
-           sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
+          sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
           grade: this.radio2
         }
       }).then(res => {
         if (res.data.resultCode == "200") {
           this.count = res.data.resultLineNum;
+
           this.videolist = res.data.resultData;
-          this.radio1 = res.data.cName;
           this.getteacher();
         } else {
-          this.videolist = []
-       
+          this.videolist = [];
         }
       });
     },
@@ -201,13 +214,12 @@ export default {
         url: "/hlkt/resource/findTeacher.action",
         data: {
           job: this.radio1,
-          sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
+          sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid
         }
       }).then(res => {
         if (res.data.resultCode == "200") {
-          this.count = res.data.resultLineNum;
+         
           this.options = res.data.resultData;
-          console.log(this.options);
         } else {
           // this.$message({
           //   type: "error",
@@ -229,11 +241,11 @@ export default {
         method: "post",
         url: "/hlkt/resource/findSearchVideo..action",
         data: {
-          year:this.year,
+          year: this.year,
           pageNum: 1,
           pageSize: 15,
           search: this.$route.params.id,
-             sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
+          sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid
           //    teacher: this.value,
           // subjects: this.radio1,
           // grade: this.radio2
@@ -242,8 +254,15 @@ export default {
         if (res.data.resultCode == "200") {
           this.count = res.data.resultLineNum;
           this.videolist = res.data.resultData;
-          this.radio1 = res.data.cName;
           this.getteacher();
+          // if (res.data.cName != "") {
+          //   //判断搜索结果是否返回学科  true是
+           
+            this.radio1 = res.data.cName;
+            // this.$route.params.id = "";
+            // this.input ='';
+            this.reload();
+          // }
         } else {
           this.videolist = [];
         }
@@ -372,21 +391,27 @@ export default {
     font-weight: 400;
     padding-left: px2vw(13px);
   }
-  c {
+  .c {
+    img {
+      width: px2vw(20px);
+      height: px2vw(20px);
+    }
     font-size: px2vw(14px);
     color: #ff9154;
-    border: 1px solid rgba(255, 145, 84, 1);
-    border-radius: 4px;
+
     margin: px2vw(9px);
     display: inline-block;
     // margin-left: px2vw(9px);
     padding: px2vw(4px);
   }
-  d {
+  .d {
+    img {
+      width: px2vw(20px);
+      height: px2vw(20px);
+    }
     font-size: px2vw(14px);
     color: #4ca4ef;
-    border: 1px solid #4ca4ef;
-    border-radius: 4px;
+
     margin: px2vw(9px);
     display: inline-block;
 

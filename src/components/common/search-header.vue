@@ -1,11 +1,16 @@
 <template>
   <div class="header">
-    <img class="logo" src="../img/logo.png" />
+    <img class="logo" @click="home" src="../img/logo.png" />
     <div class="home" @click="home">
       <img src="../img/home.png" />首页
     </div>
     <div class="search">
-      <el-input placeholder="知识点/教师/学科/年级" v-model="input3"  class="input-with-select">
+      <el-input
+        placeholder="课程名称/教师/学科/年级 "
+        v-model="input3"
+        class="input-with-select"
+        @keyup.enter.native="search()"
+      >
         <el-button slot="append" icon="el-icon-search" @click="search()"></el-button>
       </el-input>
     </div>
@@ -20,6 +25,8 @@
 </template>
 <script>
 export default {
+  name: "page-header",
+  props: ["message1"],
   data: function() {
     return {
       input3: ""
@@ -27,19 +34,47 @@ export default {
   },
   methods: {
     search() {
+    //     let routeUrl = this.$router.resolve({
+    //       path:`/search/${this.input3}`,
+          
+    //  });
+    //  window.open(routeUrl .href, '_blank');
+      this.$router.push(`/search/${this.input3}`);
      
-      this.$parent.search(this.input3);//高级搜索
     },
     quitid() {
-      sessionStorage.clear();
-      localStorage.removeItem("Flag"); //清除保存的登陆状态
-      this.$router.push(`/`);
+      this.$confirm("此操作将退出系统, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          sessionStorage.clear();
+          localStorage.removeItem("Flag"); //清除保存的登陆状态
+          this.$router.push(`/`);
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消"
+          });
+        });
     },
     user() {
-      this.$router.push("/admin");
+      let routeUrl = this.$router.resolve({
+          path: "/admin",
+          
+     });
+     window.open(routeUrl .href, '_blank');
+      // this.$router.push("/admin");
     },
     home() {
       this.$router.push("/login");
+    }
+  },
+  created() {
+    if (this.message1 != undefined) {
+      this.input3 = this.message1;
     }
   }
 };
@@ -69,7 +104,7 @@ a {
   float: left;
   width: px2vw(692px);
   height: px2vw(55px);
-  margin-top: px2vw(22px);
+  margin-top: px2vw(25px);
   margin-left: px2vw(54px);
 }
 .home img,
@@ -93,6 +128,7 @@ a {
   height: px2vw(37px);
   width: px2vw(172px);
   float: left;
+   cursor: pointer;
 }
 .header {
   position: absolute;
