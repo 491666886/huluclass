@@ -44,7 +44,7 @@
           </div>
         </div>
         <el-pagination
-        hide-on-single-page=true
+        :hide-on-single-page='true'
           class="page"
           layout="prev, pager, next"
           :page-size="12"

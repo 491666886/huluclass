@@ -185,7 +185,7 @@
                         this.$store.dispatch("userLogin", true);
                         localStorage.setItem("Flag", "isLogin");//储存登陆信息
                         if (res.data.data.type == '1') {//跳转到管理员页面
-                            this.$router.push("/admin")
+                            this.$router.push("/collect")
                         } else {//用户中心页
                             console.log(res.data.data.type)
                             this.$router.push(`/account`)

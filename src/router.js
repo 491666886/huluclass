@@ -37,13 +37,36 @@ export default new Router({
             component: () => import('@/components/search')
           },
         {
-            path: '/admin',
-            name: 'admin',
-            component: () => import('@/components/admin'),
+            path: '/collect',
+            name: 'collect',
+            component: () => import('@/components/collect'),
             meta: {
                 isLogin: true,
 
             },
         },
+        {
+            path: '/admin',
+            name: 'admin',
+            component: () => import('@/components/admin'),
+            children:[
+      
+                {
+                  path: 'home',
+                  name: 'home',
+                  component: () => import('@/components/view/Home'),
+                },
+              
+                  ],
+            meta: {
+                isLogin: true,
+
+            },
+        },
+        {
+            path: '/home',
+            name: 'home',
+            component: () => import('@/components/view/Home')
+          },
     ]
 })

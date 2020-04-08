@@ -62,11 +62,11 @@ export default {
     },
     user() {
       let routeUrl = this.$router.resolve({
-          path: "/admin",
+          path: "/collect",
           
      });
      window.open(routeUrl .href, '_blank');
-      // this.$router.push("/admin");
+      // this.$router.push("/collect");
     },
     home() {
       this.$router.push("/login");

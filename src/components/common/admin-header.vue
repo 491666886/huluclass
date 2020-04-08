@@ -2,26 +2,8 @@
   <div class="header">
     <img class="logo" @click="home" src="../img/logo.png" />
     <div class="home" @click="home">
-      <img src="../img/home.png" />首页
+      管理员系统
     </div>
-    <div class="search">
-      <el-input
-        placeholder="课程名称/教师/学科/年级 "
-        v-model="input3"
-        class="input-with-select"
-        @keyup.enter.native="search()"
-      >
-        <el-button slot="append" icon="el-icon-search" @click="search()"></el-button>
-      </el-input>
-    </div>
-    <div class="peo" @click="user">
-      <img src="../img/peo.png" />个人中心
-    </div>
-    <a>|</a>
-    <div  class="set" @click="admin">
-      <i class="el-icon-s-custom"></i>  管理员系统
-    </div>
-    <a>|</a>
     <div class="set" @click="quitid()">
       <img src="../img/set.png" />注销
     </div>
@@ -34,18 +16,10 @@ export default {
   data: function() {
     return {
       input3: "",
-    
+      admin:true,
     };
   },
   methods: {
-    admin(){
-      console.log('21')
-     let routeUrl = this.$router.resolve({
-          path: "/admin",
-          
-     });
-     window.open(routeUrl .href, '_blank');
-    },
     search() {
         let routeUrl = this.$router.resolve({
           path:`/search/${this.input3}`,
@@ -108,7 +82,8 @@ a {
 }
 .set {
   cursor: pointer;
-  float: left;
+  float: right;
+  margin-right: 70px;
   padding: px2vw(41px);
   color: #8b8b8b;
   font-size: px2vw(18px);
@@ -133,7 +108,7 @@ a {
   float: left;
   padding: px2vw(41px);
   font-size: px2vw(18px);
-  color: #209cff;
+  color: #666666;
 }
 .logo {
   margin-left: px2vw(273px);
