@@ -1,7 +1,5 @@
 <template>
-  <div>
-        groupManage
-    </div>
+  <div>12123123123123</div>
 </template>
 
 <script>
@@ -9,6 +7,9 @@
 
 export default {
   name: "home",
-  components: {}
+  components: {},
+  created() {
+  	console.log('55555555555')
+  },
 };
 </script>

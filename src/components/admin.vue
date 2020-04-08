@@ -1,13 +1,13 @@
 <template>
   <el-container>
-    <admin-header></admin-header>
+   <!-- <admin-header></admin-header> -->
     <el-container>
       <el-aside class="aside">
         <el-row class="tac">
           <el-col :span="12">
             <h5 class="h5" @click="regetvideolist()">教学视频资源</h5>
             <el-menu
-              :default-active="activeIndex"
+              :default-active="$route.path"
                router
               class="el-menu-vertical-demo"
               
@@ -16,6 +16,7 @@
               <el-menu-item index="admin/home">
                 <span slot="title">视频管理</span>
               </el-menu-item>
+			   <el-menu-item index="/admin/home">仪表盘</el-menu-item>
               <el-menu-item index="login">
                 <span slot="title">课表管理</span>
               </el-menu-item>
@@ -39,7 +40,7 @@
               </el-menu-item>
                
             </el-menu>
-             <!-- <router-view  ></router-view> -->
+             <router-view style="margin-left: 400px;" ></router-view>
           </el-col>
         </el-row>
       </el-aside>
@@ -83,7 +84,7 @@ export default {
     let start = window.location.href.lastIndexOf('/');
     let path = window.location.href.slice(start+1);
     this.activeIndex = path;
-    
+    console.log('444444444445')
     console.log(this.activeIndex)
   }
 };
