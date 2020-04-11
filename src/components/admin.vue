@@ -1,29 +1,27 @@
 <template>
   <el-container>
-   <!-- <admin-header></admin-header> -->
+   <admin-header></admin-header>
     <el-container>
       <el-aside class="aside">
         <el-row class="tac">
           <el-col :span="12">
-            <h5 class="h5" @click="regetvideolist()">教学视频资源</h5>
+            <h5 class="h5" @click="regetvideolist()">功能列表</h5>
             <el-menu
               :default-active="$route.path"
                router
               class="el-menu-vertical-demo"
               
-              style="min-height:100vh;float:left；z-index：1000"
+              style="float:left；z-index：1000"
             >
-              <el-menu-item index="admin/home">
-                <span slot="title">视频管理</span>
-              </el-menu-item>
-			   <el-menu-item index="/admin/home">仪表盘</el-menu-item>
-              <el-menu-item index="login">
+              <el-menu-item index="/admin/video">视频管理</el-menu-item>
+			   <!-- <el-menu-item index="/admin/home">仪表盘</el-menu-item> -->
+              <el-menu-item index="/admin/teach">
                 <span slot="title">课表管理</span>
               </el-menu-item>
-              <el-menu-item index="home">
+              <el-menu-item index="/admin/user">
                 <span slot="title">用户管理</span>
               </el-menu-item>
-              <el-menu-item index="4">
+              <el-menu-item index="/admin/device">
                 <span slot="title">设备管理</span>
               </el-menu-item>
                   <el-submenu index="1">
@@ -31,16 +29,16 @@
           <span>校历及作息</span>
         </template>
         <el-menu-item-group>
-          <el-menu-item index="1-1">校历管理</el-menu-item>
-          <el-menu-item index="1-2">作息管理</el-menu-item>
+          <el-menu-item index="/admin/scal">校历管理</el-menu-item>
+          <el-menu-item index="/admin/rest">作息管理</el-menu-item>
         </el-menu-item-group>
       </el-submenu>
-              <el-menu-item index="6">
+              <el-menu-item index="/admin/stati">
                 <span slot="title">视频统计</span>
               </el-menu-item>
                
             </el-menu>
-             <router-view style="margin-left: 400px;" ></router-view>
+             <router-view class="adminer" ></router-view>
           </el-col>
         </el-row>
       </el-aside>
@@ -69,7 +67,7 @@ export default {
      
       currentPage: 1, // 默认显示第几页
      
-      activeIndex: "admin/home",
+      activeIndex: "",
       
       pageNum: "1",
     
@@ -80,12 +78,10 @@ export default {
    
   },
   mounted(){
-    console.log(window.location.href)
+    // this.$router.push()
     let start = window.location.href.lastIndexOf('/');
     let path = window.location.href.slice(start+1);
-    this.activeIndex = path;
-    console.log('444444444445')
-    console.log(this.activeIndex)
+    this.activeIndex = 'admin/'+path;
   }
 };
 </script>
@@ -192,6 +188,7 @@ export default {
   }
 }
 .h5 {
+	font-size: 20px;
   cursor: pointer;
   background: linear-gradient(
     -30deg,
@@ -219,8 +216,7 @@ export default {
   // overflow-x: hidden;
   ul {
     overflow-y: auto;
-    height: 500px;
-        min-height: 70vh;
+        min-height: px2vw(700px);
   }
 }
 .el-col-12 {

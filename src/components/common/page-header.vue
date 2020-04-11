@@ -18,10 +18,10 @@
       <img src="../img/peo.png" />个人中心
     </div>
     <a>|</a>
-    <div  class="set" @click="admin">
+    <div v-if="this.admin" class="set" @click="goadmin">
       <i class="el-icon-s-custom"></i>  管理员系统
     </div>
-    <a>|</a>
+    <a v-if="this.admin">|</a>
     <div class="set" @click="quitid()">
       <img src="../img/set.png" />注销
     </div>
@@ -34,14 +34,14 @@ export default {
   data: function() {
     return {
       input3: "",
-    
+      admin:false,
     };
   },
   methods: {
-    admin(){
-      console.log('21')
+    goadmin(){
+      
      let routeUrl = this.$router.resolve({
-          path: "/admin",
+          path: "/admin/video",
           
      });
      window.open(routeUrl .href, '_blank');
@@ -86,6 +86,10 @@ export default {
     }
   },
   created() {
+	  if(JSON.parse(sessionStorage.getItem("SESSION_USER")).roleId == 0){
+		  this.admin =true
+	  }
+	  console.log(JSON.parse(sessionStorage.getItem("SESSION_USER")).roleId)
     if (this.message1 != undefined) {
       this.input3 = this.message1;
     }
