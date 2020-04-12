@@ -27,14 +27,14 @@
           class="videolist"
           v-for="video in videolist"
           :key="video.Id"
-          @click="getDescribe(video.id)"
+         
         >
           <!-- <div v-if="video.errorCode == '20303'" class="blue">蓝光</div> -->
-          <img :src="'http://'+video.vSite" />
+          <img :src="'http://'+video.vSite"  @click="getDescribe(video.id)" />
 
-          <p>{{video.vName}}</p>
-          <a>{{video.teacher}}</a>
-          <b>{{video.cTime.split(" ")[0]}}</b>
+          <p  @click="getDescribe(video.id)" >{{video.vName}}</p>
+          <a  @click="getDescribe(video.id)" >{{video.teacher}}</a>
+          <b  @click="getDescribe(video.id)" >{{video.cTime.split(" ")[0]}}</b>
           <br />
           <div v-if="video.errorCode != '20303'" class="c">
             <img src="./img/ci.png" />

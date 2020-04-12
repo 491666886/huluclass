@@ -45,12 +45,13 @@
         class="videolist"
         v-for="video in videolist"
         :key="video.cId"
-        @click="getDescribe(video.id)"
+       
       >
-        <img :src="'http://'+video.vSite" />
-        <p>{{video.vName}}</p>
-        <a>{{video.teacher}}</a>
-        <b>{{video.cTime.split(" ")[0]}}</b>
+        <img :src="'http://'+video.vSite"  @click="getDescribe(video.id)" />
+
+          <p  @click="getDescribe(video.id)" >{{video.vName}}</p>
+          <a  @click="getDescribe(video.id)" >{{video.teacher}}</a>
+          <b  @click="getDescribe(video.id)" >{{video.cTime.split(" ")[0]}}</b>
         <br />
         <div class="c">
           <img src="./img/ci.png" />

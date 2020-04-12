@@ -11,22 +11,23 @@
     <div class="main">
       <div class="mine">
         <h1>我的收藏</h1>
-        <el-input placeholder="在此搜索您收藏的内容" v-model="input3" class="input-with-select"   @keyup.enter.native="search()" >
+        <el-input
+          placeholder="在此搜索您收藏的内容"
+          v-model="input3"
+          class="input-with-select"
+          @keyup.enter.native="search()"
+        >
           <el-button slot="append" icon="el-icon-search" @click="search()"></el-button>
         </el-input>
       </div>
       <div v-if="videolist.length ===0" class="error">该选项下暂无视频</div>
-      <div
-        class="videolist"
-        v-for="video in videolist"
-        :key="video.cId"
-        @click="getDescribe(video.vId)"
-      >
-        <img :src="'http://'+video.vSite" />
+      <div class="videolist" v-for="video in videolist" :key="video.cId">
+        <img :src="'http://'+video.vSite" @click="getDescribe(video.id)" />
 
-        <p>{{video.vName}}</p>
-        <a>{{video.teacher}}</a>
-        <b>{{video.cTime.split(" ")[0]}}</b>
+        <p @click="getDescribe(video.id)">{{video.vName}}</p>
+        <a @click="getDescribe(video.id)">{{video.teacher}}</a>
+        <b @click="getDescribe(video.id)">{{video.cTime.split(" ")[0]}}</b>
+
         <br />
         <div class="c">
           <img src="./img/ci.png" />
@@ -37,7 +38,7 @@
       </div>
     </div>
     <el-pagination
-    hide-on-single-page=true
+      hide-on-single-page="true"
       class="page"
       layout="prev, pager, next"
       :page-size="12"

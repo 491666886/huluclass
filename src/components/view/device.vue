@@ -55,9 +55,9 @@
 				</el-table-column>
 				<el-table-column prop="cGrade" label="班级" width="180">
 				</el-table-column>
-				<el-table-column prop="cCamera" label="摄像头id" width="280">
+				<el-table-column prop="cCamera" label="摄像头id" width="350">
 				</el-table-column>
-				<el-table-column fixed="right" label="管理" width="180">
+				<el-table-column fixed="right" label="管理" width="120">
 					<template slot-scope="scope">
 						<el-button @click="showedit(scope.row)" type="text" size="small">编辑</el-button>
 						<el-button @click="deleteCamera(scope.row)" type="text" size="small">删除</el-button>
@@ -67,7 +67,7 @@
 			</el-table>
 			<div class="page">
 				<el-pagination :hide-on-single-page='true' class="page" layout="prev, pager, next" :page-size="10" :current-page="currentPage"
-				 @current-change="handleCurrentChange" :total="parseInt(30)"></el-pagination>
+				 @current-change="handleCurrentChange" :total="parseInt(count)"></el-pagination>
 			</div>
 		</div>
 	</div>
@@ -250,7 +250,7 @@
 				}).then(res => {
 					if (res.data.resultCode == "200") {
 						this.tableData = res.data.resultData.list;
-						this.count = res.data.resultLineNum;
+						this.count = res.data.resultData.total;
 						console.log(this.tableData)
 					} else {
 						this.$message({
