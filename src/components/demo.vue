@@ -148,6 +148,9 @@
                 },
             };
         },
+       
+    
+     
         methods: {
              replaceSpace(key){
                 this.loginForm[key] = this.loginForm[key].replace(/\s/g,'');
