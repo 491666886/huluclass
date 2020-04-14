@@ -47,38 +47,38 @@
       </div>
     </div>
     <div class="table">
-      <el-table :data="tableData" border height=600 
-    row-style="height:30px">
-        <el-table-column type="index" label="序号" width="60" h ></el-table-column>
+      <el-table :data="tableData" border height="600">
+        <el-table-column type="index" label="序号" width="60" h></el-table-column>
         <el-table-column prop="vName" label="名称" width="230"></el-table-column>
         <el-table-column prop="teacher" label="教师" width="130"></el-table-column>
 
         <el-table-column prop="subjects" label="科目" width="130"></el-table-column>
         <el-table-column prop="grade" label="班级" width="130"></el-table-column>
-        <el-table-column  label="录制日期">
-			<template scope="scope">
-			    <p>{{ scope.row.cTime.split(" ")[0]}}</p>
-			  </template>
-		</el-table-column>
+        <el-table-column label="录制日期">
+          <template scope="scope">
+            <p>{{ scope.row.cTime.split(" ")[0]}}</p>
+          </template>
+        </el-table-column>
         <el-table-column fixed="right" label="管理" width="120">
           <template slot-scope="scope">
             <el-button @click="showedit(scope.row)" type="text" size="small">编辑</el-button>
-  <!--          <el-button @click="dele(scope.row)" type="text" size="small">删除</el-button> -->
+            <!--          <el-button @click="dele(scope.row)" type="text" size="small">删除</el-button> -->
           </template>
         </el-table-column>
       </el-table>
-      <div class="page">
-        <el-pagination
-          :hide-on-single-page="true"
-          class="page"
-          layout="prev, pager, next"
-          :page-size="10"
-          :current-page="currentPage"
-          @current-change="handleCurrentChange"
-          :total="parseInt(this.count)"
-        ></el-pagination>
-      </div>
+        <div class="page">
+      <el-pagination
+        :hide-on-single-page="true"
+        class="page"
+        layout="prev, pager, next"
+        :page-size="10"
+        :current-page="currentPage"
+        @current-change="handleCurrentChange"
+        :total="parseInt(this.count)"
+      ></el-pagination>
     </div>
+    </div>
+  
     <el-dialog title="编辑视频" :visible.sync="dialogFormVisible1" :modal-append-to-body="false">
       <el-form :model="form">
         <img class="videoimg" src="../img/back1.png" />
@@ -171,7 +171,7 @@
               <el-upload
                 class="avatar-uploader"
                 action="/hlkt/admin/upload/video.action"
-				:headers="myHeaders"
+                :headers="myHeaders"
                 v-bind:data="{FoldPath:'上传目录',SecretKey:'安全验证'}"
                 v-bind:on-progress="uploadVideoProcess"
                 v-bind:on-success="handleVideoSuccess"
@@ -215,13 +215,13 @@
 <script>
 // @ is an alias to /src
 import axios from "axios";
-var sessionId =  JSON.parse(sessionStorage.getItem("SESSION_USER")).sessionId;
+var sessionId = JSON.parse(sessionStorage.getItem("SESSION_USER")).sessionId;
 var UserInfo = JSON.parse(sessionStorage.getItem("SESSION_USER")).loginId;
 export default {
   name: "videodetail",
   data() {
     return {
-		myHeaders:{Authorization: sessionId,"User-Info":UserInfo},
+      myHeaders: { Authorization: sessionId, "User-Info": UserInfo },
       videoFlag: false,
       //是否显示进度条
       videoUploadPercent: "",
@@ -244,7 +244,7 @@ export default {
       dialogFormVisible1: false,
       count: "",
       currentPage: 1, // 默认显示第几页
-
+      value1: "",
       options: [
         {
           value: "选项1",
@@ -273,36 +273,37 @@ export default {
   },
 
   methods: {
-	  // upload(file){
-		 //   let fd = new Formdata();
-		 //      fd.append('key', file, 'fileName');
-		 //    axios({
-		 //      headers: {
-		 //        "User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
-		 //          .loginId,
-		 //        Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
-		 //          .sessionId
-		 //      },
-		 //      method: "post",
-		 //      url: "/hlkt/admin/upload/video.action",
-			//   fd
-		     
-		 //    }).then(res => {
-		 //      if (res.data.resultCode == "200") {
-		 //        this.getdevice();
-		 //      } else {
-		 //        this.$message({
-		 //          type: "error",
-		 //          message: res.data.resultMsg
-		 //        });
-		 //      }
-		 //    });
-		  
-	  // },
+    // upload(file){
+    //   let fd = new Formdata();
+    //      fd.append('key', file, 'fileName');
+    //    axios({
+    //      headers: {
+    //        "User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
+    //          .loginId,
+    //        Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
+    //          .sessionId
+    //      },
+    //      method: "post",
+    //      url: "/hlkt/admin/upload/video.action",
+    //   fd
+
+    //    }).then(res => {
+    //      if (res.data.resultCode == "200") {
+    //        this.getdevice();
+    //      } else {
+    //        this.$message({
+    //          type: "error",
+    //          message: res.data.resultMsg
+    //        });
+    //      }
+    //    });
+
+    // },
     //上传前回调
     beforeUploadVideo(file) {
       var fileSize = file.size / 1024 / 1024 < 500;
-      if ([
+      if (
+        [
           "video/mp4",
           "video/ogg",
           "video/flv",
@@ -315,18 +316,18 @@ export default {
         this.$message({
           type: "error",
           message: "请上传正确的视频格式"
-		});
-		 return false;
+        });
+        return false;
       }
       if (!fileSize) {
-       this.$message({
+        this.$message({
           type: "error",
           message: "不能大于500m"
-		});
+        });
         return false;
       }
       this.isShowUploadVideo = false;
-	  // this.upload(file);
+      // this.upload(file);
     },
     //进度条
     uploadVideoProcess(event, file, fileList) {
@@ -353,7 +354,7 @@ export default {
         this.$message({
           type: "error",
           message: "msg"
-		});
+        });
       }
     },
     dele(row) {
@@ -500,7 +501,7 @@ export default {
       }).then(res => {
         if (res.data.resultCode == "200") {
           this.tableData = res.data.resultData.list;
-          this.count = res.data.resultLineNum;
+          this.count = res.data.resultData.total;
           console.log(this.tableData);
         } else {
           this.$message({
@@ -521,6 +522,9 @@ export default {
 </script>
 <style scoped lang="scss">
 @import "src/plugins/px2vw";
+.page {
+  text-align: center;
+}
 .input {
   float: left;
 }
