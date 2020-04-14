@@ -47,18 +47,23 @@
       </div>
     </div>
     <div class="table">
-      <el-table :data="tableData" border>
-        <el-table-column type="index" label="序号" width="60"></el-table-column>
-        <el-table-column prop="tName" label="姓名" width="120"></el-table-column>
-        <el-table-column prop="job" label="学科" width="130"></el-table-column>
+      <el-table :data="tableData" border height=600 
+    row-style="height:30px">
+        <el-table-column type="index" label="序号" width="60" h ></el-table-column>
+        <el-table-column prop="vName" label="名称" width="230"></el-table-column>
+        <el-table-column prop="teacher" label="教师" width="130"></el-table-column>
 
-        <el-table-column prop="baseUser.loginId" label="账号" width="130"></el-table-column>
-        <el-table-column prop="baseUser.loginId" label="工号" width="130"></el-table-column>
-        <el-table-column prop="address" label="入职时间"></el-table-column>
-        <el-table-column fixed="right" label="管理" width="100">
+        <el-table-column prop="subjects" label="科目" width="130"></el-table-column>
+        <el-table-column prop="grade" label="班级" width="130"></el-table-column>
+        <el-table-column  label="录制日期">
+			<template scope="scope">
+			    <p>{{ scope.row.cTime.split(" ")[0]}}</p>
+			  </template>
+		</el-table-column>
+        <el-table-column fixed="right" label="管理" width="120">
           <template slot-scope="scope">
             <el-button @click="showedit(scope.row)" type="text" size="small">编辑</el-button>
-            <el-button @click="dele(scope.row)" type="text" size="small">删除</el-button>
+  <!--          <el-button @click="dele(scope.row)" type="text" size="small">删除</el-button> -->
           </template>
         </el-table-column>
       </el-table>
@@ -165,7 +170,8 @@
             <div class="pic_img_box">
               <el-upload
                 class="avatar-uploader"
-                action="上传地址"
+                action="/hlkt/admin/upload/video.action"
+				:headers="myHeaders"
                 v-bind:data="{FoldPath:'上传目录',SecretKey:'安全验证'}"
                 v-bind:on-progress="uploadVideoProcess"
                 v-bind:on-success="handleVideoSuccess"
@@ -209,10 +215,13 @@
 <script>
 // @ is an alias to /src
 import axios from "axios";
+var sessionId =  JSON.parse(sessionStorage.getItem("SESSION_USER")).sessionId;
+var UserInfo = JSON.parse(sessionStorage.getItem("SESSION_USER")).loginId;
 export default {
   name: "videodetail",
   data() {
     return {
+		myHeaders:{Authorization: sessionId,"User-Info":UserInfo},
       videoFlag: false,
       //是否显示进度条
       videoUploadPercent: "",
@@ -264,11 +273,36 @@ export default {
   },
 
   methods: {
+	  // upload(file){
+		 //   let fd = new Formdata();
+		 //      fd.append('key', file, 'fileName');
+		 //    axios({
+		 //      headers: {
+		 //        "User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
+		 //          .loginId,
+		 //        Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
+		 //          .sessionId
+		 //      },
+		 //      method: "post",
+		 //      url: "/hlkt/admin/upload/video.action",
+			//   fd
+		     
+		 //    }).then(res => {
+		 //      if (res.data.resultCode == "200") {
+		 //        this.getdevice();
+		 //      } else {
+		 //        this.$message({
+		 //          type: "error",
+		 //          message: res.data.resultMsg
+		 //        });
+		 //      }
+		 //    });
+		  
+	  // },
     //上传前回调
     beforeUploadVideo(file) {
       var fileSize = file.size / 1024 / 1024 < 500;
-      if (
-        [
+      if ([
           "video/mp4",
           "video/ogg",
           "video/flv",
@@ -292,6 +326,7 @@ export default {
         return false;
       }
       this.isShowUploadVideo = false;
+	  // this.upload(file);
     },
     //进度条
     uploadVideoProcess(event, file, fileList) {
@@ -456,15 +491,15 @@ export default {
             .sessionId
         },
         method: "post",
-        url: "/hlkt/resource/findSearchVideo.action",
+        url: "/hlkt/admin/video/list.action",
         data: {
           sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-          pageSize: 12,
+          pageSize: 10,
           pageNum: this.currentPage
         }
       }).then(res => {
         if (res.data.resultCode == "200") {
-          this.tableData = res.data.resultData;
+          this.tableData = res.data.resultData.list;
           this.count = res.data.resultLineNum;
           console.log(this.tableData);
         } else {

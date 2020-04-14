@@ -371,7 +371,7 @@ export default {
 .class {
   display: inline-block;
   margin-left: 83px;
-  height: 62px;
+  height: 65px;
   a {
     margin-right: 10px;
   }
