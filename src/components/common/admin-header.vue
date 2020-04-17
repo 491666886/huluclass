@@ -1,7 +1,7 @@
 <template>
   <div class="header">
     <img class="logo" @click="home" src="../img/logo.png" />
-    <div class="home" @click="home">
+    <div class="home" >
       管理员系统
     </div>
     <div class="set" @click="quitid()">
@@ -103,7 +103,7 @@ a {
   margin-right: px2vw(9px);
 }
 .home {
-  cursor: pointer;
+  
   margin-left: px2vw(16px);
   float: left;
   padding: px2vw(41px);

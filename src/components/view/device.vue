@@ -2,7 +2,7 @@
 	<div>
 		<div>
 			<div class="head">设备管理</div>
-			<el-button class="add" size="small" type="primary" @click="dialogFormVisible = true">新增设备</el-button>
+			<el-button class="add" size="small" type="primary" @click="adddevice()">新增设备</el-button>
 			<el-button style="float: right;">全部设备</el-button>
 			<div style="float: right;">
 				<el-input placeholder="请输入内容" v-model="input2">
@@ -12,10 +12,16 @@
 			<el-dialog title="新增设备" :visible.sync="dialogFormVisible" :modal-append-to-body='false'>
 				<el-form :model="form">
 					<el-form-item :required=true label="教室" :label-width="formLabelWidth">
-						<el-input class="input" v-model="form.cNumber" autocomplete="off"></el-input>
+						<el-input class="input" v-model="form.cameraNumber" autocomplete="off"></el-input>
 					</el-form-item>
 					<el-form-item :required=true label="班级" :label-width="formLabelWidth">
-						<el-input class="input" v-model="form.cGrade" autocomplete="off"></el-input>
+						<el-input class="input" v-model="form.gradeNum"
+						autocomplete="off"
+						onkeyup="this.value=this.value.replace(/[^\d.]/g,'');"
+						maxlength="2" ></el-input>年<el-input class="input" v-model="form.classNum" 
+						autocomplete="off"
+						onkeyup="this.value=this.value.replace(/[^\d.]/g,'');"
+						maxlength="2" ></el-input>班
 					</el-form-item>
 					<!-- <el-form-item required=“true” label="摄像头ID" :label-width="formLabelWidth">
 						<el-input class="input" v-model="form.cCamera" autocomplete="off"></el-input>
@@ -29,10 +35,16 @@
 			<el-dialog title="编辑设备" :visible.sync="dialogFormVisible1" :modal-append-to-body='false'>
 				<el-form :model="form">
 					<el-form-item :required=true label="教室" :label-width="formLabelWidth">
-						<el-input class="input" v-model="form.cNumber" autocomplete="off"></el-input>
+						<el-input class="input" v-model="form.cameraNumber" autocomplete="off"></el-input>
 					</el-form-item>
 					<el-form-item :required=true label="班级" :label-width="formLabelWidth">
-						<el-input class="input" v-model="form.cGrade" autocomplete="off"></el-input>
+						<el-input class="input" v-model="form.gradeNum" 
+						autocomplete="off"
+						onkeyup="this.value=this.value.replace(/[^\d.]/g,'');"
+						maxlength="2" ></el-input>年<el-input class="input" v-model="form.classNum" 
+						autocomplete="off"
+						onkeyup="this.value=this.value.replace(/[^\d.]/g,'');"
+						maxlength="2" ></el-input>班
 					</el-form-item>
 					<!-- <el-form-item required=“true” label="摄像头ID" :label-width="formLabelWidth">
 						<el-input class="input" v-model="form.cCamera" autocomplete="off"></el-input>
@@ -51,11 +63,12 @@
 			<el-table :data="tableData" border>
 				<el-table-column type="index" label="序号" width="60">
 				</el-table-column>
-				<el-table-column prop="cNumber" label="教室" width="180">
+				<el-table-column prop="cameraNumber" label="教室" width="180">
 				</el-table-column>
-				<el-table-column prop="cGrade" label="班级" width="180">
+				<el-table-column prop="cameraGrade" label="班级" width="180">
+					 <!-- <template slot-scope="scope"> {{scope.row.projectName}}({{scope.row.projectCode}}) </template> -->
 				</el-table-column>
-				<el-table-column prop="cCamera" label="摄像头id" width="350">
+				<el-table-column prop="classCamera" label="摄像头id" width="350">
 				</el-table-column>
 				<el-table-column fixed="right" label="管理" width="120">
 					<template slot-scope="scope">
@@ -112,6 +125,11 @@
 			}
 		},
 		methods: {
+			adddevice(){
+				this.form={};
+				this.dialogFormVisible=true;
+				
+			},
 			deleteCamera(row){
 				this.$confirm("确认删除摄像头数据？", {
 				  confirmButtonText: "确定",
@@ -131,6 +149,7 @@
 			
 			showedit(row) {
 				this.dialogFormVisible1 = true;
+				this.form =row;
 				this.form.cCamera = row.cCamera
 			},
 			del(row) {
@@ -171,11 +190,11 @@
 					url: "/hlkt/admin/camera/updateCamera.action",
 					data: {
 
+						cameraNumber: this.form.cameraNumber,
+						classNum: this.form.classNum,
+						gradeNum: this.form.gradeNum,
+						
 						sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-						// sName: "小学",
-						cNumber: this.form.cNumber,
-						cGrade: this.form.cGrade,
-						cCamera: this.form.cCamera
 					}
 				}).then(res => {
 					if (res.data.resultCode == "200") {
@@ -202,8 +221,9 @@
 					url: "/hlkt/admin/camera/addCamera.action",
 					data: {
 						// cCamera: this.form.cCamera,
-						cNumber: this.form.cNumber,
-						cGrade: this.form.cGrade,
+						cameraNumber: this.form.cameraNumber,
+						classNum: this.form.classNum,
+						gradeNum: this.form.gradeNum,
 
 						sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
 
@@ -246,6 +266,7 @@
 					data: {
 						sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
 						pageNo: this.currentPage,
+						
 					}
 				}).then(res => {
 					if (res.data.resultCode == "200") {

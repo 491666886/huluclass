@@ -18,9 +18,11 @@
       <img src="../img/peo.png" />个人中心
     </div>
     <a>|</a>
+
     <div v-if="this.admin" class="set" @click="goadmin">
       <i class="el-icon-s-custom"></i>  管理员系统
     </div>
+	
     <a v-if="this.admin">|</a>
     <div class="set" @click="quitid()">
       <img src="../img/set.png" />注销
@@ -35,8 +37,10 @@ export default {
     return {
       input3: "",
       admin:false,
+	  login:false,
     };
   },
+  
   methods: {
     goadmin(){
       
@@ -89,7 +93,7 @@ export default {
 	  if(JSON.parse(sessionStorage.getItem("SESSION_USER")).roleId == 0){
 		  this.admin =true
 	  }
-	  console.log(JSON.parse(sessionStorage.getItem("SESSION_USER")).roleId)
+	 
     if (this.message1 != undefined) {
       this.input3 = this.message1;
     }

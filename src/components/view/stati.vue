@@ -2,7 +2,7 @@
   <div>
     <div>
       <div class="head">视频统计</div>
-      <el-button class="add" size="small" type="primary">+上传视频</el-button>
+
     </div>
 
     <div class="main"></div>

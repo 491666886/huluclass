@@ -18,6 +18,11 @@
       <img src="../img/peo.png" />个人中心
     </div>
     <a>|</a>
+	<div v-if="this.admin" class="set" @click="goadmin">
+	  <i class="el-icon-s-custom"></i>  管理员系统
+	</div>
+	
+	<a v-if="this.admin">|</a>
     <div class="set" @click="quitid()">
       <img src="../img/set.png" />注销
     </div>
@@ -29,7 +34,8 @@ export default {
   props: ["message1"],
   data: function() {
     return {
-      input3: ""
+      input3: "",
+	   admin:false,
     };
   },
   methods: {
@@ -73,6 +79,9 @@ export default {
     }
   },
   created() {
+	  if(JSON.parse(sessionStorage.getItem("SESSION_USER")).roleId == 0){
+	  		  this.admin =true
+	  }
     if (this.message1 != undefined) {
       this.input3 = this.message1;
     }

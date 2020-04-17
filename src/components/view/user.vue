@@ -2,55 +2,34 @@
   <div>
     <div>
       <div class="head">教师列表</div>
-      <el-button class="add" size="small" type="primary" @click="dialogFormVisible = true">添加教师</el-button>
+      <el-button class="add" size="small" type="primary" @click="addtea()">添加教师</el-button>
     </div>
 
     <div class="main">
       <a>筛选条件： 学科</a>
-      <el-select v-model="value" placeholder="请选择">
+      <el-select v-model="value" placeholder="请选择" @change="getuserlist">
         <el-option
           v-for="item in options"
           :key="item.value"
-          :label="item.label"
-          :value="item.value"
+          :label="item.name"
+          :value="item.name"
         ></el-option>
       </el-select>
-      <a>年级</a>
-      <el-select v-model="value" placeholder="请选择">
-        <el-option
-          v-for="item in options"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value"
-        ></el-option>
-      </el-select>
-      <a>教师</a>
-      <el-select v-model="value" placeholder="请选择">
-        <el-option
-          v-for="item in options"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value"
-        ></el-option>
-      </el-select>
-
-      <div class="button">
-        <el-button class="add" size="small" type="primary">搜索</el-button>
-      </div>
+      
     </div>
     <el-dialog title="新增用户" :visible.sync="dialogFormVisible" :modal-append-to-body="false">
       <el-form :model="form">
         <el-form-item class="input" :required="true" label="姓名" :label-width="formLabelWidth">
-          <el-input v-model="form.name" autocomplete="off"></el-input>
+          <el-input v-model="form.baseUser.name" autocomplete="off"></el-input>
         </el-form-item>
         <div class="class">
           <a>学科</a>
-          <el-select class v-model="value" placeholder="请选择">
+          <el-select class v-model="value" placeholder="请选择" @change="getuserlist">
             <el-option
               v-for="item in options"
               :key="item.value"
-              :label="item.label"
-              :value="item.value"
+              :label="item.name"
+              :value="item.name"
             ></el-option>
           </el-select>
         </div>
@@ -58,7 +37,7 @@
           <el-input v-model="form.loginId" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item class="input" label="工号" :label-width="formLabelWidth">
-          <el-input v-model="form.loginId" autocomplete="off"></el-input>
+          <el-input v-model="form.jobNumber" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item class="input" :required="true" label="密码" :label-width="formLabelWidth">
           <el-input v-model="form.password" autocomplete="off"></el-input>
@@ -76,7 +55,7 @@
     <el-dialog title="编辑用户" :visible.sync="dialogFormVisible1" :modal-append-to-body="false">
       <el-form :model="form">
         <el-form-item class="input" :required="true" label="姓名" :label-width="formLabelWidth">
-          <el-input v-model="form.name" autocomplete="off"></el-input>
+          <el-input v-model="form.baseUser.name" autocomplete="off"></el-input>
         </el-form-item>
         <div class="class">
           <a>学科</a>
@@ -84,19 +63,19 @@
             <el-option
               v-for="item in options"
               :key="item.value"
-              :label="item.label"
-              :value="item.value"
+              :label="item.name"
+              :value="item.name"
             ></el-option>
           </el-select>
         </div>
         <el-form-item class="input" :required="true" label="账号" :label-width="formLabelWidth">
-          <el-input v-model="form.loginId" autocomplete="off"></el-input>
+          <el-input v-model="form.baseUser.loginId" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item class="input" label="工号" :label-width="formLabelWidth">
-          <el-input v-model="form.loginId" autocomplete="off"></el-input>
+          <el-input v-model="form.jobNumber" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item class="input" :required="true" label="密码" :label-width="formLabelWidth">
-          <el-input v-model="form.password" autocomplete="off"></el-input>
+          <el-input v-model="form.baseUser.password" autocomplete="off"></el-input>
         </el-form-item>
         <div class="class">
           <a>入职时间</a>
@@ -111,12 +90,12 @@
     <div class="table">
       <el-table :data="tableData" border>
         <el-table-column type="index" label="序号" width="60"></el-table-column>
-        <el-table-column prop="tName" label="姓名" width="120"></el-table-column>
-        <el-table-column prop="job" label="学科" width="130"></el-table-column>
+        <el-table-column prop="baseUser.name" label="姓名" width="120"></el-table-column>
+        <el-table-column prop="jobName" label="学科" width="130"></el-table-column>
 
         <el-table-column prop="baseUser.loginId" label="账号" width="130"></el-table-column>
-        <el-table-column prop="baseUser.loginId" label="工号" width="130"></el-table-column>
-        <el-table-column prop="address" label="入职时间"></el-table-column>
+        <el-table-column prop="jobNumber" label="工号" width="130"></el-table-column>
+        <el-table-column prop="hiredate" label="入职时间"></el-table-column>
         <el-table-column fixed="right" label="管理" width="100">
           <template slot-scope="scope">
             <el-button @click="showedit(scope.row)" type="text" size="small">编辑</el-button>
@@ -154,7 +133,9 @@ export default {
         password: "",
         job: "语文",
         name: "",
-        roleId: "1"
+        roleId: "1",
+		jobNumber: "",
+		baseUser:{},
       },
       dialogFormVisible: false,
       dialogFormVisible1: false,
@@ -189,6 +170,39 @@ export default {
     };
   },
   methods: {
+	  addtea(){
+	  	this.form={
+			baseUser:{},
+		};
+	  	this.dialogFormVisible=true;
+	  	
+	  },
+	  getsubject(){
+		  axios({
+		      headers: {
+		        "User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
+		          .loginId,
+		        Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
+		          .sessionId
+		      },
+		      method: "post",
+		      url: "/hlkt/selective/subjects/list.action",
+		      data: {
+		        sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
+		  	    schoolType: 1,
+		      }
+		    }).then(res => {
+		      if (res.data.resultCode == "200") {
+		        this.options = res.data.resultData;
+		  	  
+		      } else {
+		        this.$message({
+		          type: "error",
+		          message: res.data.resultMsg
+		        });
+		      }
+		    });
+		  },
     dele(row) {
       this.$confirm("确认删除用户数据？", {
         confirmButtonText: "确定",
@@ -208,7 +222,9 @@ export default {
 
     showedit(row) {
       this.dialogFormVisible1 = true;
+	  this.form= row;
       this.teacherId = row.teacherId;
+	  
       this.userid = row.baseUser.userId;
     },
     serchlist(vap) {
@@ -259,23 +275,7 @@ export default {
         },
         method: "post",
         url: "/hlkt/admin/teacherOpt/updateTeacher.action",
-        data: {
-          teacherId: this.teacherId,
-          tName: this.form.name,
-          sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-          job: "",
-
-          baseUser: {
-            userId: this.userid,
-            remark: "011111",
-            loginId: this.form.loginId,
-            password: this.form.password,
-            job: "语文",
-            name: this.form.name,
-            roleId: "1",
-            sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid
-          }
-        }
+        data: this.form
       }).then(res => {
         if (res.data.resultCode == "200") {
           this.dialogFormVisible1 = false;
@@ -301,21 +301,7 @@ export default {
         },
         method: "post",
         url: "/hlkt/admin/teacherOpt/addTeacher.action",
-        data: {
-          tName: this.form.name,
-          sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-          job: "",
-
-          baseUser: {
-            remark: "011111",
-            loginId: this.form.loginId,
-            password: this.form.password,
-            job: "语文",
-            name: this.form.name,
-            roleId: "1",
-            sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid
-          }
-        }
+        data: this.form
       }).then(res => {
         if (res.data.resultCode == "200") {
           this.dialogFormVisible = false;
@@ -340,11 +326,13 @@ export default {
         url: "/hlkt/admin/teacherOpt/getTeacherList.action",
         data: {
           sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
+		  pageSize:10,
+		  jobName:this.value,
           pageNo: this.currentPage
         }
       }).then(res => {
         if (res.data.resultCode == "200") {
-          this.tableData = res.data.resultData;
+          this.tableData = res.data.resultData.list;
 		  this.count = res.data.resultData.total;
           console.log(this.tableData);
         } else {
@@ -360,6 +348,7 @@ export default {
   components: {},
   created() {
     this.getuserlist();
+	this.getsubject();
   }
 };
 </script>

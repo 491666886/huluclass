@@ -3,7 +3,7 @@
     <div class="main">
       <div class="title">葫芦课堂</div>
       <div class="remark">校本资源助力教师成长</div>
-      <div class="tit">工号</div>
+      <div class="tit">账号</div>
       <el-form
         :model="loginForm"
         :rules="rules"
