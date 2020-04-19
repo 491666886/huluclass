@@ -13,7 +13,7 @@
 					</p>
 					<div class="pic_img">
 						<div class="pic_img_box">
-							<el-upload class="upload-demo" action="http://10.150.27.124:8081/hlkt/admin/course/upload.action" :headers="myHeaders"
+							<el-upload class="upload-demo" action="http://10.150.27.124:8081/hlkt/admin/course/upload.action" :headers="myHeaders" :on-success="handleAvatarSuccess"
 							 :data="{sid:2}" :on-change="handleChange" :file-list="fileList">
 								<el-button size="small" type="primary">点击上传</el-button>
 								<div slot="tip" class="el-upload__tip">只能上传Excel文件</div>
@@ -38,7 +38,7 @@
 
 			<div slot="footer" class="dialog-footer">
 				<el-button @click="dialogFormVisible = false">取 消</el-button>
-				<el-button type="primary" @click="add()">确 定</el-button>
+				<el-button type="primary" @click="edit()">确 定</el-button>
 			</div>
 		</el-dialog>
 		<div class="main">
@@ -58,13 +58,14 @@
 			<el-table :data="tableData" border>
 				<el-table-column type="index" label="序号" width="60"></el-table-column>
 				<el-table-column prop="oldFileName" label="名称" width="180"></el-table-column>
-				<el-table-column prop="name" label="年份" width="180"></el-table-column>
-				<el-table-column prop="name" label="学期" width="180"></el-table-column>
+				<el-table-column prop="year" label="年份" width="180"></el-table-column>
+				<el-table-column prop="semester" label="学期" width="180"></el-table-column>
 				<el-table-column prop="createTime" label="更新时间" width="180"></el-table-column>
 				<el-table-column prop="address" label="视频管理">
 					<template slot-scope="scope">
 						<el-button @click="down(scope.row)" type="text" size="small">下载</el-button>
-						<el-button @click="dele(scope.row)" type="text" size="small">删除</el-button>
+						<el-button v-if="scope.row.useType==0"  @click="yingyong(scope.row)" type="text" size="small">应用</el-button>
+						<el-button v-if="scope.row.useType==1" type="text" size="small">正在应用</el-button>
 					<!-- 	<el-button type="text" size="small">应用</el-button> -->
 					</template>
 				</el-table-column>
@@ -89,7 +90,9 @@
 				formLabelWidth: '120px',
 				count: "",
 				value1: "",
+				courseFileId: "",
 				fileList: [],
+
 				currentPage: 1, // 默认显示第几页
 				dialogFormVisible: false,
 				options: [{
@@ -116,39 +119,25 @@
 			};
 		},
 		methods: {
-			down(row) {
-				axios({
-					headers: {
-						"User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
-							.loginId,
-						Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
-							.sessionId
-					},
-					method: "get",
-					url: "/hlkt/admin/courseFile/download/" + row.courseFileId + '.action',
-
-				}).then(res => {
-					if (res.data.resultCode == "200") {
-
-					} else {
-						this.$message({
-							type: "error",
-							message: res.data.resultMsg
-						});
-					}
-				});
+			handleAvatarSuccess(res, file){
+				console.log(res,file)
+              this.courseFileId=res.resultData.courseFileId;
+			},
+			down(row) {//下载课表
+			window.open("http://10.150.27.124:8081/hlkt/admin/courseFile/download/" + row.courseFileId + '.action', '_blank');
+			
 			},
 			handleChange(file, fileList) {
 				this.fileList = fileList.slice(-3);
 			},
-			dele(row) {
-				this.$confirm("不支持删除课表？", {
+			yingyong(row) {//应用
+				this.$confirm("确定应用?", {
 						confirmButtonText: "确定",
 						cancelButtonText: "取消",
 						type: "warning"
 					})
 					.then(() => {
-						// this.del(row);
+						this.del(row);
 					})
 					.catch(() => {
 						this.$message({
@@ -174,7 +163,7 @@
 				// 切换页码时，要获取每页显示的条数
 				this.getuserlist(this.PageSize, val * this.pageSize);
 			},
-			del(row) {
+			del(row) {//应用课程
 				axios({
 					headers: {
 						"User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
@@ -183,10 +172,11 @@
 							.sessionId
 					},
 					method: "post",
-					url: "/hlkt/admin/dailySchedule/delete.action",
+					url: "/hlkt/admin/courseFile/apply.action",
 					data: {
 						sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-						scheduleId: row.scheduleId,
+						courseFileId:row.courseFileId,
+						courseFileUrl:row.courseFileUrl,
 					}
 				}).then(res => {
 					if (res.data.resultCode == "200") {
@@ -208,13 +198,11 @@
 							.sessionId
 					},
 					method: "post",
-					url: "/hlkt/admin/dailySchedule/update.action",
+					url: "/hlkt/admin/coursefile/update.action",
 					data: {
-						sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-						scheduleId: this.scheduleId,
-						"courseNum": this.form.input,
-						"startTime": this.value1 + ':00',
-						"endTime": this.value2 + ':00',
+					courseFileId:this.courseFileId,
+					year:this.value,
+					semester:this.value1
 					}
 				}).then(res => {
 					if (res.data.resultCode == "200") {
@@ -222,7 +210,7 @@
 							type: 'success',
 							message: res.data.resultMsg
 						});
-						this.dialogFormVisible1 = false;
+						this.dialogFormVisible = false;
 						this.getrest();
 					} else {
 						this.$message({

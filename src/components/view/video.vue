@@ -23,7 +23,7 @@
 			  format="yyyy-MM-dd"
 			  value-format="yyyy-MM-dd"
 			  placeholder="选择日期"
-			  style="    margin-top: 20px;margin-left: 15px;"
+			  style="margin-top: 20px;margin-left: 15px;"
 			  @change="getvideo"
 			></el-date-picker>
 			
@@ -62,9 +62,9 @@
 				<img class="videoimg" :src="'http://'+form.vSite" />
 				<div style="margin-bottom: 17px;">
 					<!-- <a class="left"> 科目</a> -->
-					<el-form-item label="科目" prop="region" :required="true" style="margin-left: 50px;">
-						<el-select v-model="value" placeholder="请选择" style="width: 372px;">
-							<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
+					<el-form-item label="科目" prop="job" :required="true" style="margin-left: 50px;">
+						<el-select v-model="form.job" placeholder="请选择" style="width: 372px;" @change="getgrade"  >
+							<el-option v-for="item in options" :key="item.value" :label="item.name" :value="item.name"></el-option>
 						</el-select>
 					</el-form-item>
 				</div>
@@ -72,7 +72,7 @@
 				<div style="float: left;margin-left: 50px;width: 230px;">
 					<el-form-item label="年级" prop="region" :required="true">
 						<el-select v-model="value" :required="true" placeholder="请选择" style="width: 140px;">
-							<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
+							<el-option v-for="item in grade" :key="item.value" :label="item.label" :value="item.value"></el-option>
 						</el-select>
 					</el-form-item>
 				</div>
@@ -120,7 +120,8 @@
 					</p>
 					<div class="pic_img">
 						<div class="pic_img_box">
-							<el-upload class="avatar-uploader" action="/hlkt/admin/upload/video.action" :headers="myHeaders" v-bind:data="{FoldPath:'上传目录',SecretKey:'安全验证'}"
+							<el-upload class="avatar-uploader" action="http://10.150.27.124:8081/hlkt/admin/upload/video.action" :headers="myHeaders" 
+						 name="videoFile"
 							 v-bind:on-progress="uploadVideoProcess" v-bind:on-success="handleVideoSuccess" v-bind:before-upload="beforeUploadVideo"
 							 v-bind:show-file-list="false">
 								<video v-if="videoForm.showVideoPath !='' && !videoFlag" v-bind:src="videoForm.showVideoPath" class="avatar video-avatar"
@@ -158,6 +159,7 @@
 					Authorization: sessionId,
 					"User-Info": UserInfo
 				},
+				vId:'',
 				videoFlag: false,
 				//是否显示进度条
 				videoUploadPercent: "",
@@ -169,10 +171,11 @@
 				},
 				formLabelWidth: "120px",
 				form: {
+					
 					remark: "",
 					loginId: "",
 					password: "",
-					job: "语文",
+					job: "",
 					name: "",
 					roleId: "1"
 				},
@@ -182,8 +185,9 @@
 				currentPage: 1, // 默认显示第几页
 				value1: "",
 				value: "",//选择得老师
-				options: [],
-				teacherlist: [],
+				options: [],//科目
+				grade: [],
+				teacherlist: [],//老师
 				datalist: [],
 				subjects: "",
 				tableData: []
@@ -266,12 +270,15 @@
 				//}
 
 				//后台上传地址
-				if (res.Code == 0) {
-					this.videoForm.showVideoPath = res.Data;
+				if (res.resultCode == 200) {
+					this.videoForm.showVideoPath = 'http://10.150.27.124:8081'+res.resultData.url;
+					this.vId=res.resultData.vId;
+					//表单置空
+					this.dialogFormVisible1 = true;
 				} else {
 					this.$message({
 						type: "error",
-						message: "msg"
+						message: res.resultMsg
 					});
 				}
 			},
@@ -424,7 +431,34 @@
 					url: "/hlkt/selective/subjects/list.action",
 					data: {
 						sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-						schoolType: 1,
+						schoolType: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
+					}
+				}).then(res => {
+					if (res.data.resultCode == "200") {
+						this.options = res.data.resultData;
+
+					} else {
+						this.$message({
+							type: "error",
+							message: res.data.resultMsg
+						});
+					}
+				});
+			},
+			getgrade() {
+				axios({
+					headers: {
+						"User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
+							.loginId,
+						Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
+							.sessionId
+					},
+					method: "post",
+					url: "/hlkt/selective/subjects/twolist.action",
+					data: {
+						firstValue: this.form.job,
+						schoolType: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
+						sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
 					}
 				}).then(res => {
 					if (res.data.resultCode == "200") {

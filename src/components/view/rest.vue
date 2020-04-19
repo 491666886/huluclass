@@ -31,7 +31,10 @@
 					 placeholder="任意时间点">
 					</el-time-picker>
 				</el-form-item>
-				
+				<el-form-item :required="true" label="是否上课" :label-width="formLabelWidth">
+					 <el-radio v-model="radio" label="1">是</el-radio>
+                     <el-radio v-model="radio" label="0">否</el-radio>
+				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
 				<el-button @click="dialogFormVisible = false">取 消</el-button>
@@ -72,6 +75,7 @@
 				<el-table-column prop="courseNum" label="课程安排" width="160"></el-table-column>
 				<el-table-column prop="startTime" label="开始时间" width="280"></el-table-column>
 				<el-table-column prop="endTime" label="结束时间" width="280"></el-table-column>
+					<!-- <el-table-column prop="type" label="是否上课" width="180"></el-table-column> -->
 				<el-table-column fixed="right" label="管理">
 					<template slot-scope="scope">
 						<el-button @click="showedit(scope.row)" type="text" size="small">编辑</el-button>
@@ -101,6 +105,7 @@
 				value1: '',
 				value2:'',
 				count: "",
+				radio: "1",
 				currentPage: 1, // 默认显示第几页
 				options: [{
 						value: "选项1",
@@ -223,6 +228,7 @@
 						"courseNum": this.form.input,
 						"startTime": this.value1 +':00',
 						"endTime": this.value2+':00',
+						type:this.radio,
 					}
 				}).then(res => {
 					if (res.data.resultCode == "200") {
@@ -256,6 +262,7 @@
 						"courseNum": this.form.input,
 						"startTime": this.value1 +':00',
 						"endTime": this.value2+':00',
+						type:this.radio,
 					}
 				}).then(res => {
 					if (res.data.resultCode == "200") {
