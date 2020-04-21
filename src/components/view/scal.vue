@@ -7,26 +7,25 @@
 		</div>
 
 		<div class="table">
-			<el-calendar v-if="show" v-model="value" id="calendar">
-				<!-- 这里使用的是 2.5 slot 语法，对于新项目请使用 2.6 slot 语法-->
-				<template slot="dateCell" slot-scope="{date, data}">
-					<!--自定义内容-->
-					<div>
-						<div class="calendar-day">{{ data.day.split('-').slice(2).join('-') }}</div>
-						<div v-for="item in calendarData">
-							<div v-if="(item.date).indexOf(data.day.split('-').slice(0).join('-'))!=-1">
-								<!-- <div v-if="(item.days).indexOf(data.day.split('-').slice(2).join('-'))!=-1"> -->
-								<el-tooltip class="item" effect="dark" :content="item.things" placement="right">
-									<div class="is-selected">{{item.details}}</div>
-								</el-tooltip>
-								<!-- </div> -->
-								<!-- <div v-else></div> -->
-							</div>
-							<!-- <div v-else></div> -->
-						</div>
+	<el-calendar v-model="value">
+		<template slot="dateCell" slot-scope="{date, data}">
+			<!--自定义内容-->
+			<div>
+				<div class="calendar-day">{{ data.day.split('-').slice(2).join('-') }}</div>
+				<div v-for="item in calendarData">
+					<div v-if="(item.date).indexOf(data.day.split('-').slice(0).join('-'))!=-1">
+						<!-- <div v-if="(item.days).indexOf(data.day.split('-').slice(2).join('-'))!=-1"> -->
+						<el-tooltip class="item" effect="dark" :content="item.things" placement="right">
+							<div class="is-selected">{{item.details}}</div>
+						</el-tooltip>
+						<!-- </div> -->
+						<!-- <div v-else></div> -->
 					</div>
-				</template>
-			</el-calendar>
+					<!-- <div v-else></div> -->
+				</div>
+			</div>
+		</template>
+	</el-calendar>
 			<div v-if="hide" class="edit">
 				<el-dialog title="编辑日程" :visible.sync="dialogFormVisible1" :modal-append-to-body="false">
 					<el-form :model="form">
@@ -43,14 +42,14 @@
 					</div>
 				</el-dialog>
 				<el-form :model="form">
-					<el-form-item :label=this.tableData[0].details :label-width="formLabelWidth">
+					<el-form-item label='开学日期' :label-width="formLabelWidth">
 						<!-- <div class="demonstration">值：{{ form.value1}}</div> -->
 						<el-date-picker v-model="form.value1" type="date" format="yyyy-MM-dd" value-format="yyyy-MM-dd"></el-date-picker>
 					</el-form-item>
-					<el-form-item :label=this.tableData[1].details :label-width="formLabelWidth">
+					<el-form-item label='第一天上课日期' :label-width="formLabelWidth">
 						<el-date-picker v-model="form.value2" type="date" format="yyyy-MM-dd" value-format="yyyy-MM-dd"></el-date-picker>
 					</el-form-item>
-					<el-form-item :label=this.tableData[2].details :label-width="formLabelWidth">
+					<el-form-item label='放假日期' :label-width="formLabelWidth">
 						<el-date-picker v-model="form.value3" type="date" format="yyyy-MM-dd" value-format="yyyy-MM-dd"></el-date-picker>
 					</el-form-item>
 					<el-form-item label="其他特殊日期" :label-width="formLabelWidth">
@@ -85,15 +84,22 @@
 				show: true,
 				tableData: [{
 						date: "",
-						details: "开学日期"
+						details: "开学日期",
+						sid:JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
+						status:0
+						
 					},
 					{
 						date: "",
-						details: "第一天上课日期"
+						details: "第一天上课日期",
+						sid:JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
+							status:1
 					},
 					{
 						date: "",
-						details: "放假日期"
+						details: "放假日期",
+						sid:JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
+							status:0
 					}
 				],
 				elseData: [

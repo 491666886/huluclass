@@ -61,9 +61,9 @@
         </div>
       </div>
       <el-pagination
-      hide-on-single-page=true
+      hide-on-single-pagemessage1
         class="page"
-        layout="prev, pager, next"
+          layout="total, prev, pager, next"
         :page-size="12"
         :current-page="currentPage"
         @current-change="handleCurrentChange"

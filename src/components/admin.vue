@@ -110,9 +110,7 @@ export default {
   margin-bottom: px2vw(90px);
 }
 .page {
-  position: absolute;
-  top: px2vw(800px);
-  left: 70%;
+   float: right;
 }
 .videolist img {
   width: px2vw(232px);

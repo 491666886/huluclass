@@ -3,17 +3,17 @@
 		<div>
 			<div class="head">课表信息</div>
 			<el-button class="add" size="small" type="primary" @click="dialogFormVisible = true">+上传</el-button>
-			<a class="done">模版下载</a>
+			<a class="done" @click="downmoban()" >模版下载</a>
 		</div>
 		<el-dialog title="课表上传" :visible.sync="dialogFormVisible" :modal-append-to-body="false">
 			<div class="album albumvideo">
 				<div>
 					<p class="type_title">
-						<span>视频介绍</span>
+						<span>介绍</span>
 					</p>
 					<div class="pic_img">
 						<div class="pic_img_box">
-							<el-upload class="upload-demo" action="http://10.150.27.124:8081/hlkt/admin/course/upload.action" :headers="myHeaders" :on-success="handleAvatarSuccess"
+							<el-upload class="upload-demo" :action="doUpload"  :headers="myHeaders" :on-success="handleAvatarSuccess"
 							 :data="{sid:2}" :on-change="handleChange" :file-list="fileList">
 								<el-button size="small" type="primary">点击上传</el-button>
 								<div slot="tip" class="el-upload__tip">只能上传Excel文件</div>
@@ -57,9 +57,9 @@
 		<div class="table">
 			<el-table :data="tableData" border>
 				<el-table-column type="index" label="序号" width="60"></el-table-column>
-				<el-table-column prop="oldFileName" label="名称" width="180"></el-table-column>
-				<el-table-column prop="year" label="年份" width="180"></el-table-column>
-				<el-table-column prop="semester" label="学期" width="180"></el-table-column>
+				<el-table-column prop="oldFileName" label="名称" ></el-table-column>
+				<el-table-column prop="year" label="年份" ></el-table-column>
+				<el-table-column prop="semester" label="学期" ></el-table-column>
 				<el-table-column prop="createTime" label="更新时间" width="180"></el-table-column>
 				<el-table-column prop="address" label="视频管理">
 					<template slot-scope="scope">
@@ -77,12 +77,15 @@
 <script>
 	// @ is an alias to /src
 	import axios from "axios";
+	const url = 'http://10.150.27.126:8080';
 	var sessionId = JSON.parse(sessionStorage.getItem("SESSION_USER")).sessionId;
 	var UserInfo = JSON.parse(sessionStorage.getItem("SESSION_USER")).loginId;
+	var sid =JSON.parse(sessionStorage.getItem("SESSION_USER")).sid
 	export default {
 		name: "teach",
 		data() {
 			return {
+				doUpload:url+'/hlkt/admin/course/upload.action',
 				myHeaders: {
 					Authorization: sessionId,
 					"User-Info": UserInfo
@@ -119,12 +122,34 @@
 			};
 		},
 		methods: {
+			downmoban(){
+				axios({
+					headers: {
+						"User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
+							.loginId,
+						Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
+							.sessionId
+					},
+					method: "get",
+					url: "/hlkt/admin/courseFileModel/check/"+ sid + '.action',
+					
+				}).then(res => {
+					if (res.data.resultCode == "200") {
+						window.open("http://10.150.27.126:8080/hlkt/admin/courseFileModel/download/" + sid + '.action', '_blank');
+					} else {
+						this.$message({
+							type: "error",
+							message: res.data.resultMsg
+						});
+					}
+				});
+			},
 			handleAvatarSuccess(res, file){
 				console.log(res,file)
               this.courseFileId=res.resultData.courseFileId;
 			},
 			down(row) {//下载课表
-			window.open("http://10.150.27.124:8081/hlkt/admin/courseFile/download/" + row.courseFileId + '.action', '_blank');
+			window.open("http://10.150.27.126:8080/hlkt/admin/courseFile/download/" + row.courseFileId + '.action', '_blank');
 			
 			},
 			handleChange(file, fileList) {

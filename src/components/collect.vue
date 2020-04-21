@@ -22,11 +22,11 @@
       </div>
       <div v-if="videolist.length ===0" class="error">该选项下暂无视频</div>
       <div class="videolist" v-for="video in videolist" :key="video.cId">
-        <img :src="'http://'+video.vSite" @click="getDescribe(video.id)" />
+        <img :src="'http://'+video.vSite" @click="getDescribe(video.vId)" />
 
-        <p @click="getDescribe(video.id)">{{video.vName}}</p>
-        <a @click="getDescribe(video.id)">{{video.teacher}}</a>
-        <b @click="getDescribe(video.id)">{{video.cTime.split(" ")[0]}}</b>
+        <p @click="getDescribe(video.vId)">{{video.vName}}</p>
+        <a @click="getDescribe(video.vId)">{{video.teacher}}</a>
+        <b @click="getDescribe(video.vId)">{{video.cTime.split(" ")[0]}}</b>
 
         <br />
         <div class="c">
@@ -38,9 +38,9 @@
       </div>
     </div>
     <el-pagination
-      hide-on-single-page="true"
+      hide-on-single-page
       class="page"
-      layout="prev, pager, next"
+        layout="total, prev, pager, next"
       :page-size="12"
       :current-page="currentPage"
       @current-change="handleCurrentChange"

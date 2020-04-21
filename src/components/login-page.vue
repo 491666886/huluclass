@@ -46,7 +46,7 @@
         <el-pagination
         :hide-on-single-page='true'
           class="page"
-          layout="prev, pager, next"
+         layout="total, prev, pager, next"
           :page-size="12"
           :current-page="currentPage"
           @current-change="handleCurrentChange"
@@ -169,32 +169,33 @@ export default {
       });
     },
     regetvideolist() {
-      axios({
-        headers: {
-          "User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
-            .loginId,
-          Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
-            .sessionId
-        },
-        method: "post",
-        url: "/hlkt/resource/findSearchVideo.action",
-        data: {
-          sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-          pageSize: 12,
-          pageNum: 1,
-          subjects: "",
-          unit: "",
-          grade: ""
-        }
-      }).then(res => {
-        if (res.data.resultCode == "200") {
-          this.count = res.data.resultLineNum;
-          this.videolist = res.data.resultData;
-          console.log(this.videolist);
-        } else {
-          this.videolist = [];
-        }
-      });
+		history.go(0) 
+      // axios({
+      //   headers: {
+      //     "User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
+      //       .loginId,
+      //     Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
+      //       .sessionId
+      //   },
+      //   method: "post",
+      //   url: "/hlkt/resource/findSearchVideo.action",
+      //   data: {
+      //     sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
+      //     pageSize: 12,
+      //     pageNum: 1,
+      //     subjects: "",
+      //     unit: "",
+      //     grade: ""
+      //   }
+      // }).then(res => {
+      //   if (res.data.resultCode == "200") {
+      //     this.count = res.data.resultLineNum;
+      //     this.videolist = res.data.resultData;
+      //     console.log(this.videolist);
+      //   } else {
+      //     this.videolist = [];
+      //   }
+      // });
     }
   },
   mounted() {
@@ -229,9 +230,7 @@ export default {
   margin-bottom: px2vw(90px);
 }
 .page {
-  position: absolute;
-  top: px2vw(800px);
-  left: 70%;
+ float: right;
 }
 .videolist img {
   width: px2vw(232px);
@@ -334,7 +333,7 @@ export default {
   // overflow-x: hidden;
   ul {
     overflow-y: auto;
-    height: 300px;
+    height: px2vw(300px);
   }
 }
 .el-col-12 {

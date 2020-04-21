@@ -48,6 +48,14 @@ export default {
       this.$router.push(`/search/${this.input3}`);
      
     },
+	goadmin(){
+	  
+	 let routeUrl = this.$router.resolve({
+	      path: "/admin/video",
+	      
+	 });
+	 window.open(routeUrl .href, '_blank');
+	},
     quitid() {
       this.$confirm("此操作将退出系统, 是否继续?", "提示", {
         confirmButtonText: "确定",
@@ -83,7 +91,7 @@ export default {
 	  		  this.admin =true
 	  }
     if (this.message1 != undefined) {
-      this.input3 = this.message1;
+      this.input3 = this.$route.params.id;
     }
   }
 };
@@ -100,7 +108,7 @@ a {
   padding: px2vw(41px);
   color: #8b8b8b;
   font-size: px2vw(18px);
-  margin-left: px2vw(28px);
+  // margin-left: px2vw(28px);
 }
 .set {
   cursor: pointer;

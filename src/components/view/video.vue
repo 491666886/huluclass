@@ -13,38 +13,33 @@
 			</el-select>
 
 			<a>教师</a>
-			<el-select v-model="value" placeholder="请选择" @change="getvideo" >
+			<el-select v-model="value" placeholder="请选择" @change="getvideo">
 				<el-option v-for="item in teacherlist" :key="item" :label="item" :value="item"></el-option>
 			</el-select>
 			<a>录制日期</a>
-			<el-date-picker
-			  v-model="value1"
-			  type="date"
-			  format="yyyy-MM-dd"
-			  value-format="yyyy-MM-dd"
-			  placeholder="选择日期"
-			  style="margin-top: 20px;margin-left: 15px;"
-			  @change="getvideo"
-			></el-date-picker>
-			
+			<el-date-picker v-model="value1" type="date" format="yyyy-MM-dd" value-format="yyyy-MM-dd" placeholder="选择日期" 
+			class="redata"
+			 @change="getvideo"></el-date-picker>
+
 			<div class="button">
-				<el-button class="add" size="small" type="primary" @click='retry()' >重置</el-button>
+				<el-button class="add" size="small" type="primary" @click='retry()'>重置</el-button>
 			</div>
 		</div>
 		<div class="table">
-			<el-table :data="tableData" border height="600">
-				<el-table-column type="index" label="序号" width="60" h></el-table-column>
-				<el-table-column prop="vName" label="名称" width="230"></el-table-column>
-				<el-table-column prop="teacher" label="教师" width="130"></el-table-column>
+			  <!-- <div v-if="tableData.length ===0" class="error">暂无视频</div> -->
+			<el-table :data="tableData" border class="form"  :height="tableHeight">
+				<el-table-column type="index" label="序号" width="60" ></el-table-column>
+				<el-table-column prop="vName" label="名称" ></el-table-column>
+				<el-table-column prop="teacher" label="教师" ></el-table-column>
 
-				<el-table-column prop="subjects" label="科目" width="130"></el-table-column>
-				<el-table-column prop="grade" label="班级" width="130"></el-table-column>
+				<el-table-column prop="subjects" label="科目" ></el-table-column>
+				<el-table-column prop="grade" label="班级" ></el-table-column>
 				<el-table-column label="录制日期">
 					<template scope="scope">
 						<p>{{ scope.row.cTime.split(" ")[0]}}</p>
 					</template>
 				</el-table-column>
-				<el-table-column fixed="right" label="管理" width="120">
+				<el-table-column fixed="right" label="管理" width="60">
 					<template slot-scope="scope">
 						<el-button @click="showedit(scope.row)" type="text" size="small">编辑</el-button>
 						<!--          <el-button @click="dele(scope.row)" type="text" size="small">删除</el-button> -->
@@ -52,7 +47,7 @@
 				</el-table-column>
 			</el-table>
 			<div class="page">
-				<el-pagination :hide-on-single-page="true" class="page" layout="prev, pager, next" :page-size="10" :current-page="currentPage"
+				<el-pagination :hide-on-single-page="true" class="page"   layout="total, prev, pager, next" :page-size="10" :current-page="currentPage"
 				 @current-change="handleCurrentChange" :total="parseInt(this.count)"></el-pagination>
 			</div>
 		</div>
@@ -60,49 +55,41 @@
 		<el-dialog title="编辑视频" :visible.sync="dialogFormVisible1" :modal-append-to-body="false">
 			<el-form :model="form">
 				<img class="videoimg" :src="'http://'+form.vSite" />
-				<div style="margin-bottom: 17px;">
+
+				
 					<!-- <a class="left"> 科目</a> -->
-					<el-form-item label="科目" prop="job" :required="true" style="margin-left: 50px;">
-						<el-select v-model="form.job" placeholder="请选择" style="width: 372px;" @change="getgrade"  >
+					<el-form-item  label="科目" :required="true" >
+						<el-select v-model="form.subjects" placeholder="请选择" class='windt'  @change="getgrade">
 							<el-option v-for="item in options" :key="item.value" :label="item.name" :value="item.name"></el-option>
 						</el-select>
 					</el-form-item>
-				</div>
-
-				<div style="float: left;margin-left: 50px;width: 230px;">
-					<el-form-item label="年级" prop="region" :required="true">
-						<el-select v-model="value" :required="true" placeholder="请选择" style="width: 140px;">
-							<el-option v-for="item in grade" :key="item.value" :label="item.label" :value="item.value"></el-option>
-						</el-select>
-					</el-form-item>
-				</div>
-				<div style="float: left;margin-left: 50px;width: 230px;">
-					<el-form-item label="单元" prop="region" :required="true">
-						<el-select v-model="value" :required="true" placeholder="请选择" style="width: 140px;">
-							<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
-						</el-select>
-					</el-form-item>
-				</div>
-				<div style="float: left;margin-left: 50px;width: 230px;">
-					<el-form-item label="小节" prop="region" :required="true">
-						<el-select v-model="value" :required="true" placeholder="请选择" style="width: 140px;">
-							<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
-						</el-select>
-					</el-form-item>
-				</div>
-
-				<el-form-item class="input" :required="true" label="课时名称" :label-width="formLabelWidth">
-					<el-input style="width: 400px;" v-model="form.loginId" autocomplete="off"></el-input>
+				
+				<el-form-item  label="年级" :required="true" class="grade">
+					<el-select v-model="form.grade" placeholder="请选择" style="width: 140px;" @change="getdanyuan">
+						<el-option v-for="item in grade" :key="item" :label="item" :value="item"></el-option>
+					</el-select>
 				</el-form-item>
-				<div style="float: left;margin-left: 90px;width: 310px;">
-					<el-form-item label="教师" prop="region" :required="true">
-						<el-select v-model="value" :required="true" placeholder="请选择" style="width: 140px;">
-							<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
+					<el-form-item label="单元"  :required="true" class="grade">
+						<el-select v-model="form.danyuan" :required="true" placeholder="请选择" style="width: 140px;" @change="getxiaojie">
+							<el-option v-for="item in danyuan" :key="item" :label="item" :value="item"></el-option>
 						</el-select>
 					</el-form-item>
-
-				</div>
-				<el-form-item label="录制时间" prop="region" :required="true" style="margin-left: 50px;">
+					<el-form-item label="小节"  :required="true" class="grade">
+						<el-select v-model="form.xiaojie" :required="true" placeholder="请选择" style="width: 140px;">
+							<el-option v-for="item in xiaojie" :key="item" :label="item" :value="item"></el-option>
+						</el-select>
+					</el-form-item>
+				<el-form-item  :required="true" label="课时名称" class='classname'>
+					<el-input v-model="form.name" class="input" ></el-input>
+				</el-form-item>
+				
+					<el-form-item label="教师" prop="region" :required="true" class="grade">
+						<el-select v-model="form.teacher" :required="true" placeholder="请选择" style="width: 140px;">
+							<el-option v-for="item in teacherlist" :key="item" :label="item" :value="item"></el-option>
+						</el-select>
+					</el-form-item>
+					
+				<el-form-item label="录制时间" prop="region" :required="true" class="time"  >
 					<el-date-picker v-model="value1" type="date" placeholder="选择日期"></el-date-picker>
 				</el-form-item>
 
@@ -120,10 +107,9 @@
 					</p>
 					<div class="pic_img">
 						<div class="pic_img_box">
-							<el-upload class="avatar-uploader" action="http://10.150.27.124:8081/hlkt/admin/upload/video.action" :headers="myHeaders" 
-						 name="videoFile"
-							 v-bind:on-progress="uploadVideoProcess" v-bind:on-success="handleVideoSuccess" v-bind:before-upload="beforeUploadVideo"
-							 v-bind:show-file-list="false">
+							<el-upload class="avatar-uploader" action="http://10.150.27.126:8080/hlkt/admin/upload/video.action" :headers="myHeaders"     
+							 name="videoFile" v-bind:on-progress="uploadVideoProcess" v-bind:on-success="handleVideoSuccess"
+							 v-bind:before-upload="beforeUploadVideo" v-bind:show-file-list="false">
 								<video v-if="videoForm.showVideoPath !='' && !videoFlag" v-bind:src="videoForm.showVideoPath" class="avatar video-avatar"
 								 controls="controls">您的浏览器不支持视频播放</video>
 								<i v-else-if="videoForm.showVideoPath =='' && !videoFlag" class="el-icon-plus avatar-uploader-icon"></i>
@@ -134,7 +120,7 @@
 				</div>
 				<p class="Upload_pictures">
 					<span></span>
-					<span>最多可以上传1个视频，建议大小50M，推荐格式mp4</span>
+					<span>最多可以上传1个视频，建议大小500M，推荐格式mp4</span>
 				</p>
 			</div>
 
@@ -155,11 +141,12 @@
 		name: "videodetail",
 		data() {
 			return {
+				tableHeight: '55vh',
 				myHeaders: {
 					Authorization: sessionId,
 					"User-Info": UserInfo
 				},
-				vId:'',
+				vId: '',
 				videoFlag: false,
 				//是否显示进度条
 				videoUploadPercent: "",
@@ -171,7 +158,8 @@
 				},
 				formLabelWidth: "120px",
 				form: {
-					
+					grade: "",
+					xiaojie:'',
 					remark: "",
 					loginId: "",
 					password: "",
@@ -184,17 +172,26 @@
 				count: "",
 				currentPage: 1, // 默认显示第几页
 				value1: "",
-				value: "",//选择得老师
+				value: "", //选择得老师
 				options: [],//科目
+				danyuan:[],
 				grade: [],
-				teacherlist: [],//老师
+				xiaojie: [],
+				teacherlist: [], //老师
 				datalist: [],
+				
 				subjects: "",
 				tableData: []
 			};
 		},
 
 		methods: {
+			editfirst(){
+				// this.form.subjects='';
+				this.form.grade='';
+				this.form.danyuan='';
+				this.form.xiaojie='';
+			},
 			// upload(file){
 			//   let fd = new Formdata();
 			//      fd.append('key', file, 'fileName');
@@ -271,9 +268,10 @@
 
 				//后台上传地址
 				if (res.resultCode == 200) {
-					this.videoForm.showVideoPath = 'http://10.150.27.124:8081'+res.resultData.url;
-					this.vId=res.resultData.vId;
-					//表单置空
+					this.videoForm.showVideoPath = 'http://10.150.27.126:8080' + res.resultData.url;
+					this.vId = res.resultData.vId;
+					this.form= {};//表单置空
+					// this.add();
 					this.dialogFormVisible1 = true;
 				} else {
 					this.$message({
@@ -282,13 +280,8 @@
 					});
 				}
 			},
-			retry(){
-				this.subjects='';
-				this.value='';
-				this.value1='';
-				this.getvideo()
-			},
-			kemu(){
+			
+			kemu() {
 				this.getteacher();
 				this.getvideo();
 			},
@@ -312,6 +305,10 @@
 			showedit(row) {
 				this.dialogFormVisible1 = true;
 				this.form = row;
+				this.getgrade();
+				this.getsubject();
+				this.getxiaojie();
+				this.getdanyuan();
 				// this.teacherId = row.teacherId;
 				// this.userid = row.baseUser.userId;
 			},
@@ -389,13 +386,17 @@
 							.sessionId
 					},
 					method: "post",
-					url: "/hlkt/admin/camera/addCamera.action",
+					url: "/hlkt/admin/videoOpt/updateVideo.action",
 					data: {
-						sName: "小学",
-						cNumber: "1010",
-						cGrade: "一年级（10）班",
-
-						sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid
+						sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
+						teacher	:this.form.teacher,
+						id:this.vId,
+						subjects:this.form.subjects,
+						grade:this.form.grade,
+						unit:this.form.danyuan,
+						summary:this.form.xiaojie,
+						name:this.form.name,
+						createTime:this.value1
 					}
 				}).then(res => {
 					if (res.data.resultCode == "200") {
@@ -457,12 +458,13 @@
 					url: "/hlkt/selective/subjects/twolist.action",
 					data: {
 						firstValue: this.form.job,
-						schoolType: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
+						// schoolType: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
 						sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
 					}
 				}).then(res => {
 					if (res.data.resultCode == "200") {
-						this.options = res.data.resultData;
+						this.grade = res.data.resultData;
+						console.log(this.grade)
 
 					} else {
 						this.$message({
@@ -498,6 +500,62 @@
 					}
 				});
 			},
+			getdanyuan() {
+				axios({
+					headers: {
+						"User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
+							.loginId,
+						Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
+							.sessionId
+					},
+					method: "post",
+					url: "/hlkt/selective/subjects/threelist.action",
+					data: {
+						firstValue: this.form.job,
+						secondValue:this.form.grade,
+						// schoolType: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
+						sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
+					}
+				}).then(res => {
+					if (res.data.resultCode == "200") {
+						this.danyuan = res.data.resultData;
+						
+
+					} else {
+						this.$message({
+							type: "error",
+							message: res.data.resultMsg
+						});
+					}
+				});
+			},
+			getxiaojie() {
+				axios({
+					headers: {
+						"User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
+							.loginId,
+						Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
+							.sessionId
+					},
+					method: "post",
+					url: "/hlkt/selective/subjects/fourlist.action",
+					data: {
+						firstValue: this.form.job,
+						secondValue:this.form.grade,
+						sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
+						thirdValue:this.form.danyuan,
+					}
+				}).then(res => {
+					if (res.data.resultCode == "200") {
+						this.xiaojie=res.data.resultData;
+					} else {
+						this.$message({
+							type: "error",
+							message: res.data.resultMsg
+						});
+					}
+				});
+			},
 			getvideo() {
 				axios({
 					headers: {
@@ -512,8 +570,8 @@
 						sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
 						pageSize: 10,
 						subjects: this.subjects,
-						teacher:this.value,
-						cTime:this.value1,
+						teacher: this.value,
+						cTime: this.value1,
 						pageNum: this.currentPage
 					}
 				}).then(res => {
@@ -522,6 +580,7 @@
 						this.count = res.data.resultData.total;
 						console.log(this.tableData);
 					} else {
+						this.tableData =[];
 						this.$message({
 							type: "error",
 							message: res.data.resultMsg
@@ -542,7 +601,29 @@
 </script>
 <style scoped lang="scss">
 	@import "src/plugins/px2vw";
-
+	.classname{
+		float: left;
+		width: px2vw(550px);
+	}
+	.time{
+		float: left;
+		width: px2vw(432px);
+	}
+	.windt{
+		 width: px2vw(372px);
+	}
+	.input{
+		 width: px2vw(372px);
+		  float: left;
+	}
+	.grade{
+	  width: px2vw(280px);
+		  float: left;
+	}
+    .redata{
+		margin-top: px2vw(20px);
+		margin-left: px2vw(15px);
+	}
 	.page {
 		text-align: center;
 	}
@@ -568,6 +649,9 @@
 		height: px2vw(650px);
 		background-color: white;
 		padding: 0 px2vw(20px);
+		.form{
+			height: px2vw(600px);
+		}
 	}
 
 	.main {

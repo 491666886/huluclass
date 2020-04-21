@@ -10,15 +10,16 @@
 				</el-input>
 			</div>
 			<el-dialog title="新增设备" :visible.sync="dialogFormVisible" :modal-append-to-body='false'>
-				<el-form :model="form">
-					<el-form-item :required=true label="教室" :label-width="formLabelWidth">
+				<el-form :model="form" :rules="rules"   ref="form" >
+					<el-form-item prop="cameraNumber" label="教室" :label-width="formLabelWidth">
 						<el-input class="input" v-model="form.cameraNumber" autocomplete="off"></el-input>
 					</el-form-item>
-					<el-form-item :required=true label="班级" :label-width="formLabelWidth">
+					<el-form-item prop="gradeNum" label="班级" :label-width="formLabelWidth">
 						<el-input class="input" v-model="form.gradeNum"
 						autocomplete="off"
 						onkeyup="this.value=this.value.replace(/[^\d.]/g,'');"
 						maxlength="2" ></el-input>年<el-input class="input" v-model="form.classNum" 
+						prop="classNum"
 						autocomplete="off"
 						onkeyup="this.value=this.value.replace(/[^\d.]/g,'');"
 						maxlength="2" ></el-input>班
@@ -29,15 +30,15 @@
 				</el-form>
 				<div slot="footer" class="dialog-footer">
 					<el-button @click="dialogFormVisible = false">取 消</el-button>
-					<el-button type="primary" @click="add()">确 定</el-button>
+					<el-button type="primary" @click="submitForm('form')">确 定</el-button>
 				</div>
 			</el-dialog>
 			<el-dialog title="编辑设备" :visible.sync="dialogFormVisible1" :modal-append-to-body='false'>
 				<el-form :model="form">
-					<el-form-item :required=true label="教室" :label-width="formLabelWidth">
+					<el-form-item prop="cameraNumber" label="教室" :label-width="formLabelWidth">
 						<el-input class="input" v-model="form.cameraNumber" autocomplete="off"></el-input>
 					</el-form-item>
-					<el-form-item :required=true label="班级" :label-width="formLabelWidth">
+					<el-form-item prop="gradeNum" label="班级" :label-width="formLabelWidth">
 						<el-input class="input" v-model="form.gradeNum" 
 						autocomplete="off"
 						onkeyup="this.value=this.value.replace(/[^\d.]/g,'');"
@@ -60,15 +61,15 @@
 		<div class="main">
 		</div>
 		<div class="table">
-			<el-table :data="tableData" border>
+			<el-table :data="tableData" border :height="tableHeight">
 				<el-table-column type="index" label="序号" width="60">
 				</el-table-column>
-				<el-table-column prop="cameraNumber" label="教室" width="180">
+				<el-table-column prop="cameraNumber" label="教室" >
 				</el-table-column>
-				<el-table-column prop="cameraGrade" label="班级" width="180">
+				<el-table-column prop="cameraGrade" label="班级" >
 					 <!-- <template slot-scope="scope"> {{scope.row.projectName}}({{scope.row.projectCode}}) </template> -->
 				</el-table-column>
-				<el-table-column prop="classCamera" label="摄像头id" width="350">
+				<el-table-column prop="classCamera" label="摄像头id" >
 				</el-table-column>
 				<el-table-column fixed="right" label="管理" width="120">
 					<template slot-scope="scope">
@@ -79,7 +80,7 @@
 
 			</el-table>
 			<div class="page">
-				<el-pagination :hide-on-single-page='true' class="page" layout="prev, pager, next" :page-size="10" :current-page="currentPage"
+				<el-pagination :hide-on-single-page='true' class="page"   layout="total, prev, pager, next" :page-size="10" :current-page="currentPage"
 				 @current-change="handleCurrentChange" :total="parseInt(count)"></el-pagination>
 			</div>
 		</div>
@@ -92,6 +93,19 @@
 		name: "dev",
 		data() {
 			return {
+				rules: {
+				          cameraNumber: [
+				            { required: true, message: '请输入活动名称', trigger: 'blur' },
+				            { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+				          ],
+				          gradeNum: [
+				            { required: true, message: '请输入数字', trigger: 'change' }
+				          ],
+				          classNum: [
+				            { required: true, message: '请输入数字', trigger: 'change' }
+				          ],
+				        },
+				tableHeight: '60vh',
 				dialogFormVisible: false,
 				dialogFormVisible1: false,
 				form: {
@@ -103,28 +117,22 @@
 
 				count: "",
 				currentPage: 1, // 默认显示第几页
-				options: [{
-					value: '选项1',
-					label: '黄金糕'
-				}, {
-					value: '选项2',
-					label: '双皮奶'
-				}, {
-					value: '选项3',
-					label: '蚵仔煎'
-				}, {
-					value: '选项4',
-					label: '龙须面'
-				}, {
-					value: '选项5',
-					label: '北京烤鸭'
-				}],
+				options: [],
 				value: '',
 				tableData: [],
 				input2: '',
 			}
 		},
 		methods: {
+			submitForm(formName) {
+			        this.$refs[formName].validate(valid => {
+			          if (valid) {
+			            this.add();
+			          } else {
+			            this.loading = false;
+			          }
+			        });
+			      },
 			adddevice(){
 				this.form={};
 				this.dialogFormVisible=true;

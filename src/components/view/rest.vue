@@ -73,8 +73,8 @@
 		<div class="table">
 			<el-table :data="tableData" border>
 				<el-table-column prop="courseNum" label="课程安排" width="160"></el-table-column>
-				<el-table-column prop="startTime" label="开始时间" width="280"></el-table-column>
-				<el-table-column prop="endTime" label="结束时间" width="280"></el-table-column>
+				<el-table-column prop="startTime" label="开始时间" ></el-table-column>
+				<el-table-column prop="endTime" label="结束时间" ></el-table-column>
 					<!-- <el-table-column prop="type" label="是否上课" width="180"></el-table-column> -->
 				<el-table-column fixed="right" label="管理">
 					<template slot-scope="scope">

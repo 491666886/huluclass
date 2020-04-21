@@ -78,12 +78,20 @@ export default {
         });
     },
     user() {
-      let routeUrl = this.$router.resolve({
-          path: "/collect",
-          
-     });
-     window.open(routeUrl .href, '_blank');
-      // this.$router.push("/collect");
+		
+		
+		if(this.$route.path== '/collect'){
+		history.go(0) 
+
+		}else{
+			let routeUrl = this.$router.resolve({
+			     path: "/collect",
+			     
+			});
+			window.open(routeUrl .href, '_blank');
+			 this.$router.push("/collect");
+		}
+      
     },
     home() {
       this.$router.push("/login");
@@ -112,7 +120,7 @@ a {
   padding: px2vw(41px);
   color: #8b8b8b;
   font-size: px2vw(18px);
-  margin-left: px2vw(28px);
+  // margin-left: px2vw(28px);
 }
 .set {
   cursor: pointer;
