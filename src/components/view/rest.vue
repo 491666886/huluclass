@@ -107,55 +107,17 @@
 				count: "",
 				radio: "1",
 				currentPage: 1, // 默认显示第几页
-				options: [{
-						value: "选项1",
-						label: "黄金糕"
-					},
-					{
-						value: "选项2",
-						label: "双皮奶"
-					},
-					{
-						value: "选项3",
-						label: "蚵仔煎"
-					},
-					{
-						value: "选项4",
-						label: "龙须面"
-					},
-					{
-						value: "选项5",
-						label: "北京烤鸭"
-					}
+				options: [
 				],
 				value: "",
 				scheduleId: "",
-				tableData: [{
-						date: "1",
-						name: "王小虎",
-						address: "上海市普陀区金沙江路 1518 弄"
-					},
-					{
-						date: 2,
-						name: "王小虎",
-						address: "上海市普陀区金沙江路 1517 弄"
-					},
-					{
-						date: "3",
-						name: "王小虎",
-						address: "上海市普陀区金沙江路 1519 弄"
-					},
-					{
-						date: "4",
-						name: "王小虎",
-						address: "上海市普陀区金沙江路 1516 弄"
-					}
+				tableData: [
 				]
 			};
 		},
 		methods: {
 			dele(row) {
-				this.$confirm("确认删除用户数据？", {
+				this.$confirm("确认删除作息数据？", {
 						confirmButtonText: "确定",
 						cancelButtonText: "取消",
 						type: "warning"

@@ -7,25 +7,25 @@
 		</div>
 
 		<div class="table">
-	<el-calendar v-model="value">
-		<template slot="dateCell" slot-scope="{date, data}">
-			<!--自定义内容-->
-			<div>
-				<div class="calendar-day">{{ data.day.split('-').slice(2).join('-') }}</div>
-				<div v-for="item in calendarData">
-					<div v-if="(item.date).indexOf(data.day.split('-').slice(0).join('-'))!=-1">
-						<!-- <div v-if="(item.days).indexOf(data.day.split('-').slice(2).join('-'))!=-1"> -->
-						<el-tooltip class="item" effect="dark" :content="item.things" placement="right">
-							<div class="is-selected">{{item.details}}</div>
-						</el-tooltip>
-						<!-- </div> -->
-						<!-- <div v-else></div> -->
+			<el-calendar v-if='show' v-model="value">
+				<template slot="dateCell" slot-scope="{date, data}">
+					<!--自定义内容-->
+					<div>
+						<div class="calendar-day">{{ data.day.split('-').slice(2).join('-') }}</div>
+						<div v-for="item in calendarData">
+							<div v-if="(item.date).indexOf(data.day.split('-').slice(0).join('-'))!=-1">
+								<!-- <div v-if="(item.days).indexOf(data.day.split('-').slice(2).join('-'))!=-1"> -->
+								<el-tooltip class="item" effect="dark" :content="item.things" placement="right">
+									<div class="is-selected">{{item.details}}</div>
+								</el-tooltip>
+								<!-- </div> -->
+								<!-- <div v-else></div> -->
+							</div>
+							<!-- <div v-else></div> -->
+						</div>
 					</div>
-					<!-- <div v-else></div> -->
-				</div>
-			</div>
-		</template>
-	</el-calendar>
+				</template>
+			</el-calendar>
 			<div v-if="hide" class="edit">
 				<el-dialog title="编辑日程" :visible.sync="dialogFormVisible1" :modal-append-to-body="false">
 					<el-form :model="form">
@@ -34,6 +34,10 @@
 						</el-form-item>
 						<el-form-item :required="true" label="开始时间" :label-width="formLabelWidth">
 							<el-date-picker v-model="form.newdate" type="date" format="yyyy-MM-dd" value-format="yyyy-MM-dd"></el-date-picker>
+						</el-form-item>
+						<el-form-item :required="true" label="是否上课" :label-width="formLabelWidth">
+							<el-radio v-model="radio" label="1">是</el-radio>
+							<el-radio v-model="radio" label="0">否</el-radio>
 						</el-form-item>
 					</el-form>
 					<div slot="footer" class="dialog-footer">
@@ -80,26 +84,27 @@
 		name: "scal",
 		data() {
 			return {
+				radio: "1",
 				hide: false,
 				show: true,
 				tableData: [{
 						date: "",
 						details: "开学日期",
-						sid:JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-						status:0
-						
+						sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
+						status: 0
+
 					},
 					{
 						date: "",
 						details: "第一天上课日期",
-						sid:JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-							status:1
+						sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
+						status: 1
 					},
 					{
 						date: "",
 						details: "放假日期",
-						sid:JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-							status:0
+						sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
+						status: 0
 					}
 				],
 				elseData: [
@@ -112,6 +117,7 @@
 					value2: "",
 					value3: "",
 					newdate: "",
+					id: "",
 					input: ""
 				},
 				formLabelWidth: "120px",
@@ -129,20 +135,20 @@
 			};
 		},
 		methods: {
-		  readd(){
-		  	this.form.newdate='';
-			this.form.input='';
-		  	this.dialogFormVisible1=true;
-		  	
-		  },
+			readd() {
+				this.form.newdate = '';
+				this.form.input = '';
+				this.dialogFormVisible1 = true;
+
+			},
 
 			hold() {
 				console.log(this.form);
 				this.add();
 			},
-			showq(){
-				this.hide=true;
-				this.show=false
+			showq() {
+				this.hide = true;
+				this.show = false
 			},
 
 			dele(row) {
@@ -163,10 +169,11 @@
 			},
 
 			showedit(row) {
-				this.form.input=row.details;
-				this.form.newdate=row.date;
-				  this.dialogFormVisible1 = true;
-				
+				this.form.input = row.details;
+				this.form.newdate = row.date;
+				this.form.id = row.id;
+				this.dialogFormVisible1 = true;
+
 			},
 			serchlist(vap) {
 				//改变页数
@@ -190,10 +197,11 @@
 					method: "post",
 					url: "/hlkt/admin/kalendar/updateKalendar.action",
 					data: {
-						"date":row.date,
+						"date": row.date,
 						"week": 0,
 						"details": '',
-						"status": 1,
+						"status": this.radio,
+						id: row.id,
 						"sid": 2
 					}
 				}).then(res => {
@@ -219,10 +227,11 @@
 					method: "post",
 					url: "/hlkt/admin/kalendar/updateKalendar.action",
 					data: {
+						id: this.form.id,
 						"date": this.form.newdate,
 						"week": 0,
 						"details": this.form.input,
-						"status": 1,
+						"status": this.radio,
 						"sid": 2
 					}
 				}).then(res => {
@@ -260,14 +269,34 @@
 						method: "post",
 						url: "/hlkt/admin/kalendar/addKalendar.action",
 						data: {
-							"list": this.tableData
+							list:[ {
+								date: this.form.value1,
+								details: "开学日期",
+								sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
+								status: 0
 
-						}
+							},
+							{
+								date: this.form.value2,
+								details: "第一天上课日期",
+								sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
+								status: 1
+							},
+							{
+								date: this.form.value3,
+								details: "放假日期",
+								sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
+								status: 0
+							}
+
+						]}
 					}).then(res => {
 						if (res.data.resultCode == "200") {
 							this.dialogFormVisible = false;
 							this.getrest();
-							 this.$message('保存成功');
+							this.show = true;
+							this.hide = false;
+							this.$message('保存成功');
 						} else {
 							this.$message({
 								type: "error",
@@ -368,12 +397,12 @@
 		padding-top: px2vw(40px);
 	}
 
-	.calendar-day {
-		text-align: center;
-		color: #202535;
-		line-height: 30px;
-		font-size: 12px;
-	}
+	// .calendar-day {
+	// 	text-align: center;
+	// 	color: #202535;
+	// 	line-height: 30px;
+	// 	font-size: 12px;
+	// }
 
 	.is-selected {
 		color: #f8a535;

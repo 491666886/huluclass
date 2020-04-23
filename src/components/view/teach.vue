@@ -378,6 +378,7 @@
 	.done {
 		color: #66b1ff;
 		margin-left: px2vw(30px);
+		cursor:pointer ;
 	}
 
 	.adminer {

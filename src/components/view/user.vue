@@ -16,30 +16,31 @@
 		</div>
 		<el-dialog title="新增用户" :visible.sync="dialogFormVisible" :modal-append-to-body="false">
 			<el-form :model="form" :rules="rules" ref="form">
-				<el-form-item class="input" prop="baseUser" label="姓名" :label-width="formLabelWidth">
+				<el-form-item class="input" prop="baseUser.name" label="姓名" :label-width="formLabelWidth">
 					<el-input v-model="form.baseUser.name" autocomplete="off"></el-input>
 
 				</el-form-item>
 				<!--  <div class="class">
           <a>学科</a> -->
-				<el-form-item class="input" prop="jobName" label="账号" :label-width="formLabelWidth">
+				<el-form-item class="input" prop="jobName" label="学科" :label-width="formLabelWidth">
 					<el-select v-model="form.jobName" placeholder="请选择" @change="getuserlist">
 						<el-option v-for="item in options" :key="item.value" :label="item.name" :value="item.name"></el-option>
 					</el-select>
 				</el-form-item>
 				<!-- </div> -->
-				<el-form-item class="input" prop="loginId" label="账号" :label-width="formLabelWidth">
-					<el-input v-model="form.loginId" autocomplete="off"></el-input>
+				<el-form-item class="input"  prop="baseUser.loginId" label="账号" :label-width="formLabelWidth">
+					<el-input v-model="form.baseUser.loginId" autocomplete="off"
+					 onkeyup="this.value=this.value.replace(/[/u0391-/uFFE5]/gi,’’)"></el-input>
 				</el-form-item>
 				<el-form-item class="input" label="工号" :label-width="formLabelWidth">
 					<el-input v-model="form.jobNumber" autocomplete="off"></el-input>
 				</el-form-item>
-				<el-form-item class="input" prop="password" label="密码" :label-width="formLabelWidth">
-					<el-input v-model="form.password" autocomplete="off"></el-input>
+				<el-form-item class="input"  prop="baseUser.password" label="密码" :label-width="formLabelWidth">
+					<el-input v-model="form.baseUser.password" autocomplete="off"></el-input>
 				</el-form-item>
 				<div class="class">
 					<a>入职时间</a>
-					<el-date-picker v-model="value1" type="date" placeholder="选择日期"></el-date-picker>
+					<el-date-picker v-model="form.hiredate" type="date" placeholder="选择日期"></el-date-picker>
 				</div>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -69,7 +70,7 @@
 				</el-form-item>
 				<div class="class">
 					<a>入职时间</a>
-					<el-date-picker v-model="value1" type="date" placeholder="选择日期"></el-date-picker>
+					<el-date-picker v-model="form.hiredate" type="date" placeholder="选择日期"></el-date-picker>
 				</div>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -79,7 +80,7 @@
 		</el-dialog>
 		<div class="table">
 			<el-table :data="tableData" border :height="tableHeight">
-				<el-table-column type="index" label="序号" width="60"></el-table-column>
+				<el-table-column :index="indexMethod" type="index" label="序号" width="60"></el-table-column>
 				<el-table-column prop="baseUser.name" label="姓名"></el-table-column>
 				<el-table-column prop="jobName" label="学科"></el-table-column>
 
@@ -109,34 +110,15 @@
 		data() {
 			return {
 				rules: {
-					baseUser: [{
-							type: 'object',
-							required: true,
-							trigger: 'change',
-							fields: {
-								name: {
-									required: true,
-									message: '请输入姓名',
-									trigger: 'blur'
-								},
-								
-							}
-						}],
+					'baseUser.loginId':[{type: "string", required: true, message: '请填写账号',trigger: 'blur'}], 
+					'baseUser.name':[{type: "string", required: true, message: '请填写名字', trigger: 'blur'}], 
+					'baseUser.password':[{type: "string", required: true, message: '请填写密码', trigger: 'blur'}], 
 					jobName: [{
 						required: true,
 						message: '请选择学科',
-						trigger: 'change'
+						trigger: 'blur'
 					}],
-					loginId: [{
-						required: true,
-						message: '请输入数字',
-						trigger: 'change'
-					}],
-					password: [{
-						required: true,
-						message: '请输入密码',
-						trigger: 'change'
-					}],
+					
 				},
 				tableHeight: '55vh',
 				value1: "", //入职时间
@@ -146,12 +128,16 @@
 					loginId: "",
 					password: "",
 					job: "语文",
-					name: "",
-					roleId: "1",
+					teacherName: "",
+					sid:JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
 					jobNumber: "",
 					jobName: "",
 					baseUser: {
 						name: "",
+						roleId: 1,
+						loginId: "",
+						password: "",
+						sid:JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
 					},
 				},
 				dialogFormVisible: false,
@@ -165,7 +151,13 @@
 				tableData: []
 			};
 		},
+		
 		methods: {
+			
+			indexMethod(index) {
+			
+			        return 	(this.currentPage-1)*10+index+1;
+			      },
 			submitForm(formName) {
 				this.$refs[formName].validate(valid => {
 					if (valid) {
@@ -271,6 +263,10 @@
 				});
 			},
 			edit(row) {
+				this.form.teacherName=this.form.baseUser.name;
+				this.form.sid =JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
+				this.form.baseUser.sid =JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
+				this.form.baseUser.roleId =1,
 				axios({
 					headers: {
 						"User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
@@ -297,6 +293,11 @@
 				console.log(row);
 			},
 			add() {
+					this.form.teacherName=this.form.baseUser.name;
+					this.form.sid =JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
+					this.form.baseUser.sid =JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
+					this.form.baseUser.roleId =1,
+					
 				axios({
 					headers: {
 						"User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))

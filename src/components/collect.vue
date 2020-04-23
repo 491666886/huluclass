@@ -10,7 +10,7 @@
     </div>
     <div class="main">
       <div class="mine">
-        <h1>我的收藏</h1>
+        <h1 @click="retry()" >我的收藏</h1>
         <el-input
           placeholder="在此搜索您收藏的内容"
           v-model="input3"
@@ -71,6 +71,10 @@ export default {
   },
 
   methods: {
+	  retry(){
+		  this.input3='';
+		  this.getvideolist()
+	  },
     serchlist(vap) {
       //改变页数
       this.currentPage = vap;
@@ -150,6 +154,9 @@ export default {
 </script>
 <style scoped lang="scss">
 @import "src/plugins/px2vw";
+h1{
+	 cursor: pointer;
+}
 .page {
   position: absolute;
 

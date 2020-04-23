@@ -3,26 +3,21 @@
 		<div>
 			<div class="head">设备管理</div>
 			<el-button class="add" size="small" type="primary" @click="adddevice()">新增设备</el-button>
-			<el-button style="float: right;">全部设备</el-button>
+			<el-button style="float: right;"@click='all()' >全部设备</el-button>
 			<div style="float: right;">
-				<el-input placeholder="请输入内容" v-model="input2">
-					<template slot="append">搜索</template>
+				<el-input placeholder="请输入教室号" v-model="input2">
+					<el-button slot="append" @click="getdevice()" >搜索</el-button>
 				</el-input>
 			</div>
 			<el-dialog title="新增设备" :visible.sync="dialogFormVisible" :modal-append-to-body='false'>
-				<el-form :model="form" :rules="rules"   ref="form" >
+				<el-form :model="form" :rules="rules" ref="form">
 					<el-form-item prop="cameraNumber" label="教室" :label-width="formLabelWidth">
 						<el-input class="input" v-model="form.cameraNumber" autocomplete="off"></el-input>
 					</el-form-item>
 					<el-form-item prop="gradeNum" label="班级" :label-width="formLabelWidth">
-						<el-input class="input" v-model="form.gradeNum"
-						autocomplete="off"
-						onkeyup="this.value=this.value.replace(/[^\d.]/g,'');"
-						maxlength="2" ></el-input>年<el-input class="input" v-model="form.classNum" 
-						prop="classNum"
-						autocomplete="off"
-						onkeyup="this.value=this.value.replace(/[^\d.]/g,'');"
-						maxlength="2" ></el-input>班
+						<el-input class="input" v-model="form.gradeNum" autocomplete="off" onkeyup="this.value=this.value.replace(/[^\d.]/g,'');"
+						 maxlength="2"></el-input>年<el-input class="input" v-model="form.classNum" prop="classNum" autocomplete="off"
+						 onkeyup="this.value=this.value.replace(/[^\d.]/g,'');" maxlength="2"></el-input>班
 					</el-form-item>
 					<!-- <el-form-item required=“true” label="摄像头ID" :label-width="formLabelWidth">
 						<el-input class="input" v-model="form.cCamera" autocomplete="off"></el-input>
@@ -39,13 +34,9 @@
 						<el-input class="input" v-model="form.cameraNumber" autocomplete="off"></el-input>
 					</el-form-item>
 					<el-form-item prop="gradeNum" label="班级" :label-width="formLabelWidth">
-						<el-input class="input" v-model="form.gradeNum" 
-						autocomplete="off"
-						onkeyup="this.value=this.value.replace(/[^\d.]/g,'');"
-						maxlength="2" ></el-input>年<el-input class="input" v-model="form.classNum" 
-						autocomplete="off"
-						onkeyup="this.value=this.value.replace(/[^\d.]/g,'');"
-						maxlength="2" ></el-input>班
+						<el-input class="input" v-model="form.gradeNum" autocomplete="off" onkeyup="this.value=this.value.replace(/[^\d.]/g,'');"
+						 maxlength="2"></el-input>年<el-input class="input" v-model="form.classNum" autocomplete="off" onkeyup="this.value=this.value.replace(/[^\d.]/g,'');"
+						 maxlength="2"></el-input>班
 					</el-form-item>
 					<!-- <el-form-item required=“true” label="摄像头ID" :label-width="formLabelWidth">
 						<el-input class="input" v-model="form.cCamera" autocomplete="off"></el-input>
@@ -62,14 +53,14 @@
 		</div>
 		<div class="table">
 			<el-table :data="tableData" border :height="tableHeight">
-				<el-table-column type="index" label="序号" width="60">
+				<el-table-column :index="indexMethod" type="index" label="序号" width="60">
 				</el-table-column>
-				<el-table-column prop="cameraNumber" label="教室" >
+				<el-table-column prop="cameraNumber" label="教室">
 				</el-table-column>
-				<el-table-column prop="cameraGrade" label="班级" >
-					 <!-- <template slot-scope="scope"> {{scope.row.projectName}}({{scope.row.projectCode}}) </template> -->
+				<el-table-column prop="cameraGrade" label="班级">
+					<!-- <template slot-scope="scope"> {{scope.row.projectName}}({{scope.row.projectCode}}) </template> -->
 				</el-table-column>
-				<el-table-column prop="classCamera" label="摄像头id" >
+				<el-table-column prop="classCamera" label="摄像头id">
 				</el-table-column>
 				<el-table-column fixed="right" label="管理" width="120">
 					<template slot-scope="scope">
@@ -80,8 +71,8 @@
 
 			</el-table>
 			<div class="page">
-				<el-pagination :hide-on-single-page='true' class="page"   layout="total, prev, pager, next" :page-size="10" :current-page="currentPage"
-				 @current-change="handleCurrentChange" :total="parseInt(count)"></el-pagination>
+				<el-pagination :hide-on-single-page='true' class="page" layout="total, prev, pager, next" :page-size="10"
+				 :current-page="currentPage" @current-change="handleCurrentChange" :total="parseInt(count)"></el-pagination>
 			</div>
 		</div>
 	</div>
@@ -94,17 +85,29 @@
 		data() {
 			return {
 				rules: {
-				          cameraNumber: [
-				            { required: true, message: '请输入活动名称', trigger: 'blur' },
-				            { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
-				          ],
-				          gradeNum: [
-				            { required: true, message: '请输入数字', trigger: 'change' }
-				          ],
-				          classNum: [
-				            { required: true, message: '请输入数字', trigger: 'change' }
-				          ],
-				        },
+					cameraNumber: [{
+							required: true,
+							message: '请输入教室名称',
+							trigger: 'blur'
+						},
+						{
+							min: 3,
+							max: 5,
+							message: '长度在 3 到 5 个字符',
+							trigger: 'blur'
+						}
+					],
+					gradeNum: [{
+						required: true,
+						message: '请输入数字',
+						trigger: 'change'
+					}],
+					classNum: [{
+						required: true,
+						message: '请输入数字',
+						trigger: 'change'
+					}],
+				},
 				tableHeight: '60vh',
 				dialogFormVisible: false,
 				dialogFormVisible1: false,
@@ -112,6 +115,7 @@
 					sName: "",
 					cNumber: "",
 					cGrade: '',
+					classCamera: '',
 				},
 				formLabelWidth: '120px',
 
@@ -124,40 +128,48 @@
 			}
 		},
 		methods: {
-			submitForm(formName) {
-			        this.$refs[formName].validate(valid => {
-			          if (valid) {
-			            this.add();
-			          } else {
-			            this.loading = false;
-			          }
-			        });
-			      },
-			adddevice(){
-				this.form={};
-				this.dialogFormVisible=true;
-				
-			},
-			deleteCamera(row){
-				this.$confirm("确认删除摄像头数据？", {
-				  confirmButtonText: "确定",
-				  cancelButtonText: "取消",
-				  type: "warning"
-				})
-				  .then(() => {
-				    this.del(row)
-				  })
-				  .catch(() => {
-				    this.$message({
-				      type: "info",
-				      message: "已取消"
-				    });
-				  });
-			},
+			indexMethod(index) {
 			
+			        return 	(this.currentPage-1)*10+index+1;
+			      },
+			all(){
+				this.input2='';
+				this.getdevice()
+			},
+			submitForm(formName) {
+				this.$refs[formName].validate(valid => {
+					if (valid) {
+						this.add();
+					} else {
+						this.loading = false;
+					}
+				});
+			},
+			adddevice() {
+				this.form = {};
+				this.dialogFormVisible = true;
+
+			},
+			deleteCamera(row) {
+				this.$confirm("确认删除摄像头数据？", {
+						confirmButtonText: "确定",
+						cancelButtonText: "取消",
+						type: "warning"
+					})
+					.then(() => {
+						this.del(row)
+					})
+					.catch(() => {
+						this.$message({
+							type: "info",
+							message: "已取消"
+						});
+					});
+			},
+
 			showedit(row) {
 				this.dialogFormVisible1 = true;
-				this.form =row;
+				this.form = row;
 				this.form.cCamera = row.cCamera
 			},
 			del(row) {
@@ -172,7 +184,7 @@
 					url: "/hlkt/admin/camera/deleteCamera.action",
 					data: {
 						sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-						cCamera: row.cCamera
+						classCamera: row.classCamera
 					}
 				}).then(res => {
 					if (res.data.resultCode == "200") {
@@ -197,11 +209,11 @@
 					method: "post",
 					url: "/hlkt/admin/camera/updateCamera.action",
 					data: {
-
+						classCamera: this.form.classCamera,
 						cameraNumber: this.form.cameraNumber,
 						classNum: this.form.classNum,
 						gradeNum: this.form.gradeNum,
-						
+
 						sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
 					}
 				}).then(res => {
@@ -274,7 +286,8 @@
 					data: {
 						sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
 						pageNo: this.currentPage,
-						
+						search:this.input2,
+
 					}
 				}).then(res => {
 					if (res.data.resultCode == "200") {

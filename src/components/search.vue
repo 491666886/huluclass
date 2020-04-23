@@ -39,6 +39,9 @@
             ></el-option>
           </el-select>
         </el-radio-group>
+		<div class="button">
+			<el-button class="add" size="small" type="primary" @click='retry()'>重置</el-button>
+		</div>
       </div>
       <div v-if="videolist.length ===0" class="error">该选项下暂无视频</div>
       <div
@@ -116,6 +119,11 @@ export default {
     };
   },
   methods: {
+	  retry() {
+          this.radio1='';
+		  this.radio2='';
+		  this.search();
+        },
       reload() {
             // 移除组件
             this.update = false
@@ -437,6 +445,14 @@ export default {
   background-color: white;
   height: 150vh;
 }
+.button {
+			margin-top: px2vw(5px);
+			margin-left: px2vw(12px);
+			width: px2vw(63px);
+			height: px2vw(35px);
+			    float: right;
+			margin-right: px2vw(400px);	
+		}
 </style>
 <style lang="less" scoped>
 /deep/ .el-radio-button__inner {
