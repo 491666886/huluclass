@@ -13,13 +13,13 @@
 			</el-select>
 
 			<a>教师</a>
-			<el-select v-model="value" placeholder="请选择" @change="getvideo">
+			<el-select v-model="value" placeholder="请选择" @change="reget">
 				<el-option v-for="item in teacherlist" :key="item" :label="item" :value="item"></el-option>
 			</el-select>
 			<a>录制日期</a>
 			<el-date-picker v-model="value1" type="date" format="yyyy-MM-dd" value-format="yyyy-MM-dd" placeholder="选择日期" 
 			class="redata"
-			 @change="getvideo"></el-date-picker>
+			 @change="reget"></el-date-picker>
 
 			<div class="button">
 				<el-button class="add" size="small" type="primary" @click='retry()'>重置</el-button>
@@ -93,7 +93,7 @@
 					  @change="typedd"
      v-model="form.creationTime"
 	  type="date"
-     format="yyyy-MM-dd HH:mm:ss" value-format="yyyy-MM-dd HH:mm:ss"
+      value-format="yyyy-MM-dd HH:mm:ss"
       placeholder="选择日期时间">
     </el-date-picker>
 					<!-- <el-date-picker v-model="form.creationTime" type="date" format="yyyy-MM-dd" value-format="yyyy-MM-dd" placeholder="选择日期"></el-date-picker> -->
@@ -143,7 +143,7 @@
 					</el-form-item>
 					
 				<el-form-item label="录制时间"  :required="true" class="time"  >
-					<el-date-picker v-model="form.creationTime" type="date" format="yyyy-MM-dd" value-format="yyyy-MM-dd" placeholder="选择日期"></el-date-picker>
+					<el-date-picker v-model="form.creationTime" type="date" format="yyyy-MM-dd" value-format="yyyy-MM-dd HH:mm:ss" placeholder="选择日期"></el-date-picker>
 				</el-form-item>
 
 			</el-form>
@@ -242,6 +242,10 @@
 		},
 
 		methods: {
+			reget(){
+				this.currentPage=1;
+				this.getvideo();
+			},
 			second(){
 				this.form.nj='';
 				this.form.dy='';
@@ -366,6 +370,7 @@
 			},
 			
 			kemu() {
+				this.currentPage=1;
 				this.getteacher();
 				this.getvideo();
 			},

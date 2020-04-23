@@ -202,7 +202,7 @@
 						"details": '',
 						"status": this.radio,
 						id: row.id,
-						"sid": 2
+						"sid": JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
 					}
 				}).then(res => {
 					if (res.data.resultCode == "200") {
@@ -232,7 +232,7 @@
 						"week": 0,
 						"details": this.form.input,
 						"status": this.radio,
-						"sid": 2
+						"sid": JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
 					}
 				}).then(res => {
 					if (res.data.resultCode == "200") {

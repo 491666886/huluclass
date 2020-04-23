@@ -14,7 +14,7 @@
 					<div class="pic_img">
 						<div class="pic_img_box">
 							<el-upload class="upload-demo" :action="doUpload"  :headers="myHeaders" :on-success="handleAvatarSuccess"
-							 :data="{sid:2}" :on-change="handleChange" :file-list="fileList">
+							 :data="{sid:this.sid}" :on-change="handleChange" :file-list="fileList">
 								<el-button size="small" type="primary">点击上传</el-button>
 								<div slot="tip" class="el-upload__tip">只能上传Excel文件</div>
 							</el-upload>
@@ -85,6 +85,7 @@
 		name: "teach",
 		data() {
 			return {
+				sid:JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
 				doUpload:url+'/hlkt/admin/course/upload.action',
 				myHeaders: {
 					Authorization: sessionId,
