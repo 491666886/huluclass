@@ -3,10 +3,10 @@
 		<div>
 			<div class="head">设备管理</div>
 			<el-button class="add" size="small" type="primary" @click="adddevice()">新增设备</el-button>
-			<el-button style="float: right;"@click='all()' >全部设备</el-button>
+			<el-button style="float: right;" @click='all()'>全部设备</el-button>
 			<div style="float: right;">
-				<el-input placeholder="请输入教室号" v-model="input2">
-					<el-button slot="append" @click="getdevice()" >搜索</el-button>
+				<el-input placeholder="请输入教室号" v-model="input2" @keyup.enter.native="reget()">
+					<el-button slot="append" @click="reget()">搜索</el-button>
 				</el-input>
 			</div>
 			<el-dialog title="新增设备" :visible.sync="dialogFormVisible" :modal-append-to-body='false'>
@@ -15,8 +15,8 @@
 						<el-input class="input" v-model="form.cameraNumber" autocomplete="off"></el-input>
 					</el-form-item>
 					<el-form-item prop="gradeNum" label="班级" :label-width="formLabelWidth">
-						<el-input class="input" v-model="form.gradeNum" autocomplete="off" onkeyup="this.value=this.value.replace(/[^\d.]/g,'');"
-						 maxlength="2"></el-input>年<el-input class="input" v-model="form.classNum" prop="classNum" autocomplete="off"
+						<el-input class="input" v-model="form.gradeNum" autocomplete="off" placeholder="请输入数字" onkeyup="this.value=this.value.replace(/[^\d.]/g,'');"
+						 maxlength="2"></el-input>年<el-input class="input" placeholder="请输入数字" v-model="form.classNum" prop="classNum" autocomplete="off"
 						 onkeyup="this.value=this.value.replace(/[^\d.]/g,'');" maxlength="2"></el-input>班
 					</el-form-item>
 					<!-- <el-form-item required=“true” label="摄像头ID" :label-width="formLabelWidth">
@@ -34,10 +34,12 @@
 						<el-input class="input" v-model="form.cameraNumber" autocomplete="off"></el-input>
 					</el-form-item>
 					<el-form-item prop="gradeNum" label="班级" :label-width="formLabelWidth">
-						<el-input class="input" v-model="form.gradeNum" autocomplete="off" onkeyup="this.value=this.value.replace(/[^\d.]/g,'');"
-						 maxlength="2"></el-input>年<el-input class="input" v-model="form.classNum" autocomplete="off" onkeyup="this.value=this.value.replace(/[^\d.]/g,'');"
-						 maxlength="2"></el-input>班
+						<el-input class="input" v-model="form.gradeNum" autocomplete="off"
+						 onkeyup="this.value=this.value.replace(/[^\d.]/g,'');"
+						 maxlength="2"></el-input>年<el-input class="input" placeholder="请输入数字" v-model="form.classNum" 
+						 onkeyup="this.value=this.value.replace(/[^\d.]/g,'');" maxlength="2"></el-input>班
 					</el-form-item>
+				
 					<!-- <el-form-item required=“true” label="摄像头ID" :label-width="formLabelWidth">
 						<el-input class="input" v-model="form.cCamera" autocomplete="off"></el-input>
 					</el-form-item> -->
@@ -98,14 +100,15 @@
 						}
 					],
 					gradeNum: [{
+
 						required: true,
 						message: '请输入数字',
-						trigger: 'change'
+						trigger: 'blur'
 					}],
 					classNum: [{
 						required: true,
 						message: '请输入数字',
-						trigger: 'change'
+						trigger: 'blur'
 					}],
 				},
 				tableHeight: '60vh',
@@ -128,12 +131,16 @@
 			}
 		},
 		methods: {
+			reget() {
+				this.currentPage = 1;
+				this.getdevice();
+			},
 			indexMethod(index) {
-			
-			        return 	(this.currentPage-1)*10+index+1;
-			      },
-			all(){
-				this.input2='';
+
+				return (this.currentPage - 1) * 10 + index + 1;
+			},
+			all() {
+				this.input2 = '';
 				this.getdevice()
 			},
 			submitForm(formName) {
@@ -273,6 +280,31 @@
 				// 切换页码时，要获取每页显示的条数
 				this.getdevice(this.PageSize, val * this.pageSize);
 			},
+			getbanji() {
+				axios({
+					headers: {
+						"User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
+							.loginId,
+						Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
+							.sessionId
+					},
+					method: "post",
+					url: "/hlkt/selective/devroom/list.action",
+					data: {
+						sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
+					}
+				}).then(res => {
+					if (res.data.resultCode == "200") {
+						
+						
+					} else {
+						this.$message({
+							type: "error",
+							message: res.data.resultMsg
+						});
+					}
+				});
+			},
 			getdevice() {
 				axios({
 					headers: {
@@ -286,7 +318,7 @@
 					data: {
 						sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
 						pageNo: this.currentPage,
-						search:this.input2,
+						search: this.input2,
 
 					}
 				}).then(res => {
@@ -306,6 +338,8 @@
 		components: {},
 		created() {
 			this.getdevice();
+			this.getbanji();
+
 		},
 	};
 </script>

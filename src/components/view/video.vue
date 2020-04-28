@@ -36,7 +36,7 @@
 				<el-table-column prop="nj" label="年级" ></el-table-column>
 				<el-table-column label="录制日期">
 					<template scope="scope">
-						<p>{{ scope.row.creationTime.split(" ")[0]}}</p>
+						<p>{{ scope.row.recordTime.split(" ")[0]}}</p>
 					</template>
 				</el-table-column>
 				<el-table-column fixed="right" label="管理" width="60">
@@ -91,18 +91,18 @@
 				<el-form-item label="录制时间"  :required="true" class="time"  >
 					  <el-date-picker
 					  @change="typedd"
-     v-model="form.creationTime"
+     v-model="form.recordTime"
 	  type="date"
       value-format="yyyy-MM-dd HH:mm:ss"
       placeholder="选择日期时间">
     </el-date-picker>
-					<!-- <el-date-picker v-model="form.creationTime" type="date" format="yyyy-MM-dd" value-format="yyyy-MM-dd" placeholder="选择日期"></el-date-picker> -->
+					<!-- <el-date-picker v-model="form.recordTime" type="date" format="yyyy-MM-dd" value-format="yyyy-MM-dd" placeholder="选择日期"></el-date-picker> -->
 				</el-form-item>
 
 			</el-form>
 			<div slot="footer" class="dialog-footer">
-				<!-- <el-button @click="dialogFormVisible1= false">取消编辑</el-button> -->
-				<el-button type="primary" @click="add()">确认上传</el-button>
+				<el-button @click="dialogFormVisible2= false">取 消</el-button>
+				<el-button type="primary" @click="add()">确 认</el-button>
 			</div>
 		</el-dialog>
 		<el-dialog title="编辑视频" :visible.sync="dialogFormVisible1" :modal-append-to-body="false">
@@ -143,7 +143,7 @@
 					</el-form-item>
 					
 				<el-form-item label="录制时间"  :required="true" class="time"  >
-					<el-date-picker v-model="form.creationTime" type="date" format="yyyy-MM-dd" value-format="yyyy-MM-dd HH:mm:ss" placeholder="选择日期"></el-date-picker>
+					<el-date-picker v-model="form.recordTime" type="date" format="yyyy-MM-dd" value-format="yyyy-MM-dd HH:mm:ss" placeholder="选择日期"></el-date-picker>
 				</el-form-item>
 
 			</el-form>
@@ -177,8 +177,8 @@
 			</div>
 
 			<div slot="footer" class="dialog-footer">
-				<el-button @click="dialogFormVisible = false">取 消</el-button>
-				<el-button type="primary" @click="add()">确 定</el-button>
+				<el-button @click="esc()">取消</el-button>
+				<!-- <el-button type="primary" @click="add()">确 定</el-button> -->
 			</div>
 		</el-dialog>
 	</div>
@@ -242,6 +242,9 @@
 		},
 
 		methods: {
+			esc(){
+				this.$router.go(0);
+			},
 			reget(){
 				this.currentPage=1;
 				this.getvideo();
@@ -270,7 +273,7 @@
 			        return 	(this.currentPage-1)*10+index+1;
 			      },
 			typedd(){
-				typeof(this.form.creationTime)
+				typeof(this.form.recordTime)
 			},
 			retry() {
                 this.subjects= '';
@@ -458,7 +461,7 @@
 						dy:this.form.dy,
 						summary:this.form.summary,
 						name:this.form.name,
-						recordTime:this.form.creationTime
+						recordTime:this.form.recordTime
 					}
 				}).then(res => {
 					if (res.data.resultCode == "200") {
@@ -492,7 +495,7 @@
 						dy:this.form.dy,
 						summary:this.form.summary,
 						name:this.form.name,
-						recordTime:this.form.creationTime
+						recordTime:this.form.recordTime
 					}
 				}).then(res => {
 					if (res.data.resultCode == "200") {
@@ -639,7 +642,7 @@
 					method: "post",
 					url: "/hlkt/selective/subjects/fourlist.action",
 					data: {
-						firstValue: this.form.job,
+						firstValue: this.form.curriculumId,
 						secondValue:this.form.nj,
 						sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
 						thirdValue:this.form.dy,

@@ -21,12 +21,12 @@
         </el-input>
       </div>
       <div v-if="videolist.length ===0" class="error">该选项下暂无视频</div>
-      <div class="videolist" v-for="video in videolist" :key="video.cId">
-        <img :src="'http://'+video.vSite" @click="getDescribe(video.vId)" />
+      <div class="videolist" v-for="video in videolist" :key="video.id">
+        <img :src="'http://'+video.site" @click="getDescribe(video.id)" />
 
-        <p @click="getDescribe(video.vId)">{{video.vName}}</p>
-        <a @click="getDescribe(video.vId)">{{video.teacher}}</a>
-        <b @click="getDescribe(video.vId)">{{video.cTime.split(" ")[0]}}</b>
+        <p @click="getDescribe(video.vId)">{{video.name}}</p>
+        <a @click="getDescribe(video.vId)">{{video.teacherId}}</a>
+        <b @click="getDescribe(video.vId)">{{video.creationTime.split(" ")[0]}}</b>
 
         <br />
         <div class="c">
@@ -95,19 +95,18 @@ export default {
             .sessionId
         },
         method: "post",
-        url: "/hlkt/user/searchVideoCollection.action",
+        url: "/hlkt/api/v1/user/search/collect/videos.action",
         data: {
           pageSize: 12,
           pageNum: 1,
-          uid: JSON.parse(sessionStorage.getItem("SESSION_USER")).userId,
+          uid:Number(JSON.parse(sessionStorage.getItem("SESSION_USER")).userId),
           sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-          search: this.input3
+          keywords: this.input3
         }
       }).then(res => {
         if (res.data.resultCode == "200") {
-          this.count = res.data.resultLineNum;
-          this.videolist = res.data.resultData;
-          console.log(this.videolist);
+         this.count = res.data.resultData.total;
+         this.videolist = res.data.resultData.list;
         } else {
           this.videolist = [];
         }
@@ -129,18 +128,18 @@ export default {
             .sessionId
         },
         method: "post",
-        url: "/hlkt/user/selectCollect.action",
+        url: "/hlkt/api/v1/user/videos.action",
         data: {
           pageSize: 12,
           pageNum: this.currentPage,
-          uId: JSON.parse(sessionStorage.getItem("SESSION_USER")).userId,
-          sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid
+          uid: JSON.parse(sessionStorage.getItem("SESSION_USER")).userId,
+          // sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid
         }
       }).then(res => {
         if (res.data.resultCode == "200") {
-          this.count = res.data.resultLineNum;
-          this.videolist = res.data.resultData;
-          console.log(this.videolist);
+          this.count = res.data.resultData.total;
+          this.videolist = res.data.resultData.list;
+         
         } else {
           this.videolist = [];
         }

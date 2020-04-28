@@ -3,7 +3,7 @@
 		<div>
 			<div class="head">校历</div>
 			<el-button v-if="show" class="add" size="small" type="primary" @click="showq()">编辑</el-button>
-			<el-button v-if="hide" class="add" size="small" type="primary" @click="hold()">确定</el-button>
+			<el-button v-if="hide" class="add" size="small" type="primary" @click="hold()">返回</el-button>
 		</div>
 
 		<div class="table">
@@ -32,7 +32,7 @@
 						<el-form-item :required="true" label="事件名称" :label-width="formLabelWidth">
 							<el-input class="input" v-model="form.input" autocomplete="off"></el-input>
 						</el-form-item>
-						<el-form-item :required="true" label="开始时间" :label-width="formLabelWidth">
+						<el-form-item :required="true" label="日期" :label-width="formLabelWidth">
 							<el-date-picker v-model="form.newdate" type="date" format="yyyy-MM-dd" value-format="yyyy-MM-dd"></el-date-picker>
 						</el-form-item>
 						<el-form-item :required="true" label="是否上课" :label-width="formLabelWidth">
@@ -55,8 +55,9 @@
 					</el-form-item>
 					<el-form-item label='放假日期' :label-width="formLabelWidth">
 						<el-date-picker v-model="form.value3" type="date" format="yyyy-MM-dd" value-format="yyyy-MM-dd"></el-date-picker>
+						<el-button style="margin-left: 50px;" type="primary" @click="add()">确 定</el-button>
 					</el-form-item>
-					<el-form-item label="其他特殊日期" :label-width="formLabelWidth">
+					<el-form-item   label="其他特殊日期" :label-width="formLabelWidth">
 						<el-table :data="elseData" border>
 							<el-table-column prop="date" label="开始时间" width="160"></el-table-column>
 							<el-table-column prop="details" label="日期安排" width="280"></el-table-column>
@@ -69,7 +70,9 @@
 							</el-table-column>
 						</el-table>
 					</el-form-item>
-					<el-button type="primary" style="width: 160px;" @click="readd()">继续添加特殊日期</el-button>
+	<el-pagination :hide-on-single-page="true" class="page"   layout="total, prev, pager, next" :page-size="5" :current-page="currentPage"
+				 @current-change="handleCurrentChange" :total="parseInt(this.count)"></el-pagination>					
+					<el-button type="primary" style="width: 160px;" :disabled="disabled" @click="readd()">继续添加特殊日期</el-button>
 				</el-form>
 			</div>
 		</div>
@@ -84,7 +87,10 @@
 		name: "scal",
 		data() {
 			return {
+				currentPage: 1, // 默认显示第几页
+				disabled:true,
 				radio: "1",
+				count: "",
 				hide: false,
 				show: true,
 				tableData: [{
@@ -122,19 +128,22 @@
 				},
 				formLabelWidth: "120px",
 				input: "",
-				calendarData: [{
-						date: "2020-04-12",
-						things: "去公园野炊"
-					},
-					{
-						date: "2019-11-15",
-						things: "看电影"
-					}
-				],
+				calendarData: [],
 				value: new Date()
 			};
 		},
 		methods: {
+			serchlist(vap) {
+				//改变页数
+				this.currentPage = vap;
+				this.getuserlist();
+			},
+			handleCurrentChange(val) {
+				// 改变默认的页数
+				this.currentPage = val;
+				// 切换页码时，要获取每页显示的条数
+				this.getuserlist(this.PageSize, val * this.pageSize);
+			},
 			readd() {
 				this.form.newdate = '';
 				this.form.input = '';
@@ -143,8 +152,9 @@
 			},
 
 			hold() {
-				console.log(this.form);
-				this.add();
+				this.hide = false;
+				this.show = true;
+				// this.add();
 			},
 			showq() {
 				this.hide = true;
@@ -167,7 +177,6 @@
 						});
 					});
 			},
-
 			showedit(row) {
 				this.form.input = row.details;
 				this.form.newdate = row.date;
@@ -216,7 +225,6 @@
 				});
 			},
 			edit(row) {
-
 				axios({
 					headers: {
 						"User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
@@ -294,8 +302,8 @@
 						if (res.data.resultCode == "200") {
 							this.dialogFormVisible = false;
 							this.getrest();
-							this.show = true;
-							this.hide = false;
+							// this.show = true;
+							// this.hide = false;
 							this.$message('保存成功');
 						} else {
 							this.$message({
@@ -304,10 +312,15 @@
 							});
 						}
 					});
-				} else {
+				} else  if(sk <kx){
 					this.$message({
 						type: "error",
-						message: '您输入的日期有误晴核对后重试'
+						message: '第一天上课日期不应早于开学日期'
+					});
+				}else  if(kx >fj){
+					this.$message({
+						type: "error",
+						message: '放假日期不应早于开学日期'
 					});
 				}
 
@@ -340,13 +353,15 @@
 				}).then(res => {
 					if (res.data.resultCode == "200") {
 						this.calendarData = res.data.resultData.slice(3);
+						
 						if (this.calendarData.length >= 3) {
+							this.disabled=false;
 							this.tableData = res.data.resultData.slice(0, 3); //前三那哥日历。
 							this.form.value1 = this.tableData[0].date;
 							this.form.value2 = this.tableData[1].date;
 							this.form.value3 = this.tableData[2].date;
 						}
-						console.log(this.tableData);
+						
 					} else {
 						this.$message({
 							type: "error",
@@ -366,11 +381,14 @@
 					method: "post",
 					url: "/hlkt/admin/kalendar/specialKalendar.action",
 					data: {
-						sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid
+						sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
+						pageSize: 5,
+						pageNum: this.currentPage
 					}
 				}).then(res => {
 					if (res.data.resultCode == "200") {
-						this.elseData = res.data.resultData.list
+						this.elseData = res.data.resultData.list;
+						this.count=res.data.resultData.total;
 						console.log(res.data.resultData);
 					} else {
 						this.elseData = [];
@@ -388,7 +406,9 @@
 </script>
 <style scoped lang="scss">
 	@import "src/plugins/px2vw";
-
+    .page{
+		float: right;
+	}
 	.input {
 		width: 200px;
 	}

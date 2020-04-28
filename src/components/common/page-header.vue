@@ -6,7 +6,7 @@
     </div>
     <div class="search">
       <el-input
-        placeholder="课程名称/教师/学科/年级 "
+        placeholder="课程名称/教师/学科/年级"
         v-model="input3"
         class="input-with-select"
         @keyup.enter.native="search()"
@@ -51,13 +51,18 @@ export default {
      window.open(routeUrl .href, '_blank');
     },
     search() {
-        let routeUrl = this.$router.resolve({
-          path:`/search/${this.input3}`,
-          
-     });
-     window.open(routeUrl .href, '_blank');
-      
-     
+		if(this.input3.length == 0){
+			this.$message({
+			  type: "error",
+			  message: '请输入搜索内容'
+			});
+		}else{
+			let routeUrl = this.$router.resolve({
+			     path:`/search/${this.input3}`,
+			     
+			});
+			window.open(routeUrl .href, '_blank');
+		}
     },
     quitid() {
       this.$confirm("此操作将退出系统, 是否继续?", "提示", {

@@ -47,14 +47,14 @@
       <div
         class="videolist"
         v-for="video in videolist"
-        :key="video.cId"
+        :key="video.d"
        
       >
         <img :src="'http://'+video.vSite"  @click="getDescribe(video.id)" />
 
-          <p  @click="getDescribe(video.id)" >{{video.vName}}</p>
-          <a  @click="getDescribe(video.id)" >{{video.teacher}}</a>
-          <b  @click="getDescribe(video.id)" >{{video.cTime.split(" ")[0]}}</b>
+          <p  @click="getDescribe(video.id)" >{{video.name}}</p>
+          <a  @click="getDescribe(video.id)" >{{video.teacherId}}</a>
+          <b  @click="getDescribe(video.id)" >{{video.creationTime.split(" ")[0]}}</b>
         <br />
         <div class="c">
           <img src="./img/ci.png" />
@@ -100,7 +100,7 @@ export default {
         }
       ],
     
-      year: "",
+      year: '',
       input: this.$route.params.id,
       update: true,//搜索组件刷新
       value: "",
@@ -179,7 +179,7 @@ export default {
     },
     getValue() {
       this.getteacher();
-      
+      // if(this.$route.params.id=)
       axios({
         headers: {
           "User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
@@ -188,22 +188,22 @@ export default {
             .sessionId
         },
         method: "post",
-        url: "/hlkt/resource/findSearchVideo..action",
+        url: "/hlkt/api/v1/user/search/videos.action",
         data: {
           year: this.year,
           pageNum: 1,
           pageSize: 15,
-          search: this.$route.params.id,
+          keywords: this.$route.params.id,
           teacher: this.value,
-          subjects: this.radio1,
+          curriculum: this.radio1,
           sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-          grade: this.radio2
+          nj: this.radio2
         }
       }).then(res => {
         if (res.data.resultCode == "200") {
-          this.count = res.data.resultLineNum;
+          this.count = res.data.resultData.total;
 
-          this.videolist = res.data.resultData;
+          this.videolist = res.data.resultData.list;
           this.getteacher();
         } else {
           this.videolist = [];
@@ -248,12 +248,12 @@ export default {
             .sessionId
         },
         method: "post",
-        url: "/hlkt/resource/findSearchVideo..action",
+        url: "/hlkt/api/v1/user/search/videos.action",
         data: {
           year: this.year,
           pageNum: 1,
           pageSize: 15,
-          search: this.$route.params.id,
+          keywords: this.$route.params.id,  
           sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid
           //    teacher: this.value,
           // subjects: this.radio1,
@@ -261,13 +261,14 @@ export default {
         }
       }).then(res => {
         if (res.data.resultCode == "200") {
-          this.count = res.data.resultLineNum;
-          this.videolist = res.data.resultData;
+        this.count = res.data.resultData.total;
+        
+        this.videolist = res.data.resultData.list;
           this.getteacher();
           // if (res.data.cName != "") {
           //   //判断搜索结果是否返回学科  true是
            
-            this.radio1 = res.data.cName;
+            // this.radio1 = res.data.cName;
             // this.$route.params.id = "";
             // this.input ='';
             this.reload();

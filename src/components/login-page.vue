@@ -22,6 +22,7 @@
       </el-aside>
 
       <div class="main">
+		  <div class="videomain">
         <div v-if="videolist.length ===0" class="error">该选项下暂无视频</div>
         <div
           class="videolist"
@@ -30,11 +31,11 @@
          
         >
           <!-- <div v-if="video.errorCode == '20303'" class="blue">蓝光</div> -->
-          <img :src="'http://'+video.vSite"  @click="getDescribe(video.id)" />
+          <img :src="'http://'+video.site"  @click="getDescribe(video.id)" />
 
-          <p  @click="getDescribe(video.id)" >{{video.vName}}</p>
-          <a  @click="getDescribe(video.id)" >{{video.teacher}}</a>
-          <b  @click="getDescribe(video.id)" >{{video.cTime.split(" ")[0]}}</b>
+          <p  @click="getDescribe(video.id)" >{{video.name}}</p>
+          <a  @click="getDescribe(video.id)" >{{video.teacherId}}</a>
+          <b  @click="getDescribe(video.id)" >{{video.creationTime.split(" ")[0]}}</b>
           <br />
           <div v-if="video.errorCode != '20303'" class="c">
             <img src="./img/ci.png" />
@@ -43,6 +44,7 @@
             <img src="./img/guang.png" />
           </div>
         </div>
+		</div>
         <el-pagination
         :hide-on-single-page='true'
           class="page"
@@ -150,19 +152,23 @@ export default {
             .sessionId
         },
         method: "post",
-        url: "/hlkt/resource/findSearchVideo.action",
+        url: "/hlkt/admin/video/list.action",
         data: {
-          sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-          pageSize: 12,
-          pageNum: this.currentPage,
-          subjects: this.subjects,
-          unit: this.unit,
-          grade: this.grade
+			video:{
+				sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
+				curriculumId: this.subjects,
+				nj: this.grade,
+				dy:this.unit,
+			},
+			
+			pageSize: 12,
+			pageNum: this.currentPage
+      
         }
       }).then(res => {
         if (res.data.resultCode == "200") {
-          this.count = res.data.resultLineNum;
-          this.videolist = res.data.resultData;
+          this.count = res.data.resultData.total;
+          this.videolist = res.data.resultData.list;
         } else {
           this.videolist = [];
         }
@@ -207,6 +213,10 @@ export default {
 </script>
 <style scoped lang="scss">
 @import "src/plugins/px2vw";
+.videomain{
+	width: px2vw(1050px);
+	height: px2vw(810px);
+}
 .blue {
   display: inline;
   float: right;

@@ -39,15 +39,16 @@ export default {
     };
   },
   methods: {
-    search() {
-    //     let routeUrl = this.$router.resolve({
-    //       path:`/search/${this.input3}`,
-          
-    //  });
-    //  window.open(routeUrl .href, '_blank');
-      this.$router.push(`/search/${this.input3}`);
-     
-    },
+	  search() {
+	  	if(this.input3.length == 0){
+	  		this.$message({
+	  		  type: "error",
+	  		  message: '请输入搜索内容'
+	  		});
+	  	}else{
+	  		this.$router.push(`/search/${this.input3}`);
+	  	}
+	  },
 	goadmin(){
 	  
 	 let routeUrl = this.$router.resolve({

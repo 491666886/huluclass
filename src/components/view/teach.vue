@@ -2,8 +2,8 @@
 	<div>
 		<div>
 			<div class="head">课表信息</div>
-			<el-button class="add" size="small" type="primary" @click="dialogFormVisible = true">+上传</el-button>
-			<a class="done" @click="downmoban()" >模版下载</a>
+			<el-button class="add" size="small" type="primary" @click="doupload">+上传</el-button>
+			<a class="done" @click="downmoban()">模版下载</a>
 		</div>
 		<el-dialog title="课表上传" :visible.sync="dialogFormVisible" :modal-append-to-body="false">
 			<div class="album albumvideo">
@@ -13,21 +13,21 @@
 					</p>
 					<div class="pic_img">
 						<div class="pic_img_box">
-							<el-upload class="upload-demo" :action="doUpload"  :headers="myHeaders" :on-success="handleAvatarSuccess"
-							 :data="{sid:this.sid}" :on-change="handleChange" :file-list="fileList">
+							<el-upload class="upload-demo" :action="doUpload" :headers="myHeaders" :on-success="handleAvatarSuccess" :data="{sid:this.sid}"
+							 accept=".xls" ref="upload" :limit="1" :on-change="handleChange" :auto-upload="false" :file-list="fileList">
 								<el-button size="small" type="primary">点击上传</el-button>
 								<div slot="tip" class="el-upload__tip">只能上传Excel文件</div>
 							</el-upload>
 						</div>
-						<el-form style="margin-top: 50px;">
-							<el-form-item :required="true" label="开始时间" :label-width="formLabelWidth">
-								<el-select v-model="value" placeholder="请选择">
+						<el-form style="margin-top: 50px;" :rules="rules" :model="form" ref="form">
+							<el-form-item prop="value" label="开始时间" :label-width="formLabelWidth">
+								<el-select v-model="form.value" placeholder="请选择">
 									<el-option v-for="item in years" :key="item.value" :label="item.label" :value="item.label">
 									</el-option>
 								</el-select>
 							</el-form-item>
-							<el-form-item :required="true" label="学期" :label-width="formLabelWidth">
-								<el-select v-model="value1" placeholder="请选择">
+							<el-form-item prop="value1" label="学期" :label-width="formLabelWidth">
+								<el-select v-model="form.value1" placeholder="请选择">
 									<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.label"></el-option>
 								</el-select>
 							</el-form-item>
@@ -37,12 +37,12 @@
 			</div>
 
 			<div slot="footer" class="dialog-footer">
-				<el-button @click="dialogFormVisible = false">取 消</el-button>
-				<el-button type="primary" @click="edit()">确 定</el-button>
+				<el-button @click="quxiao">取 消</el-button>
+				<el-button type="primary" @click="submitForm('form')">确 定</el-button>
 			</div>
 		</el-dialog>
 		<div class="main">
-		<!-- 	<a>筛选条件： 年份</a>
+			<!-- 	<a>筛选条件： 年份</a>
 			<el-select v-model="value" placeholder="请选择">
 				<el-option v-for="item in years" :key="item.value" :label="item.label" :value="item.label"></el-option>
 			</el-select>
@@ -57,16 +57,16 @@
 		<div class="table">
 			<el-table :data="tableData" border>
 				<el-table-column type="index" label="序号" width="60"></el-table-column>
-				<el-table-column prop="oldFileName" label="名称" ></el-table-column>
-				<el-table-column prop="year" label="年份" ></el-table-column>
-				<el-table-column prop="semester" label="学期" ></el-table-column>
+				<el-table-column prop="oldFileName" label="名称"></el-table-column>
+				<el-table-column prop="year" label="年份"></el-table-column>
+				<el-table-column prop="semester" label="学期"></el-table-column>
 				<el-table-column prop="createTime" label="更新时间" width="180"></el-table-column>
 				<el-table-column prop="address" label="视频管理">
 					<template slot-scope="scope">
 						<el-button @click="down(scope.row)" type="text" size="small">下载</el-button>
-						<el-button v-if="scope.row.useType==0"  @click="yingyong(scope.row)" type="text" size="small">应用</el-button>
+						<el-button v-if="scope.row.useType==0" @click="yingyong(scope.row)" type="text" size="small">应用</el-button>
 						<el-button v-if="scope.row.useType==1" type="text" size="small">正在应用</el-button>
-					<!-- 	<el-button type="text" size="small">应用</el-button> -->
+						<!-- 	<el-button type="text" size="small">应用</el-button> -->
 					</template>
 				</el-table-column>
 			</el-table>
@@ -80,20 +80,36 @@
 	const url = 'http://10.150.27.126:8080';
 	var sessionId = JSON.parse(sessionStorage.getItem("SESSION_USER")).sessionId;
 	var UserInfo = JSON.parse(sessionStorage.getItem("SESSION_USER")).loginId;
-	var sid =JSON.parse(sessionStorage.getItem("SESSION_USER")).sid
+	var sid = JSON.parse(sessionStorage.getItem("SESSION_USER")).sid
 	export default {
 		name: "teach",
 		data() {
 			return {
-				sid:JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-				doUpload:url+'/hlkt/admin/course/upload.action',
+				rules: {
+					value: [{
+
+						required: true,
+						message: '请选择年份',
+						trigger: 'blur'
+					}],
+					value1: [{
+						required: true,
+						message: '请选择学期',
+						trigger: 'blur'
+					}],
+				},
+				sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
+				doUpload: url + '/hlkt/admin/course/upload.action',
 				myHeaders: {
 					Authorization: sessionId,
 					"User-Info": UserInfo
 				},
 				formLabelWidth: '120px',
 				count: "",
-				value1: "",
+				form: {
+					value1: '',
+					value: "", //laoshi
+				},
 				courseFileId: "",
 				fileList: [],
 
@@ -111,19 +127,53 @@
 				years: [{
 					value: '选项1',
 					label: '2020'
-				},{
+				}, {
 					value: '选项2',
 					label: '2019'
-				},
-				],
-				value: "", //laoshi
+				}, ],
+
 				tableData: [
 
 				]
 			};
 		},
 		methods: {
-			downmoban(){
+			doupload() {
+				this.dialogFormVisible = true;
+				this.fileList = [];
+				this.form ={
+					value1: '',
+					value: "", //laoshi
+				}
+			},
+			submitForm(formName) {
+				this.$refs[formName].validate(valid => {
+					if (valid) {
+						console.log(this.fileList.length)
+						if (this.fileList.length == 0) {
+							this.$message({
+								type: "error",
+								message: '请选择课表上传'
+							});
+						} else {
+							this.submitUpload();
+							
+						}
+
+					} else {
+						this.loading = false;
+					}
+				});
+			},
+			quxiao() {
+				this.dialogFormVisible = false;
+				this.fileList = [];
+			},
+			submitUpload() {
+				console.log(this.fileList)
+				this.$refs.upload.submit();
+			},
+			downmoban() {
 				axios({
 					headers: {
 						"User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
@@ -132,8 +182,8 @@
 							.sessionId
 					},
 					method: "get",
-					url: "/hlkt/admin/courseFileModel/check/"+ sid + '.action',
-					
+					url: "/hlkt/admin/courseFileModel/check/" + sid + '.action',
+
 				}).then(res => {
 					if (res.data.resultCode == "200") {
 						window.open("http://10.150.27.126:8080/hlkt/admin/courseFileModel/download/" + sid + '.action', '_blank');
@@ -145,18 +195,19 @@
 					}
 				});
 			},
-			handleAvatarSuccess(res, file){
-				console.log(res,file)
-              this.courseFileId=res.resultData.courseFileId;
+			handleAvatarSuccess(res, file) {
+				console.log(res.resultData, file);
+				this.courseFileId = res.resultData.courseFileId;
+				this.add(res);
 			},
-			down(row) {//下载课表
-			window.open("http://10.150.27.126:8080/hlkt/admin/courseFile/download/" + row.courseFileId + '.action', '_blank');
-			
+			down(row) { //下载课表
+				window.open("http://10.150.27.126:8080/hlkt/admin/courseFile/download/" + row.courseFileId + '.action', '_blank');
+
 			},
 			handleChange(file, fileList) {
 				this.fileList = fileList.slice(-3);
 			},
-			yingyong(row) {//应用
+			yingyong(row) { //应用
 				this.$confirm("确定应用?", {
 						confirmButtonText: "确定",
 						cancelButtonText: "取消",
@@ -189,7 +240,7 @@
 				// 切换页码时，要获取每页显示的条数
 				this.getuserlist(this.PageSize, val * this.pageSize);
 			},
-			del(row) {//应用课程
+			del(row) { //应用课程
 				axios({
 					headers: {
 						"User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
@@ -201,8 +252,8 @@
 					url: "/hlkt/admin/courseFile/apply.action",
 					data: {
 						sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-						courseFileId:row.courseFileId,
-						courseFileUrl:row.courseFileUrl,
+						courseFileId: row.courseFileId,
+						courseFileUrl: row.courseFileUrl,
 					}
 				}).then(res => {
 					if (res.data.resultCode == "200") {
@@ -216,6 +267,7 @@
 				});
 			},
 			edit(row) {
+				console.log('2222')
 				axios({
 					headers: {
 						"User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
@@ -226,9 +278,9 @@
 					method: "post",
 					url: "/hlkt/admin/coursefile/update.action",
 					data: {
-					courseFileId:this.courseFileId,
-					year:this.value,
-					semester:this.value1
+						courseFileId: this.courseFileId,
+						year: this.form.value,
+						semester: this.form.value1
 					}
 				}).then(res => {
 					if (res.data.resultCode == "200") {
@@ -247,7 +299,8 @@
 				});
 			},
 
-			add() {
+			add(res) {
+				console.log('2222')
 				axios({
 					headers: {
 						"User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
@@ -257,16 +310,21 @@
 					},
 					method: "post",
 					url: "/hlkt/admin/dailySchedule/insert.action",
+					url: "/hlkt/admin/coursefile/update.action",
 					data: {
-						sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-						"courseNum": this.form.input,
-						"startTime": this.value1 + ':00',
-						"endTime": this.value2 + ':00',
+						courseFileId: res.resultData.courseFileId,
+						year: this.form.value,
+						semester: this.form.value1
 					}
 				}).then(res => {
 					if (res.data.resultCode == "200") {
+						this.$message({
+							type: 'success',
+							message: res.data.resultMsg
+						});
 						this.dialogFormVisible = false;
 						this.getrest();
+						this.fileList = [];
 					} else {
 						this.$message({
 							type: "error",
@@ -379,7 +437,7 @@
 	.done {
 		color: #66b1ff;
 		margin-left: px2vw(30px);
-		cursor:pointer ;
+		cursor: pointer;
 	}
 
 	.adminer {

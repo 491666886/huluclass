@@ -20,15 +20,21 @@ export default {
     };
   },
   methods: {
-    search() {
-        let routeUrl = this.$router.resolve({
-          path:`/search/${this.input3}`,
-          
-     });
-     window.open(routeUrl .href, '_blank');
-      
-     
-    },
+	  search() {
+	  	if(this.input3.length == 0){
+	  		this.$message({
+	  		  type: "error",
+	  		  message: '请输入搜索内容'
+	  		});
+	  	}else{
+	  		let routeUrl = this.$router.resolve({
+	  		     path:`/search/${this.input3}`,
+	  		     
+	  		});
+	  		window.open(routeUrl .href, '_blank');
+	  	}
+	  },
+
     quitid() {
       this.$confirm("此操作将退出系统, 是否继续?", "提示", {
         confirmButtonText: "确定",

@@ -7,7 +7,7 @@
 
 		<div class="main">
 			<a>筛选条件： 学科</a>
-			<el-select v-model="value" placeholder="请选择" @change="getuserlist">
+			<el-select v-model="value" placeholder="请选择" @change="kemu">
 				<el-option v-for="item in options" :key="item.value" :label="item.name" :value="item.name"></el-option>
 			</el-select>
 			<div class="button">
@@ -40,7 +40,7 @@
 				</el-form-item>
 				<div class="class">
 					<a>入职时间</a>
-					<el-date-picker v-model="form.hiredate" type="date" placeholder="选择日期"></el-date-picker>
+					<el-date-picker v-model="form.hiredate" type="date" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 				</div>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -70,7 +70,7 @@
 				</el-form-item>
 				<div class="class">
 					<a>入职时间</a>
-					<el-date-picker v-model="form.hiredate" type="date" placeholder="选择日期"></el-date-picker>
+					<el-date-picker v-model="form.hiredate" type="date" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 				</div>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -173,6 +173,10 @@
 				};
 				this.dialogFormVisible = true;
 
+			},
+			kemu() {
+				this.currentPage=1;
+				this.getuserlist();
 			},
 			getsubject() {
 				axios({

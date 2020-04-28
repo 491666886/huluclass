@@ -1,12 +1,12 @@
 <template>
   <div class="video">
-    <page-header></page-header>
+    <page-Header></page-Header>
     <div class="det">
-      <p>当前位置：{{video[0].subjects}}>{{video[0].grade}}>{{video[0].unit}}</p>
-      <b>{{video[0].vName}}</b>
+      <p>当前位置：{{video.curriculumId}}>{{video.nj}}>{{video.dy}}</p>
+      <b>{{video.name}}</b>
       <dd>
-        主讲教师：{{video[0].teacher}}
-        <c>录制时间：{{video[0].cTime}}</c>
+        主讲教师：{{video.teacherId}}
+        <a>录制时间：{{video.recordTime}}</a>
       </dd>
 
       <div class="vid">
@@ -14,31 +14,31 @@
         <video ref="videoPlay" :src="videoURL" controls="controls" @play="myFunction()" id="video"></video>
 
         <div class="tec">
-          <l>
+          <a>
             <img class="yuan" src="./img/yuan1.png" />
             知识点快速索引
             <img class="yuan1" src="./img/yuan.png" />
-          </l>
+          </a>
           <div class="gun">
-            <div v-if="this.analysis.length ==0">该视频暂无知识点索引</div>
+            <div v-if="this.knowledges.length ==0">该视频暂无知识点索引</div>
             <div
               class="index"
-              v-for="point in analysis"
+              v-for="point in knowledges"
               :key="point.Id"
               @click="gopoint(point.time)"
             >
-              <div class="left">{{point.analysisResult}}</div>
+              <div class="left">{{point.knowledgesResult}}</div>
               <div class="right" v-text=" formatSeconds(point.time)"></div>
             </div>
           </div>
         </div>
         <div class="banner">
-          <LL @click="nocollect()" v-if="this.collectViode==1">
+          <div class="div" @click="nocollect()" v-if="this.collectViode==true">
             <i class="el-icon-star-on" id="i"></i>取消收藏
-          </LL>
-          <LL @click="collect()" v-if="this.collectViode==0">
+          </div>
+          <div class="div" @click="collect()" v-if="this.collectViode==false">
             <i class="el-icon-star-off" id="i"></i>收藏
-          </LL>
+          </div>
         </div>
         <!-- <el-button
           class="button"
@@ -72,8 +72,8 @@ export default {
   data: function() {
     return {
       videoURL: "",
-      analysis: [],
-      collectViode: "0",
+      knowledges: [],
+      collectViode: false,
       //  src: require('http://10.150.27.126:8080/video/shuxue.mp4'),
       video: {
         subjects: "",
@@ -124,19 +124,19 @@ export default {
             .sessionId
         },
         method: "post",
-        url: "/hlkt/video/details.action",
+        url: "/hlkt/api/v1/video.action",
         data: {
-          id: this.$route.params.id,
+          vid: this.$route.params.id,
           uid: JSON.parse(sessionStorage.getItem("SESSION_USER")).userId
         }
       }).then(res => {
         if (res.data.resultCode == "200") {
-          this.video = res.data.resultData;
-          this.videoURL = "http://" + this.video[0].vUrl;
-          this.collectViode = this.video[0].collectViode;
-          this.analysis = this.video[0].analysis;
-          this.formatSeconds(this.analysis[0].time);
-          console.log(this.analysis);
+          this.video = res.data.resultData.video;
+          this.videoURL = "http://" + this.video.url;
+          this.collectViode = res.data.resultData.isCollect;
+          this.knowledges = res.data.resultData.knowledges;
+          this.formatSeconds(this.knowledges.time);
+          console.log(this.knowledges);
         } else {
           this.$message({
             type: "error",
@@ -155,14 +155,14 @@ export default {
             .sessionId
         },
         method: "post",
-        url: "/hlkt/user/newCollect.action",
+        url: "/hlkt/api/v1/user/collect/video.action",
         data: {
-          uId: JSON.parse(sessionStorage.getItem("SESSION_USER")).userId,
-          vId: this.$route.params.id
+          uid: JSON.parse(sessionStorage.getItem("SESSION_USER")).userId,
+          vid: this.$route.params.id
         }
       }).then(res => {
         if (res.data.resultCode == "200") {
-          this.collectViode = 1;
+          this.collectViode = true;
           console.log(this.collectViode);
         } else {
           this.$message({
@@ -181,14 +181,14 @@ export default {
             .sessionId
         },
         method: "post",
-        url: "/hlkt/user/deleteCollect.action",
+        url: "/hlkt/api/v1/user/collect/video.action",
         data: {
-          uId: JSON.parse(sessionStorage.getItem("SESSION_USER")).userId,
-          vId: this.$route.params.id
+          uid: JSON.parse(sessionStorage.getItem("SESSION_USER")).userId,
+          vid: this.$route.params.id
         }
       }).then(res => {
         if (res.data.resultCode == "200") {
-          this.collectViode = 0;
+          this.collectViode = false;
         } else {
           this.$message({
             type: "error",
@@ -210,7 +210,7 @@ export default {
   width: 25px;
   font-size: px2vw(20px);
 }
-ll {
+.div {
   float: right;
   font-size: px2vw(18px);
   margin-right: px2vw(33px);
@@ -269,7 +269,7 @@ ll {
   height: px2vw(659px);
   background-color: #35363b;
   text-align: center;
-  l {
+  a {
     color: #fba131;
     line-height: px2vw(113px);
     display: block;
@@ -307,7 +307,7 @@ video {
     font-weight: bold;
   }
   dd {
-    c {
+    a {
       margin-left: 50px;
     }
     color: #999999;
