@@ -48,10 +48,10 @@ export default {
 			this.totalStorage =res.data.resultData.totalStorage;
 			this.storageUnit =res.data.resultData.storageUnit
         } else {
-          this.$message({
-            type: "error",
-            message: res.data.resultMsg
-          });
+          // this.$message({
+          //   type: "error",
+          //   message: res.data.resultMsg
+          // });
         }
       });
     }

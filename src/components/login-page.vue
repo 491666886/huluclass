@@ -160,10 +160,8 @@ export default {
 				nj: this.grade,
 				dy:this.unit,
 			},
-			
 			pageSize: 12,
 			pageNum: this.currentPage
-      
         }
       }).then(res => {
         if (res.data.resultCode == "200") {

@@ -77,7 +77,8 @@
 <script>
 	// @ is an alias to /src
 	import axios from "axios";
-	const url = 'http://10.150.27.126:8080';
+	// import url from '@/http/http'
+	const url = 'http://172.38.50.126:8080/';
 	var sessionId = JSON.parse(sessionStorage.getItem("SESSION_USER")).sessionId;
 	var UserInfo = JSON.parse(sessionStorage.getItem("SESSION_USER")).loginId;
 	var sid = JSON.parse(sessionStorage.getItem("SESSION_USER")).sid
@@ -85,6 +86,7 @@
 		name: "teach",
 		data() {
 			return {
+				url:"",
 				rules: {
 					value: [{
 
@@ -99,7 +101,7 @@
 					}],
 				},
 				sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-				doUpload: url + '/hlkt/admin/course/upload.action',
+				doUpload: url + 'hlkt/admin/course/upload.action',
 				myHeaders: {
 					Authorization: sessionId,
 					"User-Info": UserInfo
@@ -186,7 +188,7 @@
 
 				}).then(res => {
 					if (res.data.resultCode == "200") {
-						window.open("http://10.150.27.126:8080/hlkt/admin/courseFileModel/download/" + sid + '.action', '_blank');
+						window.open("http://172.38.50.126:8080/hlkt/admin/courseFileModel/download/" + sid + '.action', '_blank');
 					} else {
 						this.$message({
 							type: "error",
@@ -201,7 +203,7 @@
 				this.add(res);
 			},
 			down(row) { //下载课表
-				window.open("http://10.150.27.126:8080/hlkt/admin/courseFile/download/" + row.courseFileId + '.action', '_blank');
+				window.open("http://172.38.50.126:8080/hlkt/admin/courseFile/download/" + row.courseFileId + '.action', '_blank');
 
 			},
 			handleChange(file, fileList) {
@@ -377,6 +379,8 @@
 		components: {},
 		created() {
 			this.getrest();
+			console.log(window.location.href.split('dist')[0]);
+			this.url = window.location.href.split('dist')[0];
 		}
 	};
 </script>

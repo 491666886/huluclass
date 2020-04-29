@@ -1,23 +1,26 @@
 <template>
 	<div>
 		<div>
-			<div class="head">设备管理</div>
-			<el-button class="add" size="small" type="primary" @click="adddevice()">新增设备</el-button>
-			<el-button style="float: right;" @click='all()'>全部设备</el-button>
+			<div class="head">班级管理</div>
+			<el-button class="add" size="small" type="primary" @click="adddevice()">新增班级</el-button>
+			<el-button style="float: right;" @click='all()'>全部</el-button>
 			<div style="float: right;">
 				<el-input placeholder="请输入教室号" v-model="input2" @keyup.enter.native="reget()">
 					<el-button slot="append" @click="reget()">搜索</el-button>
 				</el-input>
 			</div>
-			<el-dialog title="新增设备" :visible.sync="dialogFormVisible" :modal-append-to-body='false'>
+			<el-dialog title="新增班级" :visible.sync="dialogFormVisible" :modal-append-to-body='false'>
 				<el-form :model="form" :rules="rules" ref="form">
-					<el-form-item prop="cameraNumber" label="教室" :label-width="formLabelWidth">
-						<el-input class="input" v-model="form.cameraNumber" autocomplete="off"></el-input>
+					<el-form-item prop="devRoom" label="教室" :label-width="formLabelWidth">
+						<!-- <el-input class="input" v-model="form.cameraNumber" autocomplete="off"></el-input> -->
+						<el-select v-model="form.devRoom" placeholder="请选择">
+							<el-option v-for="item in options" :key="item.id" :label="item.devRoom" :value="item.devRoom"></el-option>
+						</el-select>
 					</el-form-item>
-					<el-form-item prop="gradeNum" label="班级" :label-width="formLabelWidth">
-						<el-input class="input" v-model="form.gradeNum" autocomplete="off" placeholder="请输入数字" onkeyup="this.value=this.value.replace(/[^\d.]/g,'');"
-						 maxlength="2"></el-input>年<el-input class="input" placeholder="请输入数字" v-model="form.classNum" prop="classNum" autocomplete="off"
-						 onkeyup="this.value=this.value.replace(/[^\d.]/g,'');" maxlength="2"></el-input>班
+					<el-form-item prop="gradeNo" label="班级" :label-width="formLabelWidth">
+						<el-input class="input" v-model="form.gradeNo" autocomplete="off" placeholder="请输入数字" onkeyup="this.value=this.value.replace(/[^\d.]/g,'');"
+						 maxlength="2"></el-input>年<el-input class="input" placeholder="请输入数字" v-model="form.classNo" prop="classNo"
+						 autocomplete="off" onkeyup="this.value=this.value.replace(/[^\d.]/g,'');" maxlength="2"></el-input>班
 					</el-form-item>
 					<!-- <el-form-item required=“true” label="摄像头ID" :label-width="formLabelWidth">
 						<el-input class="input" v-model="form.cCamera" autocomplete="off"></el-input>
@@ -28,18 +31,20 @@
 					<el-button type="primary" @click="submitForm('form')">确 定</el-button>
 				</div>
 			</el-dialog>
-			<el-dialog title="编辑设备" :visible.sync="dialogFormVisible1" :modal-append-to-body='false'>
+			<el-dialog title="编辑班级" :visible.sync="dialogFormVisible1" :modal-append-to-body='false'>
 				<el-form :model="form">
-					<el-form-item prop="cameraNumber" label="教室" :label-width="formLabelWidth">
-						<el-input class="input" v-model="form.cameraNumber" autocomplete="off"></el-input>
+					<el-form-item prop="devRoom" label="教室" :label-width="formLabelWidth">
+						<!-- <el-input class="input" v-model="form.cameraNumber" autocomplete="off"></el-input> -->
+						<el-select v-model="form.tbCameraDevice.devRoom" placeholder="请选择">
+							<el-option v-for="item in options" :key="item.id" :label="item.devRoom" :value="item.devRoom"></el-option>
+						</el-select>
 					</el-form-item>
-					<el-form-item prop="gradeNum" label="班级" :label-width="formLabelWidth">
-						<el-input class="input" v-model="form.gradeNum" autocomplete="off"
-						 onkeyup="this.value=this.value.replace(/[^\d.]/g,'');"
-						 maxlength="2"></el-input>年<el-input class="input" placeholder="请输入数字" v-model="form.classNum" 
-						 onkeyup="this.value=this.value.replace(/[^\d.]/g,'');" maxlength="2"></el-input>班
+					<el-form-item prop="gradeNo" label="班级" :label-width="formLabelWidth">
+						<el-input class="input" v-model="form.gradeNo" autocomplete="off" onkeyup="this.value=this.value.replace(/[^\d.]/g,'');"
+						 maxlength="2"></el-input>年<el-input class="input" placeholder="请输入数字" v-model="form.classNo" onkeyup="this.value=this.value.replace(/[^\d.]/g,'');"
+						 maxlength="2"></el-input>班
 					</el-form-item>
-				
+
 					<!-- <el-form-item required=“true” label="摄像头ID" :label-width="formLabelWidth">
 						<el-input class="input" v-model="form.cCamera" autocomplete="off"></el-input>
 					</el-form-item> -->
@@ -57,12 +62,12 @@
 			<el-table :data="tableData" border :height="tableHeight">
 				<el-table-column :index="indexMethod" type="index" label="序号" width="60">
 				</el-table-column>
-				<el-table-column prop="cameraNumber" label="教室">
+				<el-table-column prop="tbCameraDevice.devRoom" label="教室">
 				</el-table-column>
-				<el-table-column prop="cameraGrade" label="班级">
+				<el-table-column prop="className" label="班级">
 					<!-- <template slot-scope="scope"> {{scope.row.projectName}}({{scope.row.projectCode}}) </template> -->
 				</el-table-column>
-				<el-table-column prop="classCamera" label="摄像头id">
+				<el-table-column prop="tbCameraDevice.devCode" label="摄像头id">
 				</el-table-column>
 				<el-table-column fixed="right" label="管理" width="120">
 					<template slot-scope="scope">
@@ -87,25 +92,20 @@
 		data() {
 			return {
 				rules: {
-					cameraNumber: [{
+					devRoom: [{
 							required: true,
 							message: '请输入教室名称',
 							trigger: 'blur'
 						},
-						{
-							min: 3,
-							max: 5,
-							message: '长度在 3 到 5 个字符',
-							trigger: 'blur'
-						}
+
 					],
-					gradeNum: [{
+					gradeNo: [{
 
 						required: true,
 						message: '请输入数字',
 						trigger: 'blur'
 					}],
-					classNum: [{
+					classNo: [{
 						required: true,
 						message: '请输入数字',
 						trigger: 'blur'
@@ -118,7 +118,8 @@
 					sName: "",
 					cNumber: "",
 					cGrade: '',
-					classCamera: '',
+					devRoom: '',
+					tbCameraDevice:{},
 				},
 				formLabelWidth: '120px',
 
@@ -153,7 +154,11 @@
 				});
 			},
 			adddevice() {
-				this.form = {};
+				this.form = {
+					tbCameraDevice:{
+						devRoom:''
+					},
+				};
 				this.dialogFormVisible = true;
 
 			},
@@ -177,7 +182,9 @@
 			showedit(row) {
 				this.dialogFormVisible1 = true;
 				this.form = row;
-				this.form.cCamera = row.cCamera
+				// this.form.devRoom = row.tbCameraDevice.devRoom;
+				// this.form.gradeNo =row.gradeNo;
+				// this.form.classNo =row.classNo;
 			},
 			del(row) {
 				axios({
@@ -189,10 +196,7 @@
 					},
 					method: "post",
 					url: "/hlkt/admin/camera/deleteCamera.action",
-					data: {
-						sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-						classCamera: row.classCamera
-					}
+					data: row
 				}).then(res => {
 					if (res.data.resultCode == "200") {
 
@@ -206,6 +210,7 @@
 				});
 			},
 			edit(row) {
+				console.log(this.form)
 				axios({
 					headers: {
 						"User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
@@ -215,14 +220,18 @@
 					},
 					method: "post",
 					url: "/hlkt/admin/camera/updateCamera.action",
-					data: {
-						classCamera: this.form.classCamera,
-						cameraNumber: this.form.cameraNumber,
-						classNum: this.form.classNum,
-						gradeNum: this.form.gradeNum,
-
-						sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-					}
+					data: this.form
+					// {
+					// 	id: row.id,
+					// 	classNo: this.form.classNo,
+					// 	gradeNo: this.form.gradeNo,
+					// 	sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
+					// 	tbCameraDevice: {
+					// 		id: row.tbCameraDevice.id,
+					// 		devRoom: this.form.devRoom,
+					// 		dev_code: row.tbCameraDevice.dev_code,
+					// 	},
+					// }
 				}).then(res => {
 					if (res.data.resultCode == "200") {
 						this.dialogFormVisible1 = false;
@@ -248,11 +257,13 @@
 					url: "/hlkt/admin/camera/addCamera.action",
 					data: {
 						// cCamera: this.form.cCamera,
-						cameraNumber: this.form.cameraNumber,
-						classNum: this.form.classNum,
-						gradeNum: this.form.gradeNum,
-
+						// cameraNumber: this.form.cameraNumber,
+						classNo: this.form.classNo,
+						gradeNo: this.form.gradeNo,
 						sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
+						tbCameraDevice: {
+							devRoom: this.form.devRoom
+						},
 
 					}
 				}).then(res => {
@@ -295,8 +306,8 @@
 					}
 				}).then(res => {
 					if (res.data.resultCode == "200") {
-						
-						
+						this.options = res.data.resultData;
+
 					} else {
 						this.$message({
 							type: "error",

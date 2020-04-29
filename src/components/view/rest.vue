@@ -1,8 +1,8 @@
 <template>
 	<div>
 		<div>
-			<div class="head">视频列表</div>
-			<el-button class="add" size="small" type="primary" @click="dialogFormVisible = true">新增作息</el-button>
+			<div class="head">作息管理</div>
+			<el-button class="add" size="small" type="primary" @click="showadd">新增作息</el-button>
 		</div>
 
 		<div class="main">
@@ -17,23 +17,19 @@
 					<el-time-picker v-model="value1" :picker-options="{
 					      selectableRange: '06:00:00 - 23:30:00'
 					    }"
-						value-format="HH:mm"
-						format="HH:mm"
-					 placeholder="任意时间点">
+					 value-format="HH:mm" format="HH:mm" placeholder="任意时间点">
 					</el-time-picker>
 				</el-form-item>
 				<el-form-item :required="true" label="结束时间" :label-width="formLabelWidth">
 					<el-time-picker v-model="value2" :picker-options="{
 					      selectableRange: '06:00:00 - 23:30:00'
 					    }"
-						value-format="HH:mm"
-						format="HH:mm"
-					 placeholder="任意时间点">
+					 value-format="HH:mm" format="HH:mm" placeholder="任意时间点">
 					</el-time-picker>
 				</el-form-item>
 				<el-form-item :required="true" label="是否上课" :label-width="formLabelWidth">
-					 <el-radio v-model="radio" label="1">是</el-radio>
-                     <el-radio v-model="radio" label="0">否</el-radio>
+					<el-radio v-model="radio" label="1">是</el-radio>
+					<el-radio v-model="radio" label="0">否</el-radio>
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -42,29 +38,29 @@
 			</div>
 		</el-dialog>
 		<el-dialog title="编辑课程" :visible.sync="dialogFormVisible1" :modal-append-to-body='false'>
-		<el-form :model="form">
-			<el-form-item :required=true label="课程安排" :label-width="formLabelWidth">
-				<el-input class="input" v-model="form.input" autocomplete="off"></el-input>
-			</el-form-item>
-			<el-form-item :required=true label="开始时间" :label-width="formLabelWidth">
-				<el-time-picker v-model="value1" :picker-options="{
+			<el-form :model="form">
+				<el-form-item :required=true label="课程安排" :label-width="formLabelWidth">
+					<el-input class="input" v-model="form.input" autocomplete="off"></el-input>
+				</el-form-item>
+				<el-form-item :required=true label="开始时间" :label-width="formLabelWidth">
+					<el-time-picker v-model="value1" :picker-options="{
 				      selectableRange: '06:00:00 - 23:30:00'
 				    }"
-					value-format="HH:mm"
-					format="HH:mm"
-				 placeholder="任意时间点">
-				</el-time-picker>
-			</el-form-item>
-			<el-form-item :required="true" label="结束时间" :label-width="formLabelWidth">
-				<el-time-picker v-model="value2" :picker-options="{
+					 value-format="HH:mm" format="HH:mm" placeholder="任意时间点">
+					</el-time-picker>
+				</el-form-item>
+				<el-form-item :required="true" label="结束时间" :label-width="formLabelWidth">
+					<el-time-picker v-model="value2" :picker-options="{
 				      selectableRange: '06:00:00 - 23:30:00'
 				    }"
-					value-format="HH:mm"
-					format="HH:mm"
-				 placeholder="任意时间点">
-				</el-time-picker>
-			</el-form-item>
-		</el-form>
+					 value-format="HH:mm" format="HH:mm" placeholder="任意时间点">
+					</el-time-picker>
+				</el-form-item>
+				<el-form-item :required="true" label="是否上课" :label-width="formLabelWidth">
+					<el-radio v-model="radio" label="1">是</el-radio>
+					<el-radio v-model="radio" label="0">否</el-radio>
+				</el-form-item>
+			</el-form>
 			<div slot="footer" class="dialog-footer">
 				<el-button @click="dialogFormVisible1= false">取 消</el-button>
 				<el-button type="primary" @click="edit()">确 定</el-button>
@@ -73,13 +69,13 @@
 		<div class="table">
 			<el-table :data="tableData" border>
 				<el-table-column prop="courseNum" label="课程安排" width="160"></el-table-column>
-				<el-table-column prop="startTime" label="开始时间" ></el-table-column>
-				<el-table-column prop="endTime" label="结束时间" ></el-table-column>
-					<!-- <el-table-column prop="type" label="是否上课" width="180"></el-table-column> -->
+				<el-table-column prop="startTime" label="开始时间"></el-table-column>
+				<el-table-column prop="endTime" label="结束时间"></el-table-column>
+				<!-- <el-table-column prop="type" label="是否上课" width="180"></el-table-column> -->
 				<el-table-column fixed="right" label="管理">
 					<template slot-scope="scope">
 						<el-button @click="showedit(scope.row)" type="text" size="small">编辑</el-button>
-						<el-button  @click="dele(scope.row)" type="text" size="small">删除</el-button>
+						<el-button @click="dele(scope.row)" type="text" size="small">删除</el-button>
 					</template>
 				</el-table-column>
 			</el-table>
@@ -103,19 +99,24 @@
 				},
 				formLabelWidth: '120px',
 				value1: '',
-				value2:'',
+				value2: '',
 				count: "",
 				radio: "1",
 				currentPage: 1, // 默认显示第几页
-				options: [
-				],
+				options: [],
 				value: "",
 				scheduleId: "",
-				tableData: [
-				]
+				tableData: []
 			};
 		},
 		methods: {
+			showadd() {
+				this.dialogFormVisible = true;
+				this.value1 = '';
+				this.value2 = '';
+				this.form.input = '';
+				this.radio = '1'
+			},
 			dele(row) {
 				this.$confirm("确认删除作息数据？", {
 						confirmButtonText: "确定",
@@ -134,9 +135,13 @@
 			},
 
 			showedit(row) {
+				
 				this.dialogFormVisible1 = true;
 				this.scheduleId = row.scheduleId;
-				
+				this.value1 = row.startTime;
+				this.value2 = row.endTime;
+				this.form.input = row.courseNum;
+				this.radio = row.type+'';
 			},
 			serchlist(vap) {
 				//改变页数
@@ -188,9 +193,9 @@
 						sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
 						scheduleId: this.scheduleId,
 						"courseNum": this.form.input,
-						"startTime": this.value1 +':00',
-						"endTime": this.value2+':00',
-						type:this.radio,
+						"startTime": this.value1 + ':00',
+						"endTime": this.value2 + ':00',
+						type: this.radio,
 					}
 				}).then(res => {
 					if (res.data.resultCode == "200") {
@@ -198,7 +203,7 @@
 							type: 'success',
 							message: res.data.resultMsg
 						});
-						this.dialogFormVisible1 =false;
+						this.dialogFormVisible1 = false;
 						this.getrest();
 					} else {
 						this.$message({
@@ -222,14 +227,14 @@
 					data: {
 						sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
 						"courseNum": this.form.input,
-						"startTime": this.value1 +':00',
-						"endTime": this.value2+':00',
-						type:this.radio,
+						"startTime": this.value1 + ':00',
+						"endTime": this.value2 + ':00',
+						type: this.radio,
 					}
 				}).then(res => {
 					if (res.data.resultCode == "200") {
-					   this.dialogFormVisible=false;
-					   this.getrest();
+						this.dialogFormVisible = false;
+						this.getrest();
 					} else {
 						this.$message({
 							type: "error",

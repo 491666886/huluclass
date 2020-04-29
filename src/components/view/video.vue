@@ -27,7 +27,7 @@
 		</div>
 		<div class="table">
 			  <!-- <div v-if="tableData.length ===0" class="error">暂无视频</div> -->
-			<el-table :data="tableData" border class="form"  :height="tableHeight">
+			<el-table v-if="showTable" :data="tableData" border class="form"  :height="tableHeight">
 				<el-table-column  :index="indexMethod" type="index" label="序号" width="60" ></el-table-column>
 				<el-table-column prop="name" label="名称" ></el-table-column>
 				<el-table-column prop="teacherId" label="教师" ></el-table-column>
@@ -47,13 +47,15 @@
 				</el-table-column>
 			</el-table>
 			<div class="page">
-				<el-pagination :hide-on-single-page="true" class="page"   layout="total, prev, pager, next" :page-size="10" :current-page="currentPage"
-				 @current-change="handleCurrentChange" :total="parseInt(this.count)"></el-pagination>
+				<el-pagination :hide-on-single-page="true"    layout="total, prev, pager, next"  :page-size="10" 
+				:current-page="currentPage"
+				 @current-change="handleCurrentChange" 
+				 :total="parseInt(this.count)"></el-pagination>
 			</div>
 		</div>
 <el-dialog title="新增视频" :visible.sync="dialogFormVisible2" :modal-append-to-body="false">
 			<el-form :model="form">
-				<img class="videoimg" :src="home_url" />
+				<img  class="videoimg" :src="home_url" />
 
 				
 					<!-- <a class="left"> 科目</a> -->
@@ -101,12 +103,12 @@
 
 			</el-form>
 			<div slot="footer" class="dialog-footer">
-				<el-button @click="dialogFormVisible2= false">取 消</el-button>
-				<el-button type="primary" @click="add()">确 认</el-button>
+				<el-button @click="dialogFormVisible2= false">取消上传 </el-button>
+				<el-button type="primary" @click="add()">确认上传</el-button>
 			</div>
 		</el-dialog>
 		<el-dialog title="编辑视频" :visible.sync="dialogFormVisible1" :modal-append-to-body="false">
-			<el-form :model="form">
+			<el-form :model="form" ref="form">
 				<img class="videoimg" :src="'http://'+form.site" />
 
 				
@@ -148,7 +150,7 @@
 
 			</el-form>
 			<div slot="footer" class="dialog-footer">
-				<el-button @click="dialogFormVisible1= false">取消编辑</el-button>
+				<el-button @click="cancel('form')">取消编辑</el-button>
 				<el-button type="primary" @click="edit()">保存修改</el-button>
 			</div>
 		</el-dialog>
@@ -160,7 +162,7 @@
 					</p>
 					<div class="pic_img">
 						<div class="pic_img_box">
-							<el-upload class="avatar-uploader" action="http://10.150.27.126:8080/hlkt/admin/upload/video.action" :headers="myHeaders"      :data='{sid:this.sid}'	 name="videoFile" v-bind:on-progress="uploadVideoProcess" v-bind:on-success="handleVideoSuccess"
+							<el-upload class="avatar-uploader" action="http://172.38.50.126:8080/hlkt/admin/upload/video.action" :headers="myHeaders"      :data='{sid:this.sid}'	 name="videoFile" v-bind:on-progress="uploadVideoProcess" v-bind:on-success="handleVideoSuccess"
 							 v-bind:before-upload="beforeUploadVideo" v-bind:show-file-list="false">
 								<video v-if="videoForm.showVideoPath !='' && !videoFlag" v-bind:src="videoForm.showVideoPath" class="avatar video-avatar"
 								 controls="controls">您的浏览器不支持视频播放</video>
@@ -194,6 +196,7 @@
 		name: "videodetail",
 		data() {
 			return {
+				showTable:true,
 				home_url: '',
 				tableHeight: '55vh',
 				myHeaders: {
@@ -225,6 +228,7 @@
 				dialogFormVisible: false,
 				dialogFormVisible1: false,
 				dialogFormVisible2: false,
+				
 				count: "",
 				currentPage: 1, // 默认显示第几页
 				value1: "",
@@ -242,6 +246,18 @@
 		},
 
 		methods: {
+			refreshTable () {//取消按钮回掉
+			  this.showTable = false
+			  this.$nextTick(() => {
+			    this.showTable = true
+			  })
+			},
+			cancel(formName){
+				// this.$refs[formName].resetFields();
+				this.dialogFormVisible1= false;
+				this.getvideo();
+				this.refreshTable()
+			},
 			esc(){
 				this.$router.go(0);
 			},
@@ -357,13 +373,15 @@
 
 				//后台上传地址
 				if (res.resultCode == 200) {
-					// this.videoForm.showVideoPath = 'http://10.150.27.126:8080' + res.resultData.url;
+					// this.videoForm.showVideoPath = 'http://172.38.50.126:8080' + res.resultData.url;
 					this.vId = res.resultData.id;
 					this.home_url ='http://'+ res.resultData.site;
 					this.form= {};//表单置空
 					// this.add();
 					this.dialogFormVisible2 = true;
+					// this.add=true;
 						this.dialogFormVisible = false;
+						
 				} else {
 					this.$message({
 						type: "error",

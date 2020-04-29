@@ -25,10 +25,10 @@
               class="index"
               v-for="point in knowledges"
               :key="point.Id"
-              @click="gopoint(point.time)"
+              @click="gopoint(point.appearTime)"
             >
-              <div class="left">{{point.knowledgesResult}}</div>
-              <div class="right" v-text=" formatSeconds(point.time)"></div>
+              <div class="left">{{point.knowledge}}</div>
+              <div class="right" v-text=" formatSeconds(point.appearTime)"></div>
             </div>
           </div>
         </div>

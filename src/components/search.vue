@@ -50,7 +50,7 @@
         :key="video.d"
        
       >
-        <img :src="'http://'+video.vSite"  @click="getDescribe(video.id)" />
+        <img :src="'http://'+video.site"  @click="getDescribe(video.id)" />
 
           <p  @click="getDescribe(video.id)" >{{video.name}}</p>
           <a  @click="getDescribe(video.id)" >{{video.teacherId}}</a>
@@ -190,7 +190,7 @@ export default {
         method: "post",
         url: "/hlkt/api/v1/user/search/videos.action",
         data: {
-          year: this.year,
+          year: Number(this.year) ,
           pageNum: 1,
           pageSize: 15,
           keywords: this.$route.params.id,
@@ -250,7 +250,7 @@ export default {
         method: "post",
         url: "/hlkt/api/v1/user/search/videos.action",
         data: {
-          year: this.year,
+         year: Number(this.year),
           pageNum: 1,
           pageSize: 15,
           keywords: this.$route.params.id,  

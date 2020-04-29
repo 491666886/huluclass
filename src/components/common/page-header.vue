@@ -94,7 +94,7 @@ export default {
 			     
 			});
 			window.open(routeUrl .href, '_blank');
-			 this.$router.push("/collect");
+			 // this.$router.push("/collect");
 		}
       
     },

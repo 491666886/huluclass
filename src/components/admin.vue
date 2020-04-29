@@ -22,7 +22,7 @@
                 <span slot="title">用户管理</span>
               </el-menu-item>
               <el-menu-item index="/admin/device">
-                <span slot="title">设备管理</span>
+                <span slot="title">班级管理</span>
               </el-menu-item>
                   <el-submenu index="1">
         <template slot="title">

@@ -40,16 +40,16 @@
 				</el-form-item>
 				<div class="class">
 					<a>入职时间</a>
-					<el-date-picker v-model="form.hiredate" type="date" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+					<el-date-picker v-model="form.hiredate" type="date" placeholder="选择日期" format="yyyy-MM-dd" value-format="yyyy-MM-dd" ></el-date-picker>
 				</div>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
-				<el-button @click="dialogFormVisible = false">取 消</el-button>
+				<el-button @click="esc()">取 消</el-button>
 				<el-button type="primary" @click="submitForm('form')">确 定</el-button>
 			</div>
 		</el-dialog>
 		<el-dialog title="编辑用户" :visible.sync="dialogFormVisible1" :modal-append-to-body="false">
-			<el-form :model="form">
+			<el-form :model="form" :rules="rules" ref="form">
 				<el-form-item class="input" :required="true" label="姓名" :label-width="formLabelWidth">
 					<el-input v-model="form.baseUser.name" autocomplete="off"></el-input>
 				</el-form-item>
@@ -70,16 +70,19 @@
 				</el-form-item>
 				<div class="class">
 					<a>入职时间</a>
-					<el-date-picker v-model="form.hiredate" type="date" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+					<el-date-picker v-model="form.hiredate" type="date" placeholder="选择日期" 
+					value-format="yyyy-MM-dd"
+					format="yyyy-MM-dd">
+					</el-date-picker>
 				</div>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
-				<el-button @click="dialogFormVisible1= false">取 消</el-button>
+				<el-button @click="cancel('form')">取 消</el-button>
 				<el-button type="primary" @click="edit()">确 定</el-button>
 			</div>
 		</el-dialog>
 		<div class="table">
-			<el-table :data="tableData" border :height="tableHeight">
+			<el-table v-if="showTable" :data="tableData" border :height="tableHeight">
 				<el-table-column :index="indexMethod" type="index" label="序号" width="60"></el-table-column>
 				<el-table-column prop="baseUser.name" label="姓名"></el-table-column>
 				<el-table-column prop="jobName" label="学科"></el-table-column>
@@ -109,6 +112,7 @@
 		name: "user",
 		data() {
 			return {
+				showTable:true,
 				rules: {
 					'baseUser.loginId':[{type: "string", required: true, message: '请填写账号',trigger: 'blur'}], 
 					'baseUser.name':[{type: "string", required: true, message: '请填写名字', trigger: 'blur'}], 
@@ -153,7 +157,21 @@
 		},
 		
 		methods: {
-			
+			refreshTable () {//取消按钮回掉
+			  this.showTable = false
+			  this.$nextTick(() => {
+			    this.showTable = true
+			  })
+			},
+			cancel(formName){
+				// this.$refs[formName].resetFields();
+				this.dialogFormVisible1= false;
+				this.getuserlist();
+				this.refreshTable()
+			},
+			esc(){
+				this.$router.go(0);
+			},
 			indexMethod(index) {
 			
 			        return 	(this.currentPage-1)*10+index+1;
