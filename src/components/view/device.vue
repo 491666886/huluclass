@@ -86,273 +86,266 @@
 </template>
 
 <script>
-	import axios from "axios";
-	export default {
-		name: "dev",
-		data() {
-			return {
-				rules: {
-					devRoom: [{
-							required: true,
-							message: '请输入教室名称',
-							trigger: 'blur'
-						},
+import axios from 'axios';
+export default {
+  name: 'dev',
+  data() {
+    return {
+      rules: {
+        devRoom: [{
+          required: true,
+          message: '请输入教室名称',
+          trigger: 'blur',
+        },
 
-					],
-					gradeNo: [{
+        ],
+        gradeNo: [{
 
-						required: true,
-						message: '请输入数字',
-						trigger: 'blur'
-					}],
-					classNo: [{
-						required: true,
-						message: '请输入数字',
-						trigger: 'blur'
-					}],
-				},
-				tableHeight: '60vh',
-				dialogFormVisible: false,
-				dialogFormVisible1: false,
-				form: {
-					sName: "",
-					cNumber: "",
-					cGrade: '',
-					devRoom: '',
-					tbCameraDevice:{},
-				},
-				formLabelWidth: '120px',
+          required: true,
+          message: '请输入数字',
+          trigger: 'blur',
+        }],
+        classNo: [{
+          required: true,
+          message: '请输入数字',
+          trigger: 'blur',
+        }],
+      },
+      tableHeight: '60vh',
+      dialogFormVisible: false,
+      dialogFormVisible1: false,
+      form: {
+        sName: '',
+        cNumber: '',
+        cGrade: '',
+        devRoom: '',
+        tbCameraDevice: {},
+      },
+      formLabelWidth: '120px',
 
-				count: "",
-				currentPage: 1, // 默认显示第几页
-				options: [],
-				value: '',
-				tableData: [],
-				input2: '',
-			}
-		},
-		methods: {
-			reget() {
-				this.currentPage = 1;
-				this.getdevice();
-			},
-			indexMethod(index) {
+      count: '',
+      currentPage: 1, // 默认显示第几页
+      options: [],
+      value: '',
+      tableData: [],
+      input2: '',
+    };
+  },
+  methods: {
+    reget() {
+      this.currentPage = 1;
+      this.getdevice();
+    },
+    indexMethod(index) {
+      return (this.currentPage - 1) * 10 + index + 1;
+    },
+    all() {
+      this.input2 = '';
+      this.getdevice();
+    },
+    submitForm(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.add();
+        } else {
+          this.loading = false;
+        }
+      });
+    },
+    adddevice() {
+      this.form = {
+        tbCameraDevice: {
+          devRoom: '',
+        },
+      };
+      this.dialogFormVisible = true;
+    },
+    deleteCamera(row) {
+      this.$confirm('确认删除摄像头数据？', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      })
+          .then(() => {
+            this.del(row);
+          })
+          .catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消',
+            });
+          });
+    },
 
-				return (this.currentPage - 1) * 10 + index + 1;
-			},
-			all() {
-				this.input2 = '';
-				this.getdevice()
-			},
-			submitForm(formName) {
-				this.$refs[formName].validate(valid => {
-					if (valid) {
-						this.add();
-					} else {
-						this.loading = false;
-					}
-				});
-			},
-			adddevice() {
-				this.form = {
-					tbCameraDevice:{
-						devRoom:''
-					},
-				};
-				this.dialogFormVisible = true;
+    showedit(row) {
+      this.dialogFormVisible1 = true;
+      this.form = row;
+      // this.form.devRoom = row.tbCameraDevice.devRoom;
+      // this.form.gradeNo =row.gradeNo;
+      // this.form.classNo =row.classNo;
+    },
+    del(row) {
+      axios({
+        headers: {
+          'User-Info': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .loginId,
+          'Authorization': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .sessionId,
+        },
+        method: 'post',
+        url: '/hlkt/admin/camera/deleteCamera.action',
+        data: row,
+      }).then((res) => {
+        if (res.data.resultCode == '200') {
+          this.getdevice();
+        } else {
+          this.$message({
+            type: 'error',
+            message: res.data.resultMsg,
+          });
+        }
+      });
+    },
+    edit(row) {
+      console.log(this.form);
+      axios({
+        headers: {
+          'User-Info': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .loginId,
+          'Authorization': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .sessionId,
+        },
+        method: 'post',
+        url: '/hlkt/admin/camera/updateCamera.action',
+        data: this.form,
+        // {
+        // 	id: row.id,
+        // 	classNo: this.form.classNo,
+        // 	gradeNo: this.form.gradeNo,
+        // 	sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
+        // 	tbCameraDevice: {
+        // 		id: row.tbCameraDevice.id,
+        // 		devRoom: this.form.devRoom,
+        // 		dev_code: row.tbCameraDevice.dev_code,
+        // 	},
+        // }
+      }).then((res) => {
+        if (res.data.resultCode == '200') {
+          this.dialogFormVisible1 = false;
+          this.getdevice();
+        } else {
+          this.$message({
+            type: 'error',
+            message: res.data.resultMsg,
+          });
+        }
+      });
+    },
 
-			},
-			deleteCamera(row) {
-				this.$confirm("确认删除摄像头数据？", {
-						confirmButtonText: "确定",
-						cancelButtonText: "取消",
-						type: "warning"
-					})
-					.then(() => {
-						this.del(row)
-					})
-					.catch(() => {
-						this.$message({
-							type: "info",
-							message: "已取消"
-						});
-					});
-			},
+    add() {
+      axios({
+        headers: {
+          'User-Info': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .loginId,
+          'Authorization': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .sessionId,
+        },
+        method: 'post',
+        url: '/hlkt/admin/camera/addCamera.action',
+        data: {
+          // cCamera: this.form.cCamera,
+          // cameraNumber: this.form.cameraNumber,
+          classNo: this.form.classNo,
+          gradeNo: this.form.gradeNo,
+          sid: JSON.parse(sessionStorage.getItem('SESSION_USER')).sid,
+          tbCameraDevice: {
+            devRoom: this.form.devRoom,
+          },
 
-			showedit(row) {
-				this.dialogFormVisible1 = true;
-				this.form = row;
-				// this.form.devRoom = row.tbCameraDevice.devRoom;
-				// this.form.gradeNo =row.gradeNo;
-				// this.form.classNo =row.classNo;
-			},
-			del(row) {
-				axios({
-					headers: {
-						"User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
-							.loginId,
-						Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
-							.sessionId
-					},
-					method: "post",
-					url: "/hlkt/admin/camera/deleteCamera.action",
-					data: row
-				}).then(res => {
-					if (res.data.resultCode == "200") {
+        },
+      }).then((res) => {
+        if (res.data.resultCode == '200') {
+          this.dialogFormVisible = false;
+          this.getdevice();
+        } else {
+          this.$message({
+            type: 'error',
+            message: res.data.resultMsg,
+          });
+        }
+      });
+    },
+    serchlist(vap) {
+      // 改变页数
+      this.currentPage = vap;
+      this.getdevice();
+    },
+    handleCurrentChange(val) {
+      // 改变默认的页数
+      this.currentPage = val;
+      // 切换页码时，要获取每页显示的条数
+      this.getdevice(this.PageSize, val * this.pageSize);
+    },
+    getbanji() {
+      axios({
+        headers: {
+          'User-Info': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .loginId,
+          'Authorization': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .sessionId,
+        },
+        method: 'post',
+        url: '/hlkt/selective/devroom/list.action',
+        data: {
+          sid: JSON.parse(sessionStorage.getItem('SESSION_USER')).sid,
+        },
+      }).then((res) => {
+        if (res.data.resultCode == '200') {
+          this.options = res.data.resultData;
+        } else {
+          this.$message({
+            type: 'error',
+            message: res.data.resultMsg,
+          });
+        }
+      });
+    },
+    getdevice() {
+      axios({
+        headers: {
+          'User-Info': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .loginId,
+          'Authorization': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .sessionId,
+        },
+        method: 'post',
+        url: '/hlkt/admin/camera/getCameraList.action',
+        data: {
+          sid: JSON.parse(sessionStorage.getItem('SESSION_USER')).sid,
+          pageNo: this.currentPage,
+          search: this.input2,
 
-						this.getdevice();
-					} else {
-						this.$message({
-							type: "error",
-							message: res.data.resultMsg
-						});
-					}
-				});
-			},
-			edit(row) {
-				console.log(this.form)
-				axios({
-					headers: {
-						"User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
-							.loginId,
-						Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
-							.sessionId
-					},
-					method: "post",
-					url: "/hlkt/admin/camera/updateCamera.action",
-					data: this.form
-					// {
-					// 	id: row.id,
-					// 	classNo: this.form.classNo,
-					// 	gradeNo: this.form.gradeNo,
-					// 	sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-					// 	tbCameraDevice: {
-					// 		id: row.tbCameraDevice.id,
-					// 		devRoom: this.form.devRoom,
-					// 		dev_code: row.tbCameraDevice.dev_code,
-					// 	},
-					// }
-				}).then(res => {
-					if (res.data.resultCode == "200") {
-						this.dialogFormVisible1 = false;
-						this.getdevice();
-					} else {
-						this.$message({
-							type: "error",
-							message: res.data.resultMsg
-						});
-					}
-				});
-			},
-
-			add() {
-				axios({
-					headers: {
-						"User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
-							.loginId,
-						Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
-							.sessionId
-					},
-					method: "post",
-					url: "/hlkt/admin/camera/addCamera.action",
-					data: {
-						// cCamera: this.form.cCamera,
-						// cameraNumber: this.form.cameraNumber,
-						classNo: this.form.classNo,
-						gradeNo: this.form.gradeNo,
-						sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-						tbCameraDevice: {
-							devRoom: this.form.devRoom
-						},
-
-					}
-				}).then(res => {
-					if (res.data.resultCode == "200") {
-						this.dialogFormVisible = false;
-						this.getdevice();
-
-					} else {
-						this.$message({
-							type: "error",
-							message: res.data.resultMsg
-						});
-					}
-				});
-
-			},
-			serchlist(vap) {
-				//改变页数
-				this.currentPage = vap;
-				this.getdevice();
-			},
-			handleCurrentChange(val) {
-				// 改变默认的页数
-				this.currentPage = val;
-				// 切换页码时，要获取每页显示的条数
-				this.getdevice(this.PageSize, val * this.pageSize);
-			},
-			getbanji() {
-				axios({
-					headers: {
-						"User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
-							.loginId,
-						Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
-							.sessionId
-					},
-					method: "post",
-					url: "/hlkt/selective/devroom/list.action",
-					data: {
-						sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-					}
-				}).then(res => {
-					if (res.data.resultCode == "200") {
-						this.options = res.data.resultData;
-
-					} else {
-						this.$message({
-							type: "error",
-							message: res.data.resultMsg
-						});
-					}
-				});
-			},
-			getdevice() {
-				axios({
-					headers: {
-						"User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
-							.loginId,
-						Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
-							.sessionId
-					},
-					method: "post",
-					url: "/hlkt/admin/camera/getCameraList.action",
-					data: {
-						sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-						pageNo: this.currentPage,
-						search: this.input2,
-
-					}
-				}).then(res => {
-					if (res.data.resultCode == "200") {
-						this.tableData = res.data.resultData.list;
-						this.count = res.data.resultData.total;
-						console.log(this.tableData)
-					} else {
-						this.$message({
-							type: "error",
-							message: res.data.resultMsg
-						});
-					}
-				});
-			}
-		},
-		components: {},
-		created() {
-			this.getdevice();
-			this.getbanji();
-
-		},
-	};
+        },
+      }).then((res) => {
+        if (res.data.resultCode == '200') {
+          this.tableData = res.data.resultData.list;
+          this.count = res.data.resultData.total;
+          console.log(this.tableData);
+        } else {
+          this.$message({
+            type: 'error',
+            message: res.data.resultMsg,
+          });
+        }
+      });
+    },
+  },
+  components: {},
+  created() {
+    this.getdevice();
+    this.getbanji();
+  },
+};
 </script>
 <style scoped lang="scss">
 	@import "src/plugins/px2vw";

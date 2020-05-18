@@ -84,209 +84,208 @@
 </template>
 
 <script>
-	// @ is an alias to /src
-	import axios from "axios";
-	export default {
-		name: "REST",
-		data() {
-			return {
-				dialogFormVisible: false,
-				dialogFormVisible1: false,
-				form: {
-					sName: "",
-					input: "",
-					cGrade: '',
-				},
-				formLabelWidth: '120px',
-				value1: '',
-				value2: '',
-				count: "",
-				radio: "1",
-				currentPage: 1, // 默认显示第几页
-				options: [],
-				value: "",
-				scheduleId: "",
-				tableData: []
-			};
-		},
-		methods: {
-			showadd() {
-				this.dialogFormVisible = true;
-				this.value1 = '';
-				this.value2 = '';
-				this.form.input = '';
-				this.radio = '1'
-			},
-			dele(row) {
-				this.$confirm("确认删除作息数据？", {
-						confirmButtonText: "确定",
-						cancelButtonText: "取消",
-						type: "warning"
-					})
-					.then(() => {
-						this.del(row);
-					})
-					.catch(() => {
-						this.$message({
-							type: "info",
-							message: "已取消"
-						});
-					});
-			},
+// @ is an alias to /src
+import axios from 'axios';
+export default {
+  name: 'REST',
+  data() {
+    return {
+      dialogFormVisible: false,
+      dialogFormVisible1: false,
+      form: {
+        sName: '',
+        input: '',
+        cGrade: '',
+      },
+      formLabelWidth: '120px',
+      value1: '',
+      value2: '',
+      count: '',
+      radio: '1',
+      currentPage: 1, // 默认显示第几页
+      options: [],
+      value: '',
+      scheduleId: '',
+      tableData: [],
+    };
+  },
+  methods: {
+    showadd() {
+      this.dialogFormVisible = true;
+      this.value1 = '';
+      this.value2 = '';
+      this.form.input = '';
+      this.radio = '1';
+    },
+    dele(row) {
+      this.$confirm('确认删除作息数据？', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      })
+          .then(() => {
+            this.del(row);
+          })
+          .catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消',
+            });
+          });
+    },
 
-			showedit(row) {
-				
-				this.dialogFormVisible1 = true;
-				this.scheduleId = row.scheduleId;
-				this.value1 = row.startTime;
-				this.value2 = row.endTime;
-				this.form.input = row.courseNum;
-				this.radio = row.type+'';
-			},
-			serchlist(vap) {
-				//改变页数
-				this.currentPage = vap;
-				this.getuserlist();
-			},
-			handleCurrentChange(val) {
-				// 改变默认的页数
-				this.currentPage = val;
-				// 切换页码时，要获取每页显示的条数
-				this.getuserlist(this.PageSize, val * this.pageSize);
-			},
-			del(row) {
-				axios({
-					headers: {
-						"User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
-							.loginId,
-						Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
-							.sessionId
-					},
-					method: "post",
-					url: "/hlkt/admin/dailySchedule/delete.action",
-					data: {
-						sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-						scheduleId: row.scheduleId,
-					}
-				}).then(res => {
-					if (res.data.resultCode == "200") {
-						this.getrest();
-					} else {
-						this.$message({
-							type: "error",
-							message: res.data.resultMsg
-						});
-					}
-				});
-			},
-			edit(row) {
-				axios({
-					headers: {
-						"User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
-							.loginId,
-						Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
-							.sessionId
-					},
-					method: "post",
-					url: "/hlkt/admin/dailySchedule/update.action",
-					data: {
-						sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-						scheduleId: this.scheduleId,
-						"courseNum": this.form.input,
-						"startTime": this.value1 + ':00',
-						"endTime": this.value2 + ':00',
-						type: this.radio,
-					}
-				}).then(res => {
-					if (res.data.resultCode == "200") {
-						this.$message({
-							type: 'success',
-							message: res.data.resultMsg
-						});
-						this.dialogFormVisible1 = false;
-						this.getrest();
-					} else {
-						this.$message({
-							type: "error",
-							message: res.data.resultMsg
-						});
-					}
-				});
-			},
+    showedit(row) {
+      this.dialogFormVisible1 = true;
+      this.scheduleId = row.scheduleId;
+      this.value1 = row.startTime;
+      this.value2 = row.endTime;
+      this.form.input = row.courseNum;
+      this.radio = row.type+'';
+    },
+    serchlist(vap) {
+      // 改变页数
+      this.currentPage = vap;
+      this.getuserlist();
+    },
+    handleCurrentChange(val) {
+      // 改变默认的页数
+      this.currentPage = val;
+      // 切换页码时，要获取每页显示的条数
+      this.getuserlist(this.PageSize, val * this.pageSize);
+    },
+    del(row) {
+      axios({
+        headers: {
+          'User-Info': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .loginId,
+          'Authorization': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .sessionId,
+        },
+        method: 'post',
+        url: '/hlkt/admin/dailySchedule/delete.action',
+        data: {
+          sid: JSON.parse(sessionStorage.getItem('SESSION_USER')).sid,
+          scheduleId: row.scheduleId,
+        },
+      }).then((res) => {
+        if (res.data.resultCode == '200') {
+          this.getrest();
+        } else {
+          this.$message({
+            type: 'error',
+            message: res.data.resultMsg,
+          });
+        }
+      });
+    },
+    edit(row) {
+      axios({
+        headers: {
+          'User-Info': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .loginId,
+          'Authorization': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .sessionId,
+        },
+        method: 'post',
+        url: '/hlkt/admin/dailySchedule/update.action',
+        data: {
+          'sid': JSON.parse(sessionStorage.getItem('SESSION_USER')).sid,
+          'scheduleId': this.scheduleId,
+          'courseNum': this.form.input,
+          'startTime': this.value1 + ':00',
+          'endTime': this.value2 + ':00',
+          'type': this.radio,
+        },
+      }).then((res) => {
+        if (res.data.resultCode == '200') {
+          this.$message({
+            type: 'success',
+            message: res.data.resultMsg,
+          });
+          this.dialogFormVisible1 = false;
+          this.getrest();
+        } else {
+          this.$message({
+            type: 'error',
+            message: res.data.resultMsg,
+          });
+        }
+      });
+    },
 
-			add() {
-				axios({
-					headers: {
-						"User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
-							.loginId,
-						Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
-							.sessionId
-					},
-					method: "post",
-					url: "/hlkt/admin/dailySchedule/insert.action",
-					data: {
-						sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-						"courseNum": this.form.input,
-						"startTime": this.value1 + ':00',
-						"endTime": this.value2 + ':00',
-						type: this.radio,
-					}
-				}).then(res => {
-					if (res.data.resultCode == "200") {
-						this.dialogFormVisible = false;
-						this.getrest();
-					} else {
-						this.$message({
-							type: "error",
-							message: res.data.resultMsg
-						});
-					}
-				});
-			},
-			serchlist(vap) {
-				//改变页数
-				this.currentPage = vap;
-				this.getdevice();
-			},
-			handleCurrentChange(val) {
-				// 改变默认的页数
-				this.currentPage = val;
-				// 切换页码时，要获取每页显示的条数
-				this.getdevice(this.PageSize, val * this.pageSize);
-			},
-			getrest() {
-				axios({
-					headers: {
-						"User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
-							.loginId,
-						Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
-							.sessionId
-					},
-					method: "post",
-					url: "/hlkt/admin/dailySchedule/list.action",
-					data: {
-						sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
+    add() {
+      axios({
+        headers: {
+          'User-Info': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .loginId,
+          'Authorization': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .sessionId,
+        },
+        method: 'post',
+        url: '/hlkt/admin/dailySchedule/insert.action',
+        data: {
+          'sid': JSON.parse(sessionStorage.getItem('SESSION_USER')).sid,
+          'courseNum': this.form.input,
+          'startTime': this.value1 + ':00',
+          'endTime': this.value2 + ':00',
+          'type': this.radio,
+        },
+      }).then((res) => {
+        if (res.data.resultCode == '200') {
+          this.dialogFormVisible = false;
+          this.getrest();
+        } else {
+          this.$message({
+            type: 'error',
+            message: res.data.resultMsg,
+          });
+        }
+      });
+    },
+    serchlist(vap) {
+      // 改变页数
+      this.currentPage = vap;
+      this.getdevice();
+    },
+    handleCurrentChange(val) {
+      // 改变默认的页数
+      this.currentPage = val;
+      // 切换页码时，要获取每页显示的条数
+      this.getdevice(this.PageSize, val * this.pageSize);
+    },
+    getrest() {
+      axios({
+        headers: {
+          'User-Info': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .loginId,
+          'Authorization': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .sessionId,
+        },
+        method: 'post',
+        url: '/hlkt/admin/dailySchedule/list.action',
+        data: {
+          sid: JSON.parse(sessionStorage.getItem('SESSION_USER')).sid,
 
-					}
-				}).then(res => {
-					if (res.data.resultCode == "200") {
-						this.tableData = res.data.resultData;
-						this.count = res.data.resultLineNum;
-						console.log(this.tableData);
-					} else {
-						this.$message({
-							type: "error",
-							message: res.data.resultMsg
-						});
-					}
-				});
-			}
-		},
-		components: {},
-		created() {
-			this.getrest();
-		}
-	};
+        },
+      }).then((res) => {
+        if (res.data.resultCode == '200') {
+          this.tableData = res.data.resultData;
+          this.count = res.data.resultLineNum;
+          console.log(this.tableData);
+        } else {
+          this.$message({
+            type: 'error',
+            message: res.data.resultMsg,
+          });
+        }
+      });
+    },
+  },
+  components: {},
+  created() {
+    this.getrest();
+  },
+};
 </script>
 <style scoped lang="scss">
 	@import "src/plugins/px2vw";

@@ -1,0 +1,9 @@
+vue.dev.js
+vue.config.js
+node_modules
+dist/
+test
+build/
+ 
+
+

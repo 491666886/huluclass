@@ -10,7 +10,7 @@
               :default-active="$route.path"
                router
               class="el-menu-vertical-demo"
-              
+
               style="float:left；z-index：1000"
             >
               <el-menu-item index="/admin/video">视频管理</el-menu-item>
@@ -36,7 +36,7 @@
               <el-menu-item index="/admin/stati">
                 <span slot="title">视频统计</span>
               </el-menu-item>
-               
+
             </el-menu>
              <router-view class="adminer" ></router-view>
           </el-col>
@@ -48,48 +48,48 @@
          <router-view   name="admin" style="margin-left:250px"></router-view>
       </div> -->
     </el-container>
-           
+
   </el-container>
-  
+
 </template>
 <script>
-import axios from "axios";
-import adminHeader from "./common/admin-header";
-import NavMenu from "./common/NavMenu";
+import axios from 'axios';
+import adminHeader from './common/admin-header';
+import NavMenu from './common/NavMenu';
 export default {
   components: {
     adminHeader,
-    NavMenu: NavMenu
+    NavMenu: NavMenu,
   },
   data: function() {
     return {
 
-     
+
       currentPage: 1, // 默认显示第几页
-     
-      activeIndex: "",
-      
-      pageNum: "1",
-    
+
+      activeIndex: '',
+
+      pageNum: '1',
+
     };
   },
 
   methods: {
-   
+
   },
-  mounted(){
+  mounted() {
     // this.$router.push()
-    let start = window.location.href.lastIndexOf('/');
-    let path = window.location.href.slice(start+1);
+    const start = window.location.href.lastIndexOf('/');
+    const path = window.location.href.slice(start+1);
     this.activeIndex = 'admin/'+path;
-  }
+  },
 };
 </script>
 <style scoped lang="scss">
 @import "src/plugins/px2vw";
 .blue {
   display: inline;
-  
+
   position: relative;
   top: px2vw(130px);
   background-color: #39aeee;

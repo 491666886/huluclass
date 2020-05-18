@@ -14,15 +14,15 @@
   font-size: px2vw(14px);
   text-align: center;
   background: #fff;
-  
+
     position: fixed;
     bottom: 0;
     width: 100%;
-  
+
 }
 </style>
 <script>
 export default {
-  name: "page-footer"
+  name: 'page-footer',
 };
 </script>

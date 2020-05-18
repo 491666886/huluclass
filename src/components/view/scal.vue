@@ -71,7 +71,7 @@
 						</el-table>
 					</el-form-item>
 	<el-pagination :hide-on-single-page="true" class="page"   layout="total, prev, pager, next" :page-size="5" :current-page="currentPage"
-				 @current-change="handleCurrentChange" :total="parseInt(this.count)"></el-pagination>					
+				 @current-change="handleCurrentChange" :total="parseInt(this.count)"></el-pagination>
 					<el-button type="primary" style="width: 160px;" :disabled="disabled" @click="readd()">继续添加特殊日期</el-button>
 				</el-form>
 			</div>
@@ -80,329 +80,325 @@
 </template>
 
 <script>
-	// @ is an alias to /src
-	import axios from "axios";
+// @ is an alias to /src
+import axios from 'axios';
 
-	export default {
-		name: "scal",
-		data() {
-			return {
-				currentPage: 1, // 默认显示第几页
-				disabled:true,
-				radio: "1",
-				count: "",
-				hide: false,
-				show: true,
-				tableData: [{
-						date: "",
-						details: "开学日期",
-						sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-						status: 0
+export default {
+  name: 'scal',
+  data() {
+    return {
+      currentPage: 1, // 默认显示第几页
+      disabled: true,
+      radio: '1',
+      count: '',
+      hide: false,
+      show: true,
+      tableData: [{
+        date: '',
+        details: '开学日期',
+        sid: JSON.parse(sessionStorage.getItem('SESSION_USER')).sid,
+        status: 0,
 
-					},
-					{
-						date: "",
-						details: "第一天上课日期",
-						sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-						status: 1
-					},
-					{
-						date: "",
-						details: "放假日期",
-						sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-						status: 0
-					}
-				],
-				elseData: [
+      },
+      {
+        date: '',
+        details: '第一天上课日期',
+        sid: JSON.parse(sessionStorage.getItem('SESSION_USER')).sid,
+        status: 1,
+      },
+      {
+        date: '',
+        details: '放假日期',
+        sid: JSON.parse(sessionStorage.getItem('SESSION_USER')).sid,
+        status: 0,
+      },
+      ],
+      elseData: [
 
-				],
-				place1: '',
-				dialogFormVisible1: false,
-				form: {
-					value1: "",
-					value2: "",
-					value3: "",
-					newdate: "",
-					id: "",
-					input: ""
-				},
-				formLabelWidth: "120px",
-				input: "",
-				calendarData: [],
-				value: new Date()
-			};
-		},
-		methods: {
-			serchlist(vap) {
-				//改变页数
-				this.currentPage = vap;
-				this.getuserlist();
-			},
-			handleCurrentChange(val) {
-				// 改变默认的页数
-				this.currentPage = val;
-				// 切换页码时，要获取每页显示的条数
-				this.getuserlist(this.PageSize, val * this.pageSize);
-			},
-			readd() {
-				this.form.newdate = '';
-				this.form.input = '';
-				this.dialogFormVisible1 = true;
+      ],
+      place1: '',
+      dialogFormVisible1: false,
+      form: {
+        value1: '',
+        value2: '',
+        value3: '',
+        newdate: '',
+        id: '',
+        input: '',
+      },
+      formLabelWidth: '120px',
+      input: '',
+      calendarData: [],
+      value: new Date(),
+    };
+  },
+  methods: {
+    serchlist(vap) {
+      // 改变页数
+      this.currentPage = vap;
+      this.getuserlist();
+    },
+    handleCurrentChange(val) {
+      // 改变默认的页数
+      this.currentPage = val;
+      // 切换页码时，要获取每页显示的条数
+      this.getuserlist(this.PageSize, val * this.pageSize);
+    },
+    readd() {
+      this.form.newdate = '';
+      this.form.input = '';
+      this.dialogFormVisible1 = true;
+    },
 
-			},
+    hold() {
+      this.hide = false;
+      this.show = true;
+      // this.add();
+    },
+    showq() {
+      this.hide = true;
+      this.show = false;
+    },
 
-			hold() {
-				this.hide = false;
-				this.show = true;
-				// this.add();
-			},
-			showq() {
-				this.hide = true;
-				this.show = false
-			},
+    dele(row) {
+      this.$confirm('确认删除用户数据？', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      })
+          .then(() => {
+            this.del(row);
+          })
+          .catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消',
+            });
+          });
+    },
+    showedit(row) {
+      this.form.input = row.details;
+      this.form.newdate = row.date;
+      this.form.id = row.id;
+      this.dialogFormVisible1 = true;
+    },
+    serchlist(vap) {
+      // 改变页数
+      this.currentPage = vap;
+      this.getuserlist();
+    },
+    handleCurrentChange(val) {
+      // 改变默认的页数
+      this.currentPage = val;
+      // 切换页码时，要获取每页显示的条数
+      this.getuserlist(this.PageSize, val * this.pageSize);
+    },
+    del(row) {
+      axios({
+        headers: {
+          'User-Info': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .loginId,
+          'Authorization': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .sessionId,
+        },
+        method: 'post',
+        url: '/hlkt/admin/kalendar/updateKalendar.action',
+        data: {
+          'date': row.date,
+          'week': 0,
+          'details': '',
+          'status': this.radio,
+          'id': row.id,
+          'sid': JSON.parse(sessionStorage.getItem('SESSION_USER')).sid,
+        },
+      }).then((res) => {
+        if (res.data.resultCode == '200') {
+          this.getrest();
+        } else {
+          this.$message({
+            type: 'error',
+            message: res.data.resultMsg,
+          });
+        }
+      });
+    },
+    edit(row) {
+      axios({
+        headers: {
+          'User-Info': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .loginId,
+          'Authorization': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .sessionId,
+        },
+        method: 'post',
+        url: '/hlkt/admin/kalendar/updateKalendar.action',
+        data: {
+          'id': this.form.id,
+          'date': this.form.newdate,
+          'week': 0,
+          'details': this.form.input,
+          'status': this.radio,
+          'sid': JSON.parse(sessionStorage.getItem('SESSION_USER')).sid,
+        },
+      }).then((res) => {
+        if (res.data.resultCode == '200') {
+          this.$message({
+            type: 'success',
+            message: res.data.resultMsg,
+          });
+          this.dialogFormVisible1 = false;
+          this.getrest();
+        } else {
+          this.$message({
+            type: 'error',
+            message: res.data.resultMsg,
+          });
+        }
+      });
+    },
 
-			dele(row) {
-				this.$confirm("确认删除用户数据？", {
-						confirmButtonText: "确定",
-						cancelButtonText: "取消",
-						type: "warning"
-					})
-					.then(() => {
-						this.del(row);
-					})
-					.catch(() => {
-						this.$message({
-							type: "info",
-							message: "已取消"
-						});
-					});
-			},
-			showedit(row) {
-				this.form.input = row.details;
-				this.form.newdate = row.date;
-				this.form.id = row.id;
-				this.dialogFormVisible1 = true;
+    add() {
+      this.tableData[0].date = this.form.value1;
+      this.tableData[1].date = this.form.value2;
+      this.tableData[2].date = this.form.value3;
+      const kx = new Date(this.tableData[0].date).getTime();
+      const sk = new Date(this.tableData[1].date).getTime();
+      const fj = new Date(this.tableData[2].date).getTime();
+      if (sk >= kx && fj > sk) {
+        axios({
+          headers: {
+            'User-Info': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+                .loginId,
+            'Authorization': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+                .sessionId,
+          },
+          method: 'post',
+          url: '/hlkt/admin/kalendar/addKalendar.action',
+          data: {
+            list: [{
+              date: this.form.value1,
+              details: '开学日期',
+              sid: JSON.parse(sessionStorage.getItem('SESSION_USER')).sid,
+              status: 0,
 
-			},
-			serchlist(vap) {
-				//改变页数
-				this.currentPage = vap;
-				this.getuserlist();
-			},
-			handleCurrentChange(val) {
-				// 改变默认的页数
-				this.currentPage = val;
-				// 切换页码时，要获取每页显示的条数
-				this.getuserlist(this.PageSize, val * this.pageSize);
-			},
-			del(row) {
-				axios({
-					headers: {
-						"User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
-							.loginId,
-						Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
-							.sessionId
-					},
-					method: "post",
-					url: "/hlkt/admin/kalendar/updateKalendar.action",
-					data: {
-						"date": row.date,
-						"week": 0,
-						"details": '',
-						"status": this.radio,
-						id: row.id,
-						"sid": JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-					}
-				}).then(res => {
-					if (res.data.resultCode == "200") {
-						this.getrest();
-					} else {
-						this.$message({
-							type: "error",
-							message: res.data.resultMsg
-						});
-					}
-				});
-			},
-			edit(row) {
-				axios({
-					headers: {
-						"User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
-							.loginId,
-						Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
-							.sessionId
-					},
-					method: "post",
-					url: "/hlkt/admin/kalendar/updateKalendar.action",
-					data: {
-						id: this.form.id,
-						"date": this.form.newdate,
-						"week": 0,
-						"details": this.form.input,
-						"status": this.radio,
-						"sid": JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-					}
-				}).then(res => {
-					if (res.data.resultCode == "200") {
-						this.$message({
-							type: "success",
-							message: res.data.resultMsg
-						});
-						this.dialogFormVisible1 = false;
-						this.getrest();
-					} else {
-						this.$message({
-							type: "error",
-							message: res.data.resultMsg
-						});
-					}
-				});
-			},
+            },
+            {
+              date: this.form.value2,
+              details: '第一天上课日期',
+              sid: JSON.parse(sessionStorage.getItem('SESSION_USER')).sid,
+              status: 1,
+            },
+            {
+              date: this.form.value3,
+              details: '放假日期',
+              sid: JSON.parse(sessionStorage.getItem('SESSION_USER')).sid,
+              status: 0,
+            },
 
-			add() {
-				this.tableData[0].date = this.form.value1;
-				this.tableData[1].date = this.form.value2;
-				this.tableData[2].date = this.form.value3;
-				let kx = new Date(this.tableData[0].date).getTime();
-				let sk = new Date(this.tableData[1].date).getTime();
-				let fj = new Date(this.tableData[2].date).getTime();
-				if (sk >= kx && fj > sk) {
-					axios({
-						headers: {
-							"User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
-								.loginId,
-							Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
-								.sessionId
-						},
-						method: "post",
-						url: "/hlkt/admin/kalendar/addKalendar.action",
-						data: {
-							list:[ {
-								date: this.form.value1,
-								details: "开学日期",
-								sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-								status: 0
+            ]},
+        }).then((res) => {
+          if (res.data.resultCode == '200') {
+            this.dialogFormVisible = false;
+            this.getrest();
+            // this.show = true;
+            // this.hide = false;
+            this.$message('保存成功');
+          } else {
+            this.$message({
+              type: 'error',
+              message: res.data.resultMsg,
+            });
+          }
+        });
+      } else if (sk <kx) {
+        this.$message({
+          type: 'error',
+          message: '第一天上课日期不应早于开学日期',
+        });
+      } else if (kx >fj) {
+        this.$message({
+          type: 'error',
+          message: '放假日期不应早于开学日期',
+        });
+      }
+    },
+    serchlist(vap) {
+      // 改变页数
+      this.currentPage = vap;
+      this.getdevice();
+    },
+    handleCurrentChange(val) {
+      // 改变默认的页数
+      this.currentPage = val;
+      // 切换页码时，要获取每页显示的条数
+      this.getdevice(this.PageSize, val * this.pageSize);
+    },
+    getrest() {
+      this.getrest2();
+      axios({
+        headers: {
+          'User-Info': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .loginId,
+          'Authorization': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .sessionId,
+        },
+        method: 'post',
+        url: '/hlkt/admin/kalendar/getKalendarList.action',
+        data: {
+          sid: JSON.parse(sessionStorage.getItem('SESSION_USER')).sid,
+        },
+      }).then((res) => {
+        if (res.data.resultCode == '200') {
+          this.calendarData = res.data.resultData.slice(3);
 
-							},
-							{
-								date: this.form.value2,
-								details: "第一天上课日期",
-								sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-								status: 1
-							},
-							{
-								date: this.form.value3,
-								details: "放假日期",
-								sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-								status: 0
-							}
+          if (this.calendarData.length >= 3) {
+            this.disabled=false;
+            this.tableData = res.data.resultData.slice(0, 3); // 前三那哥日历。
+            this.form.value1 = this.tableData[0].date;
+            this.form.value2 = this.tableData[1].date;
+            this.form.value3 = this.tableData[2].date;
+          }
+        } else {
+          this.$message({
+            type: 'error',
+            message: res.data.resultMsg,
+          });
+        }
+      });
+    },
+    getrest2() {
+      axios({
+        headers: {
+          'User-Info': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .loginId,
+          'Authorization': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .sessionId,
+        },
+        method: 'post',
+        url: '/hlkt/admin/kalendar/specialKalendar.action',
+        data: {
+          sid: JSON.parse(sessionStorage.getItem('SESSION_USER')).sid,
+          pageSize: 5,
+          pageNum: this.currentPage,
+        },
+      }).then((res) => {
+        if (res.data.resultCode == '200') {
+          this.elseData = res.data.resultData.list;
+          this.count=res.data.resultData.total;
+          console.log(res.data.resultData);
+        } else {
+          this.elseData = [];
+        }
+      });
+    },
+  },
 
-						]}
-					}).then(res => {
-						if (res.data.resultCode == "200") {
-							this.dialogFormVisible = false;
-							this.getrest();
-							// this.show = true;
-							// this.hide = false;
-							this.$message('保存成功');
-						} else {
-							this.$message({
-								type: "error",
-								message: res.data.resultMsg
-							});
-						}
-					});
-				} else  if(sk <kx){
-					this.$message({
-						type: "error",
-						message: '第一天上课日期不应早于开学日期'
-					});
-				}else  if(kx >fj){
-					this.$message({
-						type: "error",
-						message: '放假日期不应早于开学日期'
-					});
-				}
-
-			},
-			serchlist(vap) {
-				//改变页数
-				this.currentPage = vap;
-				this.getdevice();
-			},
-			handleCurrentChange(val) {
-				// 改变默认的页数
-				this.currentPage = val;
-				// 切换页码时，要获取每页显示的条数
-				this.getdevice(this.PageSize, val * this.pageSize);
-			},
-			getrest() {
-				this.getrest2();
-				axios({
-					headers: {
-						"User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
-							.loginId,
-						Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
-							.sessionId
-					},
-					method: "post",
-					url: "/hlkt/admin/kalendar/getKalendarList.action",
-					data: {
-						sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid
-					}
-				}).then(res => {
-					if (res.data.resultCode == "200") {
-						this.calendarData = res.data.resultData.slice(3);
-						
-						if (this.calendarData.length >= 3) {
-							this.disabled=false;
-							this.tableData = res.data.resultData.slice(0, 3); //前三那哥日历。
-							this.form.value1 = this.tableData[0].date;
-							this.form.value2 = this.tableData[1].date;
-							this.form.value3 = this.tableData[2].date;
-						}
-						
-					} else {
-						this.$message({
-							type: "error",
-							message: res.data.resultMsg
-						});
-					}
-				});
-			},
-			getrest2() {
-				axios({
-					headers: {
-						"User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
-							.loginId,
-						Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
-							.sessionId
-					},
-					method: "post",
-					url: "/hlkt/admin/kalendar/specialKalendar.action",
-					data: {
-						sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-						pageSize: 5,
-						pageNum: this.currentPage
-					}
-				}).then(res => {
-					if (res.data.resultCode == "200") {
-						this.elseData = res.data.resultData.list;
-						this.count=res.data.resultData.total;
-						console.log(res.data.resultData);
-					} else {
-						this.elseData = [];
-					}
-				});
-			}
-		},
-
-		components: {},
-		created() {
-			// console.log(addfrom);
-			this.getrest();
-		}
-	};
+  components: {},
+  created() {
+    // console.log(addfrom);
+    this.getrest();
+  },
+};
 </script>
 <style scoped lang="scss">
 	@import "src/plugins/px2vw";

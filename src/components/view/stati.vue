@@ -16,14 +16,14 @@
 
 <script>
 // @ is an alias to /src
-import axios from "axios";
+import axios from 'axios';
 export default {
-  name: "stati",
+  name: 'stati',
   data() {
     return {
-      currentStorage: "",
-      totalStorage: "",
-      storageUnit: ""
+      currentStorage: '',
+      totalStorage: '',
+      storageUnit: '',
     };
   },
 
@@ -32,21 +32,21 @@ export default {
     getstati() {
       axios({
         headers: {
-          "User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
-            .loginId,
-          Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
-            .sessionId
+          'User-Info': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .loginId,
+          'Authorization': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .sessionId,
         },
-        method: "get",
+        method: 'get',
         url:
-          "/hlkt/admin/videoOpt/getStorage/" +
-          JSON.parse(sessionStorage.getItem("SESSION_USER")).sid +
-          ".action"
-      }).then(res => {
-        if (res.data.resultCode == "200") {
-			this.currentStorage =res.data.resultData.currentStorage;
-			this.totalStorage =res.data.resultData.totalStorage;
-			this.storageUnit =res.data.resultData.storageUnit
+          '/hlkt/admin/videoOpt/getStorage/' +
+          JSON.parse(sessionStorage.getItem('SESSION_USER')).sid +
+          '.action',
+      }).then((res) => {
+        if (res.data.resultCode == '200') {
+          this.currentStorage =res.data.resultData.currentStorage;
+          this.totalStorage =res.data.resultData.totalStorage;
+          this.storageUnit =res.data.resultData.storageUnit;
         } else {
           // this.$message({
           //   type: "error",
@@ -54,11 +54,11 @@ export default {
           // });
         }
       });
-    }
+    },
   },
   created() {
     this.getstati();
-  }
+  },
 };
 </script>
 <style scoped lang="scss">

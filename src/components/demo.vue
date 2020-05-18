@@ -29,7 +29,7 @@
            <el-submenu index="1-4-2-1-1">
           <template slot="title">第五层</template>
             <el-menu-item index="1-4-1-1-1-1">选项1</el-menu-item>
-          
+
         </el-submenu>
         </el-submenu>
         </el-submenu>
@@ -47,7 +47,7 @@
         <i class="el-icon-setting"></i>
         <span slot="title">导航四</span>
       </el-menu-item>
-     
+
     </el-menu>
         <div class="login-page-main" ref="scrollBox">
             <div class="login-main">
@@ -63,7 +63,7 @@
                                     v-model="loginForm.username"
                                     placeholder="用户名/手机号/邮箱"
                                     class="login-form-line-input"
-                                   
+
                                      @input="replaceSpace('username')"
                             ></el-input>
                         </el-form-item>
@@ -91,7 +91,7 @@
                 </div>
             </div>
              <el-breadcrumb separator-class="el-icon-arrow-right">
-  
+
   <el-breadcrumb-item :to="{ path: '/login' }">首页</el-breadcrumb-item>
   <el-breadcrumb-item>活动管理</el-breadcrumb-item>
   <el-breadcrumb-item>活动列表</el-breadcrumb-item>
@@ -105,116 +105,113 @@
 </template>
 
 <script>
-    import axios from 'axios'
-    import qs from 'qs'
-    import MD5 from 'md5'
+import axios from 'axios';
+import qs from 'qs';
+import MD5 from 'md5';
 
-    import pageHeader from "./common/page-header";
-    import pageFooter from "./common/page-footer";
-    import contactUs from "./common/contact-us";
-
-
-    export default {
-        name: "login-page",
-        components: {
-            pageHeader,
-            pageFooter,
-            contactUs,
-
-        },
-        data: function () {
-
-            return {
-                loading:false,
-                loginerror:'',
-                showerror:false,
-                isShowSecurityCode: false,
-                loginTitle: "用户中心",
-                user: null,
-                reLogin: false,
-                loginForm: {
-                    username: "",
-                    password: "",
-                    securityCode: ""
-                },
-                rules: {
-                    username: [
-                        {required: true, message: "请输入用户名", trigger: "blur"}
-                    ],
-                    password: [{required: true, message: "请输入密码", trigger: "blur"}],
-                    securityCode: [
-                        {required: true, message: "请输入验证码", trigger: "blur"}
-                    ]
-                },
-            };
-        },
-       
-    
-     
-        methods: {
-             replaceSpace(key){
-                this.loginForm[key] = this.loginForm[key].replace(/\s/g,'');
-            },
-            submitForm(formName) {
-                this.showerror=false;
-                this.loading=true;
-                this.$refs[formName].validate((valid) => {
-                    if (valid) {
-                        this.login();
-                    } else {
-//
-                        return false;
-                    }
-                });
-            },
-            login() {
-                axios({
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    method: 'post',
-                    url: '/uc/sso/clientlogin.do?client_id=f19838dfc34f4b6989b9ae65d1b0ej78',
-                    data: {
-                        login_name: this.loginForm.username,
-                        password: MD5(this.loginForm.password),
-                    },
-                }).then(res => {
-                    console.log(res.data.data.type)
-                    if (res.data.status == "success") {
-                         this.loading=false;
-                        sessionStorage.setItem("SESSION_USER", JSON.stringify(res.data.data));
-                        sessionStorage.setItem("isLogin",true);
-//                        this.token(JSON.stringify(res.data.data))
-                        this.$store.dispatch("userLogin", true);
-                        localStorage.setItem("Flag", "isLogin");//储存登陆信息
-                        if (res.data.data.type == '1') {//跳转到管理员页面
-                            this.$router.push("/collect")
-                        } else {//用户中心页
-                            console.log(res.data.data.type)
-                            this.$router.push(`/account`)
-                        }
-//                        this.$store.commit('save_userinfo',res.data.data)
-//                        console.log(sessionStorage.getItem('SESSION_USER'))
-////                        this.$router.push(`/account`)
-                    } else {//
-                        this.loginerror =res.data.msg
-                       this.showerror = true;
-                         this.loading=false;
-
-                    }
-                })
-                    .catch(err => {
-                         this.loading=false;
-                        this.$message({
-                            type: 'success',
-                            message: (err) ,
-                        });
-                    })
-            },
-        }
+import pageHeader from './common/page-header';
+import pageFooter from './common/page-footer';
+import contactUs from './common/contact-us';
 
 
+export default {
+  name: 'login-page',
+  components: {
+    pageHeader,
+    pageFooter,
+    contactUs,
+
+  },
+  data: function() {
+    return {
+      loading: false,
+      loginerror: '',
+      showerror: false,
+      isShowSecurityCode: false,
+      loginTitle: '用户中心',
+      user: null,
+      reLogin: false,
+      loginForm: {
+        username: '',
+        password: '',
+        securityCode: '',
+      },
+      rules: {
+        username: [
+          {required: true, message: '请输入用户名', trigger: 'blur'},
+        ],
+        password: [{required: true, message: '请输入密码', trigger: 'blur'}],
+        securityCode: [
+          {required: true, message: '请输入验证码', trigger: 'blur'},
+        ],
+      },
     };
+  },
+
+
+  methods: {
+    replaceSpace(key) {
+      this.loginForm[key] = this.loginForm[key].replace(/\s/g, '');
+    },
+    submitForm(formName) {
+      this.showerror=false;
+      this.loading=true;
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.login();
+        } else {
+          //
+          return false;
+        }
+      });
+    },
+    login() {
+      axios({
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        method: 'post',
+        url: '/uc/sso/clientlogin.do?client_id=f19838dfc34f4b6989b9ae65d1b0ej78',
+        data: {
+          login_name: this.loginForm.username,
+          password: MD5(this.loginForm.password),
+        },
+      }).then((res) => {
+        console.log(res.data.data.type);
+        if (res.data.status == 'success') {
+          this.loading=false;
+          sessionStorage.setItem('SESSION_USER', JSON.stringify(res.data.data));
+          sessionStorage.setItem('isLogin', true);
+          //                        this.token(JSON.stringify(res.data.data))
+          this.$store.dispatch('userLogin', true);
+          localStorage.setItem('Flag', 'isLogin');// 储存登陆信息
+          if (res.data.data.type == '1') {// 跳转到管理员页面
+            this.$router.push('/collect');
+          } else {// 用户中心页
+            console.log(res.data.data.type);
+            this.$router.push(`/account`);
+          }
+          //                        this.$store.commit('save_userinfo',res.data.data)
+          //                        console.log(sessionStorage.getItem('SESSION_USER'))
+          // //                        this.$router.push(`/account`)
+        } else {//
+          this.loginerror =res.data.msg;
+          this.showerror = true;
+          this.loading=false;
+        }
+      })
+          .catch((err) => {
+            this.loading=false;
+            this.$message({
+              type: 'success',
+              message: (err),
+            });
+          });
+    },
+  },
+
+
+};
 </script>
 
 

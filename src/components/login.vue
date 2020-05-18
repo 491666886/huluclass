@@ -47,32 +47,32 @@
   </div>
 </template>
 <script>
-import axios from "axios";
+import axios from 'axios';
 export default {
-  name: "login",
+  name: 'login',
 
   data: function() {
     return {
       showerror: false,
       loading: false,
       loginForm: {
-        username: "",
-        password: ""
+        username: '',
+        password: '',
       },
       rules: {
-        username: [{ required: true, message: "请输入工号", trigger: "blur" }],
-        password: [{ required: true, message: "请输入密码", trigger: "blur" }]
-      }
+        username: [{required: true, message: '请输入工号', trigger: 'blur'}],
+        password: [{required: true, message: '请输入密码', trigger: 'blur'}],
+      },
     };
   },
   methods: {
     replaceSpace(key) {
-      this.loginForm[key] = this.loginForm[key].replace(/\s/g, "");
+      this.loginForm[key] = this.loginForm[key].replace(/\s/g, '');
     },
     submitForm(formName) {
       this.showerror = false;
       this.loading = true;
-      this.$refs[formName].validate(valid => {
+      this.$refs[formName].validate((valid) => {
         if (valid) {
           this.login();
         } else {
@@ -83,42 +83,42 @@ export default {
     login() {
       axios({
         headers: {
-          "Content-Type": "application/json",
-          "User-Info": encodeURI(this.loginForm.username)
+          'Content-Type': 'application/json',
+          'User-Info': encodeURI(this.loginForm.username),
         },
-        method: "post",
-        url: "/hlkt/user/login.action",
+        method: 'post',
+        url: '/hlkt/user/login.action',
         data: {
           loginId: this.loginForm.username,
-          password: this.loginForm.password
-        }
+          password: this.loginForm.password,
+        },
       })
-        .then(res => {
-          if (res.data.resultCode == "200") {
+          .then((res) => {
+            if (res.data.resultCode == '200') {
+              this.loading = false;
+              sessionStorage.setItem(
+                  'SESSION_USER',
+                  JSON.stringify(res.data.resultData),
+              );
+              sessionStorage.setItem('isLogin', true);
+              this.$store.dispatch('userLogin', true);
+              localStorage.setItem('Flag', 'isLogin'); // 储存登陆信息
+              this.$router.push('/login');
+            } else {
+              this.loginerror = res.data.resultMsg;
+              this.showerror = true;
+              this.loading = false;
+            }
+          })
+          .catch((err) => {
             this.loading = false;
-            sessionStorage.setItem(
-              "SESSION_USER",
-              JSON.stringify(res.data.resultData)
-            );
-            sessionStorage.setItem("isLogin", true);
-            this.$store.dispatch("userLogin", true);
-            localStorage.setItem("Flag", "isLogin"); //储存登陆信息
-            this.$router.push("/login");
-          } else {
-            this.loginerror = res.data.resultMsg;
-            this.showerror = true;
-            this.loading = false;
-          }
-        })
-        .catch(err => {
-          this.loading = false;
-          this.$message({
-            type: "error",
-            message: err
+            this.$message({
+              type: 'error',
+              message: err,
+            });
           });
-        });
-    }
-  }
+    },
+  },
 };
 </script>
 <style lang="scss" scoped>

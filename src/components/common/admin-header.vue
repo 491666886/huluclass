@@ -11,65 +11,65 @@
 </template>
 <script>
 export default {
-  name: "page-header",
-  props: ["message1"],
+  name: 'page-header',
+  props: ['message1'],
   data: function() {
     return {
-      input3: "",
-      admin:true,
+      input3: '',
+      admin: true,
     };
   },
   methods: {
 	  search() {
-	  	if(this.input3.length == 0){
+	  	if (this.input3.length == 0) {
 	  		this.$message({
-	  		  type: "error",
-	  		  message: '请输入搜索内容'
+	  		  type: 'error',
+	  		  message: '请输入搜索内容',
 	  		});
-	  	}else{
-	  		let routeUrl = this.$router.resolve({
-	  		     path:`/search/${this.input3}`,
-	  		     
+	  	} else {
+	  		const routeUrl = this.$router.resolve({
+	  		     path: `/search/${this.input3}`,
+
 	  		});
 	  		window.open(routeUrl .href, '_blank');
 	  	}
 	  },
 
     quitid() {
-      this.$confirm("此操作将退出系统, 是否继续?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
+      this.$confirm('此操作将退出系统, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
       })
-        .then(() => {
-          sessionStorage.clear();
-          localStorage.removeItem("Flag"); //清除保存的登陆状态
-          this.$router.push(`/`);
-        })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消"
+          .then(() => {
+            sessionStorage.clear();
+            localStorage.removeItem('Flag'); // 清除保存的登陆状态
+            this.$router.push(`/`);
+          })
+          .catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消',
+            });
           });
-        });
     },
     user() {
-      let routeUrl = this.$router.resolve({
-          path: "/collect",
-          
-     });
-     window.open(routeUrl .href, '_blank');
+      const routeUrl = this.$router.resolve({
+        path: '/collect',
+
+      });
+      window.open(routeUrl .href, '_blank');
       // this.$router.push("/collect");
     },
     home() {
-      this.$router.push("/login");
-    }
+      this.$router.push('/login');
+    },
   },
   created() {
     if (this.message1 != undefined) {
       this.input3 = this.message1;
     }
-  }
+  },
 };
 </script>
 <style lang="scss" scoped>
@@ -109,7 +109,7 @@ a {
   margin-right: px2vw(9px);
 }
 .home {
-  
+
   margin-left: px2vw(16px);
   float: left;
   padding: px2vw(41px);

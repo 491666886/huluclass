@@ -50,33 +50,33 @@
   </div>
 </template>
 <script>
-import axios from "axios";
-import pageHeader from "./common/page-header";
-import pageFooter from "./common/page-footer";
+import axios from 'axios';
+import pageHeader from './common/page-header';
+import pageFooter from './common/page-footer';
 export default {
   components: {
     pageHeader,
-    pageFooter
+    pageFooter,
   },
   data: function() {
     return {
       videolist: [],
       currentPage: 1, // 默认显示第几页
-      count: "",
+      count: '',
       tableData: [],
-      input3: "",
-      username: JSON.parse(sessionStorage.getItem("SESSION_USER")).name,
-      loginId: JSON.parse(sessionStorage.getItem("SESSION_USER")).loginId
+      input3: '',
+      username: JSON.parse(sessionStorage.getItem('SESSION_USER')).name,
+      loginId: JSON.parse(sessionStorage.getItem('SESSION_USER')).loginId,
     };
   },
 
   methods: {
-	  retry(){
+	  retry() {
 		  this.input3='';
-		  this.getvideolist()
+		  this.getvideolist();
 	  },
     serchlist(vap) {
-      //改变页数
+      // 改变页数
       this.currentPage = vap;
       this.getvideolist();
     },
@@ -89,24 +89,24 @@ export default {
     search() {
       axios({
         headers: {
-          "User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
-            .loginId,
-          Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
-            .sessionId
+          'User-Info': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .loginId,
+          'Authorization': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .sessionId,
         },
-        method: "post",
-        url: "/hlkt/api/v1/user/search/collect/videos.action",
+        method: 'post',
+        url: '/hlkt/api/v1/user/search/collect/videos.action',
         data: {
           pageSize: 12,
           pageNum: 1,
-          uid:Number(JSON.parse(sessionStorage.getItem("SESSION_USER")).userId),
-          sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-          keywords: this.input3
-        }
-      }).then(res => {
-        if (res.data.resultCode == "200") {
-         this.count = res.data.resultData.total;
-         this.videolist = res.data.resultData.list;
+          uid: Number(JSON.parse(sessionStorage.getItem('SESSION_USER')).userId),
+          sid: JSON.parse(sessionStorage.getItem('SESSION_USER')).sid,
+          keywords: this.input3,
+        },
+      }).then((res) => {
+        if (res.data.resultCode == '200') {
+          this.count = res.data.resultData.total;
+          this.videolist = res.data.resultData.list;
         } else {
           this.videolist = [];
         }
@@ -114,41 +114,40 @@ export default {
     },
 
     getDescribe(id) {
-      let routeUrl = this.$router.resolve({
-        path: `/describe/${id}`
+      const routeUrl = this.$router.resolve({
+        path: `/describe/${id}`,
       });
-      window.open(routeUrl.href, "_blank");
+      window.open(routeUrl.href, '_blank');
     },
     getvideolist() {
       axios({
         headers: {
-          "User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
-            .loginId,
-          Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
-            .sessionId
+          'User-Info': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .loginId,
+          'Authorization': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .sessionId,
         },
-        method: "post",
-        url: "/hlkt/api/v1/user/videos.action",
+        method: 'post',
+        url: '/hlkt/api/v1/user/videos.action',
         data: {
           pageSize: 12,
           pageNum: this.currentPage,
-          uid: JSON.parse(sessionStorage.getItem("SESSION_USER")).userId,
+          uid: JSON.parse(sessionStorage.getItem('SESSION_USER')).userId,
           // sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid
-        }
-      }).then(res => {
-        if (res.data.resultCode == "200") {
+        },
+      }).then((res) => {
+        if (res.data.resultCode == '200') {
           this.count = res.data.resultData.total;
           this.videolist = res.data.resultData.list;
-         
         } else {
           this.videolist = [];
         }
       });
-    }
+    },
   },
   mounted() {
     this.getvideolist();
-  }
+  },
 };
 </script>
 <style scoped lang="scss">

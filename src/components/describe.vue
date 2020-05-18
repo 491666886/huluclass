@@ -60,87 +60,87 @@
   </div>
 </template>
 <script>
-import axios from "axios";
-import pageHeader from "./common/page-header";
+import axios from 'axios';
+import pageHeader from './common/page-header';
 
-import pageFooter from "./common/page-footer";
+import pageFooter from './common/page-footer';
 export default {
   components: {
     pageHeader,
-    pageFooter
+    pageFooter,
   },
   data: function() {
     return {
-      videoURL: "",
+      videoURL: '',
       knowledges: [],
       collectViode: false,
       //  src: require('http://10.150.27.126:8080/video/shuxue.mp4'),
       video: {
-        subjects: "",
-        grade: "",
-        unit: ""
-      }
+        subjects: '',
+        grade: '',
+        unit: '',
+      },
     };
   },
   computed: {
     average: function() {
       return Math.round(this.sum / 3);
-    }
+    },
   },
   methods: {
     gopoint(time) {
-      var $video = document.getElementById("video");
+      const $video = document.getElementById('video');
 
       $video.currentTime = time;
     },
     formatSeconds(value) {
       let result = parseInt(value);
-      let h =
-        Math.floor(result / 3600) < 10
-          ? "0" + Math.floor(result / 3600)
-          : Math.floor(result / 3600);
-      let m =
-        Math.floor((result / 60) % 60) < 10
-          ? "0" + Math.floor((result / 60) % 60)
-          : Math.floor((result / 60) % 60);
-      let s =
-        Math.floor(result % 60) < 10
-          ? "0" + Math.floor(result % 60)
-          : Math.floor(result % 60);
+      const h =
+        Math.floor(result / 3600) < 10 ?
+          '0' + Math.floor(result / 3600) :
+          Math.floor(result / 3600);
+      const m =
+        Math.floor((result / 60) % 60) < 10 ?
+          '0' + Math.floor((result / 60) % 60) :
+          Math.floor((result / 60) % 60);
+      const s =
+        Math.floor(result % 60) < 10 ?
+          '0' + Math.floor(result % 60) :
+          Math.floor(result % 60);
       result = `${h}:${m}:${s}`;
       console.log(result);
       return result;
     },
 
     myFunction() {
-      document.getElementById("alert").style.display = "none";
+      document.getElementById('alert').style.display = 'none';
     },
     getvideo() {
       axios({
         headers: {
-          "User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
-            .loginId,
-          Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
-            .sessionId
+          'User-Info': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .loginId,
+          'Authorization': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .sessionId,
         },
-        method: "post",
-        url: "/hlkt/api/v1/video.action",
+        method: 'post',
+        url: '/hlkt/api/v1/video.action',
         data: {
           vid: this.$route.params.id,
-          uid: JSON.parse(sessionStorage.getItem("SESSION_USER")).userId
-        }
-      }).then(res => {
-        if (res.data.resultCode == "200") {
+          uid: JSON.parse(sessionStorage.getItem('SESSION_USER')).userId,
+        },
+      }).then((res) => {
+        if (res.data.resultCode == '200') {
           this.video = res.data.resultData.video;
-          this.videoURL = "http://" + this.video.url;
+          this.videoURL = 'http://' + this.video.url;
           this.collectViode = res.data.resultData.isCollect;
           this.knowledges = res.data.resultData.knowledges;
           this.formatSeconds(this.knowledges.time);
           console.log(this.knowledges);
         } else {
           this.$message({
-            type: "error",
-            message: "错误" + res.data.resultMsg
+            type: 'error',
+            message: '错误' + res.data.resultMsg,
           });
         }
       });
@@ -149,25 +149,25 @@ export default {
     collect() {
       axios({
         headers: {
-          "User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
-            .loginId,
-          Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
-            .sessionId
+          'User-Info': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .loginId,
+          'Authorization': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .sessionId,
         },
-        method: "post",
-        url: "/hlkt/api/v1/user/collect/video.action",
+        method: 'post',
+        url: '/hlkt/api/v1/user/collect/video.action',
         data: {
-          uid: JSON.parse(sessionStorage.getItem("SESSION_USER")).userId,
-          vid: this.$route.params.id
-        }
-      }).then(res => {
-        if (res.data.resultCode == "200") {
+          uid: JSON.parse(sessionStorage.getItem('SESSION_USER')).userId,
+          vid: this.$route.params.id,
+        },
+      }).then((res) => {
+        if (res.data.resultCode == '200') {
           this.collectViode = true;
           console.log(this.collectViode);
         } else {
           this.$message({
-            type: "error",
-            message: "错误" + res.data.resultMsg
+            type: 'error',
+            message: '错误' + res.data.resultMsg,
           });
         }
       });
@@ -175,33 +175,33 @@ export default {
     nocollect() {
       axios({
         headers: {
-          "User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
-            .loginId,
-          Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
-            .sessionId
+          'User-Info': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .loginId,
+          'Authorization': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .sessionId,
         },
-        method: "post",
-        url: "/hlkt/api/v1/user/collect/video.action",
+        method: 'post',
+        url: '/hlkt/api/v1/user/collect/video.action',
         data: {
-          uid: JSON.parse(sessionStorage.getItem("SESSION_USER")).userId,
-          vid: this.$route.params.id
-        }
-      }).then(res => {
-        if (res.data.resultCode == "200") {
+          uid: JSON.parse(sessionStorage.getItem('SESSION_USER')).userId,
+          vid: this.$route.params.id,
+        },
+      }).then((res) => {
+        if (res.data.resultCode == '200') {
           this.collectViode = false;
         } else {
           this.$message({
-            type: "error",
-            message: "错误" + res.data.resultMsg
+            type: 'error',
+            message: '错误' + res.data.resultMsg,
           });
         }
       });
-    }
+    },
   },
   created() {
     console.log(this.$route.params.id);
     this.getvideo();
-  }
+  },
 };
 </script>
 <style scoped lang="scss">

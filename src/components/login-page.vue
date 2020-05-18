@@ -28,14 +28,14 @@
           class="videolist"
           v-for="video in videolist"
           :key="video.Id"
-         
+
         >
           <!-- <div v-if="video.errorCode == '20303'" class="blue">蓝光</div> -->
           <img :src="'http://'+video.site"  @click="getDescribe(video.id)" />
 
           <p  @click="getDescribe(video.id)" >{{video.name}}</p>
           <a  @click="getDescribe(video.id)" >{{video.teacherId}}</a>
-          <b  @click="getDescribe(video.id)" >{{video.creationTime.split(" ")[0]}}</b>
+          <b  @click="getDescribe(video.id)" v-if="video.creationTime !=null"  >{{video.creationTime.split(" ")[0]}}</b>
           <br />
           <div v-if="video.errorCode != '20303'" class="c">
             <img src="./img/ci.png" />
@@ -59,63 +59,63 @@
   </el-container>
 </template>
 <script>
-import axios from "axios";
-import pageHeader from "./common/page-header";
-import NavMenu from "./common/NavMenu";
+import axios from 'axios';
+import pageHeader from './common/page-header';
+import NavMenu from './common/NavMenu';
 export default {
   components: {
     pageHeader,
-    NavMenu: NavMenu
+    NavMenu: NavMenu,
   },
   data: function() {
     return {
-      vSite: "",
-      count: "",
+      vSite: '',
+      count: '',
       currentPage: 1, // 默认显示第几页
       tableData: [],
-      activeIndex: "aa",
+      activeIndex: 'aa',
       videolist: [],
-      subjects: "",
-      grade: "",
-      unit: "",
-      pageNum: "1",
-      menuData: []
+      subjects: '',
+      grade: '',
+      unit: '',
+      pageNum: '1',
+      menuData: [],
     };
   },
 
   methods: {
     getDescribe(id) {
-      let routeUrl = this.$router.resolve({
-        path: `/describe/${id}`
+      const routeUrl = this.$router.resolve({
+        path: `/describe/${id}`,
       });
-      window.open(routeUrl.href, "_blank");
+      window.open(routeUrl.href, '_blank');
     },
     getItem() {
       axios({
         headers: {
-          "User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
-            .loginId,
-          Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
-            .sessionId
+          'User-Info': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .loginId,
+          'Authorization': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .sessionId,
         },
-        method: "post",
-        url: "/hlkt/resource/findMenusTree.action",
+        method: 'post',
+        url: '/hlkt/resource/findMenusTree.action',
         data: {
-          sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid
-        }
-      }).then(res => {
-        if (res.data.resultCode == "200") {
+          sid: JSON.parse(sessionStorage.getItem('SESSION_USER')).sid,
+        },
+      }).then((res) => {
+        if (res.data.resultCode == '200') {
           this.menuData = res.data.resultData;
         } else {
           this.$message({
-            type: "error",
-            message: res.data.resultMsg
+            type: 'error',
+            message: res.data.resultMsg,
           });
         }
       });
     },
     serchlist(vap) {
-      //改变页数
+      // 改变页数
       this.currentPage = vap;
       this.getvideolist();
     },
@@ -130,41 +130,43 @@ export default {
       console.log(key, keyPath);
       this.subjects = keyPath[0];
       this.grade = keyPath[1];
+	   this.currentPage =1;
       this.getvideolist();
     },
     handleClose(key, keyPath) {
-      this.subjects = "";
-      this.grade = "";
-      this.unit = "";
+      this.subjects = '';
+      this.grade = '';
+      this.unit = '';
     },
     handleselect(key, keyPath) {
       console.log(keyPath[0]);
       this.subjects = keyPath[0];
       this.unit = keyPath[2];
+	  this.currentPage =1;
       this.getvideolist();
     },
     getvideolist() {
       axios({
         headers: {
-          "User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
-            .loginId,
-          Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
-            .sessionId
+          'User-Info': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .loginId,
+          'Authorization': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .sessionId,
         },
-        method: "post",
-        url: "/hlkt/admin/video/list.action",
+        method: 'post',
+        url: '/hlkt/admin/video/list.action',
         data: {
-			video:{
-				sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-				curriculumId: this.subjects,
-				nj: this.grade,
-				dy:this.unit,
-			},
-			pageSize: 12,
-			pageNum: this.currentPage
-        }
-      }).then(res => {
-        if (res.data.resultCode == "200") {
+          video: {
+            sid: JSON.parse(sessionStorage.getItem('SESSION_USER')).sid,
+            curriculumId: this.subjects,
+            nj: this.grade,
+            dy: this.unit,
+          },
+          pageSize: 12,
+          pageNum: this.currentPage,
+        },
+      }).then((res) => {
+        if (res.data.resultCode == '200') {
           this.count = res.data.resultData.total;
           this.videolist = res.data.resultData.list;
         } else {
@@ -173,7 +175,7 @@ export default {
       });
     },
     regetvideolist() {
-		history.go(0) 
+      history.go(0);
       // axios({
       //   headers: {
       //     "User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
@@ -200,13 +202,13 @@ export default {
       //     this.videolist = [];
       //   }
       // });
-    }
+    },
   },
   mounted() {
     console.log(this.menuData);
     this.getvideolist();
     this.getItem();
-  }
+  },
 };
 </script>
 <style scoped lang="scss">

@@ -13,7 +13,7 @@
 					</p>
 					<div class="pic_img">
 						<div class="pic_img_box">
-							<el-upload class="upload-demo" :action="doUpload" :headers="myHeaders" :on-success="handleAvatarSuccess" :data="{sid:this.sid}"
+							<el-upload class="upload-demo" :action="Uploadurl" :headers="myHeaders" :on-success="handleAvatarSuccess" :data="{sid:this.sid}"
 							 accept=".xls" ref="upload" :limit="1" :on-change="handleChange" :auto-upload="false" :file-list="fileList">
 								<el-button size="small" type="primary">点击上传</el-button>
 								<div slot="tip" class="el-upload__tip">只能上传Excel文件</div>
@@ -75,314 +75,310 @@
 </template>
 
 <script>
-	// @ is an alias to /src
-	import axios from "axios";
-	// import url from '@/http/http'
-	const url = 'http://172.38.50.126:8080/';
-	var sessionId = JSON.parse(sessionStorage.getItem("SESSION_USER")).sessionId;
-	var UserInfo = JSON.parse(sessionStorage.getItem("SESSION_USER")).loginId;
-	var sid = JSON.parse(sessionStorage.getItem("SESSION_USER")).sid
-	export default {
-		name: "teach",
-		data() {
-			return {
-				url:"",
-				rules: {
-					value: [{
+// @ is an alias to /src
+import axios from 'axios';
+// import url from '@/http/http'
+const url = window.location.href.split('dist')[0];
+const sessionId = JSON.parse(sessionStorage.getItem('SESSION_USER')).sessionId;
+const UserInfo = JSON.parse(sessionStorage.getItem('SESSION_USER')).loginId;
+const sid = JSON.parse(sessionStorage.getItem('SESSION_USER')).sid;
+export default {
+  name: 'teach',
+  data() {
+    return {
+      url: '',
+      rules: {
+        value: [{
 
-						required: true,
-						message: '请选择年份',
-						trigger: 'blur'
-					}],
-					value1: [{
-						required: true,
-						message: '请选择学期',
-						trigger: 'blur'
-					}],
-				},
-				sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-				doUpload: url + 'hlkt/admin/course/upload.action',
-				myHeaders: {
-					Authorization: sessionId,
-					"User-Info": UserInfo
-				},
-				formLabelWidth: '120px',
-				count: "",
-				form: {
-					value1: '',
-					value: "", //laoshi
-				},
-				courseFileId: "",
-				fileList: [],
+          required: true,
+          message: '请选择年份',
+          trigger: 'blur',
+        }],
+        value1: [{
+          required: true,
+          message: '请选择学期',
+          trigger: 'blur',
+        }],
+      },
+      sid: JSON.parse(sessionStorage.getItem('SESSION_USER')).sid,
+      Uploadurl: url + 'hlkt/admin/course/upload.action',
+      myHeaders: {
+        'Authorization': sessionId,
+        'User-Info': UserInfo,
+      },
+      formLabelWidth: '120px',
+      count: '',
+      form: {
+        value1: '',
+        value: '', // laoshi
+      },
+      courseFileId: '',
+      fileList: [],
 
-				currentPage: 1, // 默认显示第几页
-				dialogFormVisible: false,
-				options: [{
-						value: '选项1',
-						label: '上学期'
-					},
-					{
-						value: '选项2',
-						label: '下学期'
-					},
-				],
-				years: [{
-					value: '选项1',
-					label: '2020'
-				}, {
-					value: '选项2',
-					label: '2019'
-				}, ],
+      currentPage: 1, // 默认显示第几页
+      dialogFormVisible: false,
+      options: [{
+        value: '选项1',
+        label: '上学期',
+      },
+      {
+        value: '选项2',
+        label: '下学期',
+      },
+      ],
+      years: [{
+        value: '选项1',
+        label: '2020',
+      }, {
+        value: '选项2',
+        label: '2019',
+      }],
 
-				tableData: [
+      tableData: [
 
-				]
-			};
-		},
-		methods: {
-			doupload() {
-				this.dialogFormVisible = true;
-				this.fileList = [];
-				this.form ={
-					value1: '',
-					value: "", //laoshi
-				}
-			},
-			submitForm(formName) {
-				this.$refs[formName].validate(valid => {
-					if (valid) {
-						console.log(this.fileList.length)
-						if (this.fileList.length == 0) {
-							this.$message({
-								type: "error",
-								message: '请选择课表上传'
-							});
-						} else {
-							this.submitUpload();
-							
-						}
+      ],
+    };
+  },
+  methods: {
+    doupload() {
+      console.log(this.Uploadurl);
+      this.dialogFormVisible = true;
+      this.fileList = [];
+      this.form ={
+        value1: '',
+        value: '', // laoshi
+      };
+    },
+    submitForm(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          console.log(this.fileList.length);
+          if (this.fileList.length == 0) {
+            this.$message({
+              type: 'error',
+              message: '请选择课表上传',
+            });
+          } else {
+            this.submitUpload();
+          }
+        } else {
+          this.loading = false;
+        }
+      });
+    },
+    quxiao() {
+      this.dialogFormVisible = false;
+      this.fileList = [];
+    },
+    submitUpload() {
+      console.log(this.fileList);
+      this.$refs.upload.submit();
+    },
+    downmoban() {
+      axios({
+        headers: {
+          'User-Info': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .loginId,
+          'Authorization': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .sessionId,
+        },
+        method: 'get',
+        url: '/hlkt/admin/courseFileModel/check/' + sid + '.action',
 
-					} else {
-						this.loading = false;
-					}
-				});
-			},
-			quxiao() {
-				this.dialogFormVisible = false;
-				this.fileList = [];
-			},
-			submitUpload() {
-				console.log(this.fileList)
-				this.$refs.upload.submit();
-			},
-			downmoban() {
-				axios({
-					headers: {
-						"User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
-							.loginId,
-						Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
-							.sessionId
-					},
-					method: "get",
-					url: "/hlkt/admin/courseFileModel/check/" + sid + '.action',
+      }).then((res) => {
+        if (res.data.resultCode == '200') {
+          window.open('http://172.38.50.126:8080/hlkt/admin/courseFileModel/download/' + sid + '.action', '_blank');
+        } else {
+          this.$message({
+            type: 'error',
+            message: res.data.resultMsg,
+          });
+        }
+      });
+    },
+    handleAvatarSuccess(res, file) {
+      console.log(res.resultData, file);
+      this.courseFileId = res.resultData.courseFileId;
+      this.add(res);
+    },
+    down(row) { // 下载课表
+      window.open('http://172.38.50.126:8080/hlkt/admin/courseFile/download/' + row.courseFileId + '.action', '_blank');
+    },
+    handleChange(file, fileList) {
+      this.fileList = fileList.slice(-3);
+    },
+    yingyong(row) { // 应用
+      this.$confirm('确定应用?', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      })
+          .then(() => {
+            this.del(row);
+          })
+          .catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消',
+            });
+          });
+    },
 
-				}).then(res => {
-					if (res.data.resultCode == "200") {
-						window.open("http://172.38.50.126:8080/hlkt/admin/courseFileModel/download/" + sid + '.action', '_blank');
-					} else {
-						this.$message({
-							type: "error",
-							message: res.data.resultMsg
-						});
-					}
-				});
-			},
-			handleAvatarSuccess(res, file) {
-				console.log(res.resultData, file);
-				this.courseFileId = res.resultData.courseFileId;
-				this.add(res);
-			},
-			down(row) { //下载课表
-				window.open("http://172.38.50.126:8080/hlkt/admin/courseFile/download/" + row.courseFileId + '.action', '_blank');
+    showedit(row) {
+      this.dialogFormVisible1 = true;
+      this.scheduleId = row.scheduleId;
+    },
+    serchlist(vap) {
+      // 改变页数
+      this.currentPage = vap;
+      this.getuserlist();
+    },
+    handleCurrentChange(val) {
+      // 改变默认的页数
+      this.currentPage = val;
+      // 切换页码时，要获取每页显示的条数
+      this.getuserlist(this.PageSize, val * this.pageSize);
+    },
+    del(row) { // 应用课程
+      axios({
+        headers: {
+          'User-Info': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .loginId,
+          'Authorization': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .sessionId,
+        },
+        method: 'post',
+        url: '/hlkt/admin/courseFile/apply.action',
+        data: {
+          sid: JSON.parse(sessionStorage.getItem('SESSION_USER')).sid,
+          courseFileId: row.courseFileId,
+          courseFileUrl: row.courseFileUrl,
+        },
+      }).then((res) => {
+        if (res.data.resultCode == '200') {
+          this.getrest();
+        } else {
+          this.$message({
+            type: 'error',
+            message: res.data.resultMsg,
+          });
+        }
+      });
+    },
+    edit(row) {
+      console.log('2222');
+      axios({
+        headers: {
+          'User-Info': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .loginId,
+          'Authorization': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .sessionId,
+        },
+        method: 'post',
+        url: '/hlkt/admin/coursefile/update.action',
+        data: {
+          courseFileId: this.courseFileId,
+          year: this.form.value,
+          semester: this.form.value1,
+        },
+      }).then((res) => {
+        if (res.data.resultCode == '200') {
+          this.$message({
+            type: 'success',
+            message: res.data.resultMsg,
+          });
+          this.dialogFormVisible = false;
+          this.getrest();
+        } else {
+          this.$message({
+            type: 'error',
+            message: res.data.resultMsg,
+          });
+        }
+      });
+    },
 
-			},
-			handleChange(file, fileList) {
-				this.fileList = fileList.slice(-3);
-			},
-			yingyong(row) { //应用
-				this.$confirm("确定应用?", {
-						confirmButtonText: "确定",
-						cancelButtonText: "取消",
-						type: "warning"
-					})
-					.then(() => {
-						this.del(row);
-					})
-					.catch(() => {
-						this.$message({
-							type: "info",
-							message: "已取消"
-						});
-					});
-			},
-
-			showedit(row) {
-				this.dialogFormVisible1 = true;
-				this.scheduleId = row.scheduleId;
-
-			},
-			serchlist(vap) {
-				//改变页数
-				this.currentPage = vap;
-				this.getuserlist();
-			},
-			handleCurrentChange(val) {
-				// 改变默认的页数
-				this.currentPage = val;
-				// 切换页码时，要获取每页显示的条数
-				this.getuserlist(this.PageSize, val * this.pageSize);
-			},
-			del(row) { //应用课程
-				axios({
-					headers: {
-						"User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
-							.loginId,
-						Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
-							.sessionId
-					},
-					method: "post",
-					url: "/hlkt/admin/courseFile/apply.action",
-					data: {
-						sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-						courseFileId: row.courseFileId,
-						courseFileUrl: row.courseFileUrl,
-					}
-				}).then(res => {
-					if (res.data.resultCode == "200") {
-						this.getrest();
-					} else {
-						this.$message({
-							type: "error",
-							message: res.data.resultMsg
-						});
-					}
-				});
-			},
-			edit(row) {
-				console.log('2222')
-				axios({
-					headers: {
-						"User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
-							.loginId,
-						Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
-							.sessionId
-					},
-					method: "post",
-					url: "/hlkt/admin/coursefile/update.action",
-					data: {
-						courseFileId: this.courseFileId,
-						year: this.form.value,
-						semester: this.form.value1
-					}
-				}).then(res => {
-					if (res.data.resultCode == "200") {
-						this.$message({
-							type: 'success',
-							message: res.data.resultMsg
-						});
-						this.dialogFormVisible = false;
-						this.getrest();
-					} else {
-						this.$message({
-							type: "error",
-							message: res.data.resultMsg
-						});
-					}
-				});
-			},
-
-			add(res) {
-				console.log('2222')
-				axios({
-					headers: {
-						"User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
-							.loginId,
-						Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
-							.sessionId
-					},
-					method: "post",
-					url: "/hlkt/admin/dailySchedule/insert.action",
-					url: "/hlkt/admin/coursefile/update.action",
-					data: {
-						courseFileId: res.resultData.courseFileId,
-						year: this.form.value,
-						semester: this.form.value1
-					}
-				}).then(res => {
-					if (res.data.resultCode == "200") {
-						this.$message({
-							type: 'success',
-							message: res.data.resultMsg
-						});
-						this.dialogFormVisible = false;
-						this.getrest();
-						this.fileList = [];
-					} else {
-						this.$message({
-							type: "error",
-							message: res.data.resultMsg
-						});
-					}
-				});
-			},
-			serchlist(vap) {
-				//改变页数
-				this.currentPage = vap;
-				this.getdevice();
-			},
-			handleCurrentChange(val) {
-				// 改变默认的页数
-				this.currentPage = val;
-				// 切换页码时，要获取每页显示的条数
-				this.getdevice(this.PageSize, val * this.pageSize);
-			},
-			getrest() { //获取课表
-				axios({
-					headers: {
-						"User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
-							.loginId,
-						Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
-							.sessionId
-					},
-					method: "post",
-					url: "/hlkt/admin/courseFile/list.action",
-					data: {
-						sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-						// sid:3,
-						pageNo: this.currentPage,
-						pageSize: 10
-					}
-				}).then(res => {
-					if (res.data.resultCode == "200") {
-						this.tableData = res.data.resultData.list;
-						this.count = res.data.resultLineNum;
-						console.log(this.tableData);
-					} else {
-						this.$message({
-							type: "error",
-							message: res.data.resultMsg
-						});
-					}
-				});
-			}
-		},
-		components: {},
-		created() {
-			this.getrest();
-			console.log(window.location.href.split('dist')[0]);
-			this.url = window.location.href.split('dist')[0];
-		}
-	};
+    add(res) {
+      console.log('2222');
+      axios({
+        headers: {
+          'User-Info': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .loginId,
+          'Authorization': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .sessionId,
+        },
+        method: 'post',
+        url: '/hlkt/admin/dailySchedule/insert.action',
+        url: '/hlkt/admin/coursefile/update.action',
+        data: {
+          courseFileId: res.resultData.courseFileId,
+          year: this.form.value,
+          semester: this.form.value1,
+        },
+      }).then((res) => {
+        if (res.data.resultCode == '200') {
+          this.$message({
+            type: 'success',
+            message: res.data.resultMsg,
+          });
+          this.dialogFormVisible = false;
+          this.getrest();
+          this.fileList = [];
+        } else {
+          this.$message({
+            type: 'error',
+            message: res.data.resultMsg,
+          });
+        }
+      });
+    },
+    serchlist(vap) {
+      // 改变页数
+      this.currentPage = vap;
+      this.getdevice();
+    },
+    handleCurrentChange(val) {
+      // 改变默认的页数
+      this.currentPage = val;
+      // 切换页码时，要获取每页显示的条数
+      this.getdevice(this.PageSize, val * this.pageSize);
+    },
+    getrest() { // 获取课表
+      axios({
+        headers: {
+          'User-Info': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .loginId,
+          'Authorization': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .sessionId,
+        },
+        method: 'post',
+        url: '/hlkt/admin/courseFile/list.action',
+        data: {
+          sid: JSON.parse(sessionStorage.getItem('SESSION_USER')).sid,
+          // sid:3,
+          pageNo: this.currentPage,
+          pageSize: 10,
+        },
+      }).then((res) => {
+        if (res.data.resultCode == '200') {
+          this.tableData = res.data.resultData.list;
+          this.count = res.data.resultLineNum;
+          console.log(this.tableData);
+        } else {
+          this.$message({
+            type: 'error',
+            message: res.data.resultMsg,
+          });
+        }
+      });
+    },
+  },
+  components: {},
+  created() {
+    this.getrest();
+    console.log(window.location.href.split('dist')[0]);
+  },
+};
 </script>
 <style scoped lang="scss">
 	@import "src/plugins/px2vw";

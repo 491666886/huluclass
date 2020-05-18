@@ -70,7 +70,7 @@
 				</el-form-item>
 				<div class="class">
 					<a>入职时间</a>
-					<el-date-picker v-model="form.hiredate" type="date" placeholder="选择日期" 
+					<el-date-picker v-model="form.hiredate" type="date" placeholder="选择日期"
 					value-format="yyyy-MM-dd"
 					format="yyyy-MM-dd">
 					</el-date-picker>
@@ -106,285 +106,281 @@
 </template>
 
 <script>
-	// @ is an alias to /src
-	import axios from "axios";
-	export default {
-		name: "user",
-		data() {
-			return {
-				showTable:true,
-				rules: {
-					'baseUser.loginId':[{type: "string", required: true, message: '请填写账号',trigger: 'blur'}], 
-					'baseUser.name':[{type: "string", required: true, message: '请填写名字', trigger: 'blur'}], 
-					'baseUser.password':[{type: "string", required: true, message: '请填写密码', trigger: 'blur'}], 
-					jobName: [{
-						required: true,
-						message: '请选择学科',
-						trigger: 'blur'
-					}],
-					
-				},
-				tableHeight: '55vh',
-				value1: "", //入职时间
-				formLabelWidth: "120px",
-				form: {
-					remark: "",
-					loginId: "",
-					password: "",
-					job: "语文",
-					teacherName: "",
-					sid:JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-					jobNumber: "",
-					jobName: "",
-					baseUser: {
-						name: "",
-						roleId: 1,
-						loginId: "",
-						password: "",
-						sid:JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-					},
-				},
-				dialogFormVisible: false,
-				dialogFormVisible1: false,
-				count: "",
-				currentPage: 1, // 默认显示第几页
-				options: [],
-				value: "",
-				userid: "",
-				teacherId: "",
-				tableData: []
-			};
-		},
-		
-		methods: {
-			refreshTable () {//取消按钮回掉
-			  this.showTable = false
+// @ is an alias to /src
+import axios from 'axios';
+export default {
+  name: 'user',
+  data() {
+    return {
+      showTable: true,
+      rules: {
+        'baseUser.loginId': [{type: 'string', required: true, message: '请填写账号', trigger: 'blur'}],
+        'baseUser.name': [{type: 'string', required: true, message: '请填写名字', trigger: 'blur'}],
+        'baseUser.password': [{type: 'string', required: true, message: '请填写密码', trigger: 'blur'}],
+        'jobName': [{
+          required: true,
+          message: '请选择学科',
+          trigger: 'blur',
+        }],
+
+      },
+      tableHeight: '55vh',
+      value1: '', // 入职时间
+      formLabelWidth: '120px',
+      form: {
+        remark: '',
+        loginId: '',
+        password: '',
+        job: '语文',
+        teacherName: '',
+        sid: JSON.parse(sessionStorage.getItem('SESSION_USER')).sid,
+        jobNumber: '',
+        jobName: '',
+        baseUser: {
+          name: '',
+          roleId: 1,
+          loginId: '',
+          password: '',
+          sid: JSON.parse(sessionStorage.getItem('SESSION_USER')).sid,
+        },
+      },
+      dialogFormVisible: false,
+      dialogFormVisible1: false,
+      count: '',
+      currentPage: 1, // 默认显示第几页
+      options: [],
+      value: '',
+      userid: '',
+      teacherId: '',
+      tableData: [],
+    };
+  },
+
+  methods: {
+    refreshTable() {// 取消按钮回掉
+			  this.showTable = false;
 			  this.$nextTick(() => {
-			    this.showTable = true
-			  })
-			},
-			cancel(formName){
-				// this.$refs[formName].resetFields();
-				this.dialogFormVisible1= false;
-				this.getuserlist();
-				this.refreshTable()
-			},
-			esc(){
-				this.$router.go(0);
-			},
-			indexMethod(index) {
-			
+			    this.showTable = true;
+			  });
+    },
+    cancel(formName) {
+      // this.$refs[formName].resetFields();
+      this.dialogFormVisible1= false;
+      this.getuserlist();
+      this.refreshTable();
+    },
+    esc() {
+      this.$router.go(0);
+    },
+    indexMethod(index) {
 			        return 	(this.currentPage-1)*10+index+1;
 			      },
-			submitForm(formName) {
-				this.$refs[formName].validate(valid => {
-					if (valid) {
-						this.add();
-					} else {
-						this.loading = false;
-					}
-				});
-			},
-			addtea() {
-				this.form = {
-					baseUser: {},
-				};
-				this.dialogFormVisible = true;
+    submitForm(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.add();
+        } else {
+          this.loading = false;
+        }
+      });
+    },
+    addtea() {
+      this.form = {
+        baseUser: {},
+      };
+      this.dialogFormVisible = true;
+    },
+    kemu() {
+      this.currentPage=1;
+      this.getuserlist();
+    },
+    getsubject() {
+      axios({
+        headers: {
+          'User-Info': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .loginId,
+          'Authorization': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .sessionId,
+        },
+        method: 'post',
+        url: '/hlkt/selective/subjects/list.action',
+        data: {
+          sid: JSON.parse(sessionStorage.getItem('SESSION_USER')).sid,
+          schoolType: 1,
+        },
+      }).then((res) => {
+        if (res.data.resultCode == '200') {
+          this.options = res.data.resultData;
+        } else {
+          this.$message({
+            type: 'error',
+            message: res.data.resultMsg,
+          });
+        }
+      });
+    },
+    dele(row) {
+      this.$confirm('确认删除用户数据？', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      })
+          .then(() => {
+            this.del(row);
+          })
+          .catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消',
+            });
+          });
+    },
 
-			},
-			kemu() {
-				this.currentPage=1;
-				this.getuserlist();
-			},
-			getsubject() {
-				axios({
-					headers: {
-						"User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
-							.loginId,
-						Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
-							.sessionId
-					},
-					method: "post",
-					url: "/hlkt/selective/subjects/list.action",
-					data: {
-						sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-						schoolType: 1,
-					}
-				}).then(res => {
-					if (res.data.resultCode == "200") {
-						this.options = res.data.resultData;
+    showedit(row) {
+      this.dialogFormVisible1 = true;
+      this.form = row;
+      this.teacherId = row.teacherId;
 
-					} else {
-						this.$message({
-							type: "error",
-							message: res.data.resultMsg
-						});
-					}
-				});
-			},
-			dele(row) {
-				this.$confirm("确认删除用户数据？", {
-						confirmButtonText: "确定",
-						cancelButtonText: "取消",
-						type: "warning"
-					})
-					.then(() => {
-						this.del(row);
-					})
-					.catch(() => {
-						this.$message({
-							type: "info",
-							message: "已取消"
-						});
-					});
-			},
+      this.userid = row.baseUser.userId;
+    },
+    serchlist(vap) {
+      // 改变页数
+      this.currentPage = vap;
+      this.getuserlist();
+    },
+    handleCurrentChange(val) {
+      // 改变默认的页数
+      this.currentPage = val;
+      // 切换页码时，要获取每页显示的条数
+      this.getuserlist(this.PageSize, val * this.pageSize);
+    },
+    del(row) {
+      axios({
+        headers: {
+          'User-Info': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .loginId,
+          'Authorization': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .sessionId,
+        },
+        method: 'post',
+        url: '/hlkt/admin/teacherOpt/deleteTeacher.action',
+        data: {
+          teacherId: row.teacherId,
+          baseUser: {
+            userId: row.baseUser.userId,
+          },
+        },
+      }).then((res) => {
+        if (res.data.resultCode == '200') {
+          this.getuserlist();
+        } else {
+          this.$message({
+            type: 'error',
+            message: res.data.resultMsg,
+          });
+        }
+      });
+    },
+    edit(row) {
+      this.form.teacherName=this.form.baseUser.name;
+      this.form.sid =JSON.parse(sessionStorage.getItem('SESSION_USER')).sid,
+      this.form.baseUser.sid =JSON.parse(sessionStorage.getItem('SESSION_USER')).sid,
+      this.form.baseUser.roleId =1,
+      axios({
+        headers: {
+          'User-Info': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .loginId,
+          'Authorization': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .sessionId,
+        },
+        method: 'post',
+        url: '/hlkt/admin/teacherOpt/updateTeacher.action',
+        data: this.form,
+      }).then((res) => {
+        if (res.data.resultCode == '200') {
+          this.dialogFormVisible1 = false;
+          this.getuserlist();
+        } else {
+          this.$message({
+            type: 'error',
+            message: res.data.resultMsg,
+          });
+        }
+      });
+    },
+    handleClick(row) {
+      console.log(row);
+    },
+    add() {
+      this.form.teacherName=this.form.baseUser.name;
+      this.form.sid =JSON.parse(sessionStorage.getItem('SESSION_USER')).sid,
+      this.form.baseUser.sid =JSON.parse(sessionStorage.getItem('SESSION_USER')).sid,
+      this.form.baseUser.roleId =1,
 
-			showedit(row) {
-				this.dialogFormVisible1 = true;
-				this.form = row;
-				this.teacherId = row.teacherId;
+      axios({
+        headers: {
+          'User-Info': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .loginId,
+          'Authorization': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .sessionId,
+        },
+        method: 'post',
+        url: '/hlkt/admin/teacherOpt/addTeacher.action',
+        data: this.form,
+      }).then((res) => {
+        if (res.data.resultCode == '200') {
+          this.dialogFormVisible = false;
+          this.getuserlist();
+        } else {
+          this.$message({
+            type: 'error',
+            message: res.data.resultMsg,
+          });
+        }
+      });
+    },
+    retry() {
+      this.value = '';
 
-				this.userid = row.baseUser.userId;
-			},
-			serchlist(vap) {
-				//改变页数
-				this.currentPage = vap;
-				this.getuserlist();
-			},
-			handleCurrentChange(val) {
-				// 改变默认的页数
-				this.currentPage = val;
-				// 切换页码时，要获取每页显示的条数
-				this.getuserlist(this.PageSize, val * this.pageSize);
-			},
-			del(row) {
-				axios({
-					headers: {
-						"User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
-							.loginId,
-						Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
-							.sessionId
-					},
-					method: "post",
-					url: "/hlkt/admin/teacherOpt/deleteTeacher.action",
-					data: {
-						teacherId: row.teacherId,
-						baseUser: {
-							userId: row.baseUser.userId
-						}
-					}
-				}).then(res => {
-					if (res.data.resultCode == "200") {
-						this.getuserlist();
-					} else {
-						this.$message({
-							type: "error",
-							message: res.data.resultMsg
-						});
-					}
-				});
-			},
-			edit(row) {
-				this.form.teacherName=this.form.baseUser.name;
-				this.form.sid =JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-				this.form.baseUser.sid =JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-				this.form.baseUser.roleId =1,
-				axios({
-					headers: {
-						"User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
-							.loginId,
-						Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
-							.sessionId
-					},
-					method: "post",
-					url: "/hlkt/admin/teacherOpt/updateTeacher.action",
-					data: this.form
-				}).then(res => {
-					if (res.data.resultCode == "200") {
-						this.dialogFormVisible1 = false;
-						this.getuserlist();
-					} else {
-						this.$message({
-							type: "error",
-							message: res.data.resultMsg
-						});
-					}
-				});
-			},
-			handleClick(row) {
-				console.log(row);
-			},
-			add() {
-					this.form.teacherName=this.form.baseUser.name;
-					this.form.sid =JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-					this.form.baseUser.sid =JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-					this.form.baseUser.roleId =1,
-					
-				axios({
-					headers: {
-						"User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
-							.loginId,
-						Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
-							.sessionId
-					},
-					method: "post",
-					url: "/hlkt/admin/teacherOpt/addTeacher.action",
-					data: this.form
-				}).then(res => {
-					if (res.data.resultCode == "200") {
-						this.dialogFormVisible = false;
-						this.getuserlist();
-					} else {
-						this.$message({
-							type: "error",
-							message: res.data.resultMsg
-						});
-					}
-				});
-			},
-			retry() {
+      this.getuserlist();
+    },
+    getuserlist() {
+      axios({
+        headers: {
+          'User-Info': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .loginId,
+          'Authorization': JSON.parse(sessionStorage.getItem('SESSION_USER'))
+              .sessionId,
+        },
+        method: 'post',
+        url: '/hlkt/admin/teacherOpt/getTeacherList.action',
+        data: {
+          sid: JSON.parse(sessionStorage.getItem('SESSION_USER')).sid,
+          pageSize: 10,
+          jobName: this.value,
+          pageNo: this.currentPage,
+        },
+      }).then((res) => {
+        if (res.data.resultCode == '200') {
+          this.tableData = res.data.resultData.list;
+          this.count = res.data.resultData.total;
+          console.log(this.tableData);
+        } else {
+          this.$message({
+            type: 'error',
+            message: res.data.resultMsg,
+          });
+        }
+      });
+    },
+  },
 
-				this.value = '';
-
-				this.getuserlist();
-			},
-			getuserlist() {
-				axios({
-					headers: {
-						"User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
-							.loginId,
-						Authorization: JSON.parse(sessionStorage.getItem("SESSION_USER"))
-							.sessionId
-					},
-					method: "post",
-					url: "/hlkt/admin/teacherOpt/getTeacherList.action",
-					data: {
-						sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid,
-						pageSize: 10,
-						jobName: this.value,
-						pageNo: this.currentPage
-					}
-				}).then(res => {
-					if (res.data.resultCode == "200") {
-						this.tableData = res.data.resultData.list;
-						this.count = res.data.resultData.total;
-						console.log(this.tableData);
-					} else {
-						this.$message({
-							type: "error",
-							message: res.data.resultMsg
-						});
-					}
-				});
-			}
-		},
-
-		components: {},
-		created() {
-			this.getuserlist();
-			this.getsubject();
-		}
-	};
+  components: {},
+  created() {
+    this.getuserlist();
+    this.getsubject();
+  },
+};
 </script>
 <style scoped lang="scss">
 	@import "src/plugins/px2vw";
