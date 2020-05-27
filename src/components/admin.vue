@@ -1,20 +1,18 @@
 <template>
   <el-container>
-   <admin-header></admin-header>
+    <admin-header></admin-header>
     <el-container>
       <el-aside class="aside">
         <el-row class="tac">
           <el-col :span="12">
-            <h5 class="h5" @click="regetvideolist()">功能列表</h5>
-            <el-menu
-              :default-active="$route.path"
-               router
-              class="el-menu-vertical-demo"
-
-              style="float:left；z-index：1000"
-            >
+            <h5 class="h5"
+                @click="regetvideolist()">功能列表</h5>
+            <el-menu :default-active="$route.path"
+                     router
+                     class="el-menu-vertical-demo"
+                     style="float:left；z-index：1000">
               <el-menu-item index="/admin/video">视频管理</el-menu-item>
-			   <!-- <el-menu-item index="/admin/home">仪表盘</el-menu-item> -->
+              <!-- <el-menu-item index="/admin/home">仪表盘</el-menu-item> -->
               <el-menu-item index="/admin/teach">
                 <span slot="title">课表管理</span>
               </el-menu-item>
@@ -24,21 +22,21 @@
               <el-menu-item index="/admin/device">
                 <span slot="title">班级管理</span>
               </el-menu-item>
-                  <el-submenu index="1">
-        <template slot="title">
-          <span>校历及作息</span>
-        </template>
-        <el-menu-item-group>
-          <el-menu-item index="/admin/scal">校历管理</el-menu-item>
-          <el-menu-item index="/admin/rest">作息管理</el-menu-item>
-        </el-menu-item-group>
-      </el-submenu>
+              <el-submenu index="1">
+                <template slot="title">
+                  <span>校历及作息</span>
+                </template>
+                <el-menu-item-group>
+                  <el-menu-item index="/admin/scal">校历管理</el-menu-item>
+                  <el-menu-item index="/admin/rest">作息管理</el-menu-item>
+                </el-menu-item-group>
+              </el-submenu>
               <el-menu-item index="/admin/stati">
                 <span slot="title">视频统计</span>
               </el-menu-item>
 
             </el-menu>
-             <router-view class="adminer" ></router-view>
+            <router-view class="adminer"></router-view>
           </el-col>
         </el-row>
       </el-aside>
@@ -53,25 +51,22 @@
 
 </template>
 <script>
-import axios from 'axios';
-import adminHeader from './common/admin-header';
-import NavMenu from './common/NavMenu';
+
+import adminHeader from './common/admin-header'
 export default {
   components: {
-    adminHeader,
-    NavMenu: NavMenu,
+    adminHeader
+
   },
   data: function() {
     return {
-
-
       currentPage: 1, // 默认显示第几页
 
       activeIndex: '',
 
-      pageNum: '1',
+      pageNum: '1'
 
-    };
+    }
   },
 
   methods: {
@@ -79,11 +74,11 @@ export default {
   },
   mounted() {
     // this.$router.push()
-    const start = window.location.href.lastIndexOf('/');
-    const path = window.location.href.slice(start+1);
-    this.activeIndex = 'admin/'+path;
-  },
-};
+    const start = window.location.href.lastIndexOf('/')
+    const path = window.location.href.slice(start + 1)
+    this.activeIndex = 'admin/' + path
+  }
+}
 </script>
 <style scoped lang="scss">
 @import "src/plugins/px2vw";
@@ -110,7 +105,7 @@ export default {
   margin-bottom: px2vw(90px);
 }
 .page {
-   float: right;
+  float: right;
 }
 .videolist img {
   width: px2vw(232px);
@@ -186,7 +181,7 @@ export default {
   }
 }
 .h5 {
-	font-size: 20px;
+  font-size: 20px;
   cursor: pointer;
   background: linear-gradient(
     -30deg,
@@ -214,7 +209,7 @@ export default {
   // overflow-x: hidden;
   ul {
     overflow-y: auto;
-        min-height: px2vw(700px);
+    min-height: px2vw(700px);
   }
 }
 .el-col-12 {

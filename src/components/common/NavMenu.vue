@@ -30,10 +30,10 @@ export default {
   name: 'NavMenu',
   props: ['navMenus'],
   data() {
-    return {};
+    return {}
   },
-  methods: {},
-};
+  methods: {}
+}
 </script>
 
 <style>

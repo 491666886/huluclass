@@ -23,6 +23,6 @@
 </style>
 <script>
 export default {
-  name: 'page-footer',
-};
+  name: 'page-footer'
+}
 </script>

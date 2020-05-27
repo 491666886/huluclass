@@ -59,13 +59,13 @@
   </el-container>
 </template>
 <script>
-import axios from 'axios';
-import pageHeader from './common/page-header';
-import NavMenu from './common/NavMenu';
+import axios from 'axios'
+import pageHeader from './common/page-header'
+import NavMenu from './common/NavMenu'
 export default {
   components: {
     pageHeader,
-    NavMenu: NavMenu,
+    NavMenu: NavMenu
   },
   data: function() {
     return {
@@ -79,79 +79,79 @@ export default {
       grade: '',
       unit: '',
       pageNum: '1',
-      menuData: [],
-    };
+      menuData: []
+    }
   },
 
   methods: {
     getDescribe(id) {
       const routeUrl = this.$router.resolve({
-        path: `/describe/${id}`,
-      });
-      window.open(routeUrl.href, '_blank');
+        path: `/describe/${id}`
+      })
+      window.open(routeUrl.href, '_blank')
     },
     getItem() {
       axios({
         headers: {
           'User-Info': JSON.parse(sessionStorage.getItem('SESSION_USER'))
-              .loginId,
+            .loginId,
           'Authorization': JSON.parse(sessionStorage.getItem('SESSION_USER'))
-              .sessionId,
+            .sessionId
         },
         method: 'post',
         url: '/hlkt/resource/findMenusTree.action',
         data: {
-          sid: JSON.parse(sessionStorage.getItem('SESSION_USER')).sid,
-        },
+          sid: JSON.parse(sessionStorage.getItem('SESSION_USER')).sid
+        }
       }).then((res) => {
         if (res.data.resultCode == '200') {
-          this.menuData = res.data.resultData;
+          this.menuData = res.data.resultData
         } else {
           this.$message({
             type: 'error',
-            message: res.data.resultMsg,
-          });
+            message: res.data.resultMsg
+          })
         }
-      });
+      })
     },
     serchlist(vap) {
       // 改变页数
-      this.currentPage = vap;
-      this.getvideolist();
+      this.currentPage = vap
+      this.getvideolist()
     },
     handleCurrentChange(val) {
       // 改变默认的页数
-      this.currentPage = val;
+      this.currentPage = val
       // 切换页码时，要获取每页显示的条数
-      this.getvideolist(this.PageSize, val * this.pageSize);
+      this.getvideolist(this.PageSize, val * this.pageSize)
     },
     handleOpen(key, keyPath) {
-      console.log(this.menuData);
-      console.log(key, keyPath);
-      this.subjects = keyPath[0];
-      this.grade = keyPath[1];
-	   this.currentPage =1;
-      this.getvideolist();
+      console.log(this.menuData)
+      console.log(key, keyPath)
+      this.subjects = keyPath[0]
+      this.grade = keyPath[1]
+	   this.currentPage = 1
+      this.getvideolist()
     },
     handleClose(key, keyPath) {
-      this.subjects = '';
-      this.grade = '';
-      this.unit = '';
+      this.subjects = ''
+      this.grade = ''
+      this.unit = ''
     },
     handleselect(key, keyPath) {
-      console.log(keyPath[0]);
-      this.subjects = keyPath[0];
-      this.unit = keyPath[2];
-	  this.currentPage =1;
-      this.getvideolist();
+      console.log(keyPath[0])
+      this.subjects = keyPath[0]
+      this.unit = keyPath[2]
+	  this.currentPage = 1
+      this.getvideolist()
     },
     getvideolist() {
       axios({
         headers: {
           'User-Info': JSON.parse(sessionStorage.getItem('SESSION_USER'))
-              .loginId,
+            .loginId,
           'Authorization': JSON.parse(sessionStorage.getItem('SESSION_USER'))
-              .sessionId,
+            .sessionId
         },
         method: 'post',
         url: '/hlkt/admin/video/list.action',
@@ -160,22 +160,22 @@ export default {
             sid: JSON.parse(sessionStorage.getItem('SESSION_USER')).sid,
             curriculumId: this.subjects,
             nj: this.grade,
-            dy: this.unit,
+            dy: this.unit
           },
           pageSize: 12,
-          pageNum: this.currentPage,
-        },
+          pageNum: this.currentPage
+        }
       }).then((res) => {
         if (res.data.resultCode == '200') {
-          this.count = res.data.resultData.total;
-          this.videolist = res.data.resultData.list;
+          this.count = res.data.resultData.total
+          this.videolist = res.data.resultData.list
         } else {
-          this.videolist = [];
+          this.videolist = []
         }
-      });
+      })
     },
     regetvideolist() {
-      history.go(0);
+      history.go(0)
       // axios({
       //   headers: {
       //     "User-Info": JSON.parse(sessionStorage.getItem("SESSION_USER"))
@@ -202,14 +202,14 @@ export default {
       //     this.videolist = [];
       //   }
       // });
-    },
+    }
   },
   mounted() {
-    console.log(this.menuData);
-    this.getvideolist();
-    this.getItem();
-  },
-};
+    console.log(this.menuData)
+    this.getvideolist()
+    this.getItem()
+  }
+}
 </script>
 <style scoped lang="scss">
 @import "src/plugins/px2vw";

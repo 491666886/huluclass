@@ -5,7 +5,7 @@
       <div class="icon">
         <img src="./img/touxiang.png" />
         您好，{{username}}老师
-        <p>工号：{{loginId}}</p>
+        <p>账号：{{loginId}}</p>
       </div>
     </div>
     <div class="main">
@@ -50,13 +50,13 @@
   </div>
 </template>
 <script>
-import axios from 'axios';
-import pageHeader from './common/page-header';
-import pageFooter from './common/page-footer';
+import axios from 'axios'
+import pageHeader from './common/page-header'
+import pageFooter from './common/page-footer'
 export default {
   components: {
     pageHeader,
-    pageFooter,
+    pageFooter
   },
   data: function() {
     return {
@@ -66,33 +66,33 @@ export default {
       tableData: [],
       input3: '',
       username: JSON.parse(sessionStorage.getItem('SESSION_USER')).name,
-      loginId: JSON.parse(sessionStorage.getItem('SESSION_USER')).loginId,
-    };
+      loginId: JSON.parse(sessionStorage.getItem('SESSION_USER')).loginId
+    }
   },
 
   methods: {
-	  retry() {
-		  this.input3='';
-		  this.getvideolist();
-	  },
+    retry() {
+      this.input3 = ''
+      this.getvideolist()
+    },
     serchlist(vap) {
       // 改变页数
-      this.currentPage = vap;
-      this.getvideolist();
+      this.currentPage = vap
+      this.getvideolist()
     },
     handleCurrentChange(val) {
       // 改变默认的页数
-      this.currentPage = val;
+      this.currentPage = val
       // 切换页码时，要获取每页显示的条数
-      this.getvideolist(this.PageSize, val * this.pageSize);
+      this.getvideolist(this.PageSize, val * this.pageSize)
     },
     search() {
       axios({
         headers: {
           'User-Info': JSON.parse(sessionStorage.getItem('SESSION_USER'))
-              .loginId,
+            .loginId,
           'Authorization': JSON.parse(sessionStorage.getItem('SESSION_USER'))
-              .sessionId,
+            .sessionId
         },
         method: 'post',
         url: '/hlkt/api/v1/user/search/collect/videos.action',
@@ -101,59 +101,59 @@ export default {
           pageNum: 1,
           uid: Number(JSON.parse(sessionStorage.getItem('SESSION_USER')).userId),
           sid: JSON.parse(sessionStorage.getItem('SESSION_USER')).sid,
-          keywords: this.input3,
-        },
+          keywords: this.input3
+        }
       }).then((res) => {
         if (res.data.resultCode == '200') {
-          this.count = res.data.resultData.total;
-          this.videolist = res.data.resultData.list;
+          this.count = res.data.resultData.total
+          this.videolist = res.data.resultData.list
         } else {
-          this.videolist = [];
+          this.videolist = []
         }
-      });
+      })
     },
 
     getDescribe(id) {
       const routeUrl = this.$router.resolve({
-        path: `/describe/${id}`,
-      });
-      window.open(routeUrl.href, '_blank');
+        path: `/describe/${id}`
+      })
+      window.open(routeUrl.href, '_blank')
     },
     getvideolist() {
       axios({
         headers: {
           'User-Info': JSON.parse(sessionStorage.getItem('SESSION_USER'))
-              .loginId,
+            .loginId,
           'Authorization': JSON.parse(sessionStorage.getItem('SESSION_USER'))
-              .sessionId,
+            .sessionId
         },
         method: 'post',
         url: '/hlkt/api/v1/user/videos.action',
         data: {
           pageSize: 12,
           pageNum: this.currentPage,
-          uid: JSON.parse(sessionStorage.getItem('SESSION_USER')).userId,
+          uid: JSON.parse(sessionStorage.getItem('SESSION_USER')).userId
           // sid: JSON.parse(sessionStorage.getItem("SESSION_USER")).sid
-        },
+        }
       }).then((res) => {
         if (res.data.resultCode == '200') {
-          this.count = res.data.resultData.total;
-          this.videolist = res.data.resultData.list;
+          this.count = res.data.resultData.total
+          this.videolist = res.data.resultData.list
         } else {
-          this.videolist = [];
+          this.videolist = []
         }
-      });
-    },
+      })
+    }
   },
   mounted() {
-    this.getvideolist();
-  },
-};
+    this.getvideolist()
+  }
+}
 </script>
 <style scoped lang="scss">
 @import "src/plugins/px2vw";
 h1{
-	 cursor: pointer;
+	cursor: pointer;
 }
 .page {
   position: absolute;

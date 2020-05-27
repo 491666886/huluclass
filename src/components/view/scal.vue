@@ -12,12 +12,12 @@
 					<!--自定义内容-->
 					<div>
 						<div class="calendar-day">{{ data.day.split('-').slice(2).join('-') }}</div>
-						<div v-for="item in calendarData">
+						<div v-for="item in calendarData"  :key="item.value">
 							<div v-if="(item.date).indexOf(data.day.split('-').slice(0).join('-'))!=-1">
 								<!-- <div v-if="(item.days).indexOf(data.day.split('-').slice(2).join('-'))!=-1"> -->
-								<el-tooltip class="item" effect="dark" :content="item.things" placement="right">
+
 									<div class="is-selected">{{item.details}}</div>
-								</el-tooltip>
+
 								<!-- </div> -->
 								<!-- <div v-else></div> -->
 							</div>
@@ -45,17 +45,17 @@
 						<el-button type="primary" @click="edit()">确 定</el-button>
 					</div>
 				</el-dialog>
-				<el-form :model="form">
-					<el-form-item label='开学日期' :label-width="formLabelWidth">
+				<el-form :rules="rules" :model="form" ref="form">
+					<el-form-item label='开学日期' prop="value1" :label-width="formLabelWidth">
 						<!-- <div class="demonstration">值：{{ form.value1}}</div> -->
 						<el-date-picker v-model="form.value1" type="date" format="yyyy-MM-dd" value-format="yyyy-MM-dd"></el-date-picker>
 					</el-form-item>
-					<el-form-item label='第一天上课日期' :label-width="formLabelWidth">
+					<el-form-item label='第一天上课日期' prop="value2" :label-width="formLabelWidth">
 						<el-date-picker v-model="form.value2" type="date" format="yyyy-MM-dd" value-format="yyyy-MM-dd"></el-date-picker>
 					</el-form-item>
-					<el-form-item label='放假日期' :label-width="formLabelWidth">
+					<el-form-item label='放假日期' prop="value3" :label-width="formLabelWidth">
 						<el-date-picker v-model="form.value3" type="date" format="yyyy-MM-dd" value-format="yyyy-MM-dd"></el-date-picker>
-						<el-button style="margin-left: 50px;" type="primary" @click="add()">确 定</el-button>
+						<el-button style="margin-left: 50px;" type="primary" @click="submitForm('form')">确 定</el-button>
 					</el-form-item>
 					<el-form-item   label="其他特殊日期" :label-width="formLabelWidth">
 						<el-table :data="elseData" border>
@@ -71,7 +71,7 @@
 						</el-table>
 					</el-form-item>
 	<el-pagination :hide-on-single-page="true" class="page"   layout="total, prev, pager, next" :page-size="5" :current-page="currentPage"
-				 @current-change="handleCurrentChange" :total="parseInt(this.count)"></el-pagination>
+	@current-change="handleCurrentChange" :total="parseInt(this.count)"></el-pagination>
 					<el-button type="primary" style="width: 160px;" :disabled="disabled" @click="readd()">继续添加特殊日期</el-button>
 				</el-form>
 			</div>
@@ -81,7 +81,7 @@
 
 <script>
 // @ is an alias to /src
-import axios from 'axios';
+import axios from 'axios'
 
 export default {
   name: 'scal',
@@ -97,25 +97,48 @@ export default {
         date: '',
         details: '开学日期',
         sid: JSON.parse(sessionStorage.getItem('SESSION_USER')).sid,
-        status: 0,
+        status: 0
 
       },
       {
         date: '',
         details: '第一天上课日期',
         sid: JSON.parse(sessionStorage.getItem('SESSION_USER')).sid,
-        status: 1,
+        status: 1
       },
       {
         date: '',
         details: '放假日期',
         sid: JSON.parse(sessionStorage.getItem('SESSION_USER')).sid,
-        status: 0,
-      },
+        status: 0
+      }
       ],
       elseData: [
 
       ],
+      rules: {
+        value1: [
+          {
+            required: true,
+            message: '请选择开学日期',
+            trigger: 'blur'
+          }
+        ],
+        value2: [
+          {
+            required: true,
+            message: '请选择第一天上课日期',
+            trigger: 'blur'
+          }
+        ],
+        value3: [
+          {
+            required: true,
+            message: '请选择放假日期',
+            trigger: 'blur'
+          }
+        ]
+      },
       place1: '',
       dialogFormVisible1: false,
       form: {
@@ -124,82 +147,80 @@ export default {
         value3: '',
         newdate: '',
         id: '',
-        input: '',
+        input: ''
       },
-      formLabelWidth: '120px',
+      formLabelWidth: '125px',
       input: '',
       calendarData: [],
-      value: new Date(),
-    };
+      value: new Date()
+    }
   },
   methods: {
-    serchlist(vap) {
-      // 改变页数
-      this.currentPage = vap;
-      this.getuserlist();
-    },
-    handleCurrentChange(val) {
-      // 改变默认的页数
-      this.currentPage = val;
-      // 切换页码时，要获取每页显示的条数
-      this.getuserlist(this.PageSize, val * this.pageSize);
+    submitForm(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.add()
+        } else {
+          this.loading = false
+        }
+      })
     },
     readd() {
-      this.form.newdate = '';
-      this.form.input = '';
-      this.dialogFormVisible1 = true;
+      this.form.newdate = ''
+      this.form.input = ''
+      this.dialogFormVisible1 = true
     },
 
     hold() {
-      this.hide = false;
-      this.show = true;
+      this.hide = false
+      this.show = true
       // this.add();
     },
     showq() {
-      this.hide = true;
-      this.show = false;
+      this.hide = true
+      this.show = false
     },
 
     dele(row) {
       this.$confirm('确认删除用户数据？', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning',
+        type: 'warning'
       })
-          .then(() => {
-            this.del(row);
+        .then(() => {
+          this.del(row)
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消'
           })
-          .catch(() => {
-            this.$message({
-              type: 'info',
-              message: '已取消',
-            });
-          });
+        })
     },
     showedit(row) {
-      this.form.input = row.details;
-      this.form.newdate = row.date;
-      this.form.id = row.id;
-      this.dialogFormVisible1 = true;
+      this.form.input = row.details
+      this.form.newdate = row.date
+      this.form.id = row.id
+      this.dialogFormVisible1 = true
     },
     serchlist(vap) {
       // 改变页数
-      this.currentPage = vap;
-      this.getuserlist();
+      this.currentPage = vap
+      this.getuserlist()
     },
     handleCurrentChange(val) {
       // 改变默认的页数
-      this.currentPage = val;
+      this.currentPage = val
       // 切换页码时，要获取每页显示的条数
-      this.getuserlist(this.PageSize, val * this.pageSize);
+      this.getuserlist(this.PageSize, val * this.pageSize)
     },
     del(row) {
       axios({
         headers: {
           'User-Info': JSON.parse(sessionStorage.getItem('SESSION_USER'))
-              .loginId,
+            .loginId,
           'Authorization': JSON.parse(sessionStorage.getItem('SESSION_USER'))
-              .sessionId,
+            .sessionId
         },
         method: 'post',
         url: '/hlkt/admin/kalendar/updateKalendar.action',
@@ -209,26 +230,26 @@ export default {
           'details': '',
           'status': this.radio,
           'id': row.id,
-          'sid': JSON.parse(sessionStorage.getItem('SESSION_USER')).sid,
-        },
+          'sid': JSON.parse(sessionStorage.getItem('SESSION_USER')).sid
+        }
       }).then((res) => {
         if (res.data.resultCode == '200') {
-          this.getrest();
+          this.getrest()
         } else {
           this.$message({
             type: 'error',
-            message: res.data.resultMsg,
-          });
+            message: res.data.resultMsg
+          })
         }
-      });
+      })
     },
     edit(row) {
       axios({
         headers: {
           'User-Info': JSON.parse(sessionStorage.getItem('SESSION_USER'))
-              .loginId,
+            .loginId,
           'Authorization': JSON.parse(sessionStorage.getItem('SESSION_USER'))
-              .sessionId,
+            .sessionId
         },
         method: 'post',
         url: '/hlkt/admin/kalendar/updateKalendar.action',
@@ -238,39 +259,39 @@ export default {
           'week': 0,
           'details': this.form.input,
           'status': this.radio,
-          'sid': JSON.parse(sessionStorage.getItem('SESSION_USER')).sid,
-        },
+          'sid': JSON.parse(sessionStorage.getItem('SESSION_USER')).sid
+        }
       }).then((res) => {
         if (res.data.resultCode == '200') {
           this.$message({
             type: 'success',
-            message: res.data.resultMsg,
-          });
-          this.dialogFormVisible1 = false;
-          this.getrest();
+            message: res.data.resultMsg
+          })
+          this.dialogFormVisible1 = false
+          this.getrest()
         } else {
           this.$message({
             type: 'error',
-            message: res.data.resultMsg,
-          });
+            message: res.data.resultMsg
+          })
         }
-      });
+      })
     },
 
     add() {
-      this.tableData[0].date = this.form.value1;
-      this.tableData[1].date = this.form.value2;
-      this.tableData[2].date = this.form.value3;
-      const kx = new Date(this.tableData[0].date).getTime();
-      const sk = new Date(this.tableData[1].date).getTime();
-      const fj = new Date(this.tableData[2].date).getTime();
+      this.tableData[0].date = this.form.value1
+      this.tableData[1].date = this.form.value2
+      this.tableData[2].date = this.form.value3
+      const kx = new Date(this.tableData[0].date).getTime()
+      const sk = new Date(this.tableData[1].date).getTime()
+      const fj = new Date(this.tableData[2].date).getTime()
       if (sk >= kx && fj > sk) {
         axios({
           headers: {
             'User-Info': JSON.parse(sessionStorage.getItem('SESSION_USER'))
-                .loginId,
+              .loginId,
             'Authorization': JSON.parse(sessionStorage.getItem('SESSION_USER'))
-                .sessionId,
+              .sessionId
           },
           method: 'post',
           url: '/hlkt/admin/kalendar/addKalendar.action',
@@ -279,126 +300,120 @@ export default {
               date: this.form.value1,
               details: '开学日期',
               sid: JSON.parse(sessionStorage.getItem('SESSION_USER')).sid,
-              status: 0,
+              status: 0
 
             },
             {
               date: this.form.value2,
               details: '第一天上课日期',
               sid: JSON.parse(sessionStorage.getItem('SESSION_USER')).sid,
-              status: 1,
+              status: 1
             },
             {
               date: this.form.value3,
               details: '放假日期',
               sid: JSON.parse(sessionStorage.getItem('SESSION_USER')).sid,
-              status: 0,
-            },
+              status: 0
+            }
 
-            ]},
+            ] }
         }).then((res) => {
           if (res.data.resultCode == '200') {
-            this.dialogFormVisible = false;
-            this.getrest();
+            this.dialogFormVisible = false
+            this.getrest()
             // this.show = true;
             // this.hide = false;
-            this.$message('保存成功');
+            this.$message('保存成功')
           } else {
             this.$message({
               type: 'error',
-              message: res.data.resultMsg,
-            });
+              message: res.data.resultMsg
+            })
           }
-        });
-      } else if (sk <kx) {
+        })
+      } else if (sk < kx) {
         this.$message({
           type: 'error',
-          message: '第一天上课日期不应早于开学日期',
-        });
-      } else if (kx >fj) {
+          message: '第一天上课日期不应早于开学日期'
+        })
+      } else if (kx > fj) {
         this.$message({
           type: 'error',
-          message: '放假日期不应早于开学日期',
-        });
+          message: '放假日期不应早于开学日期'
+        })
+      } else if (sk > fj) {
+        this.$message({
+          type: 'error',
+          message: '放假日期不应早于第一天上课日期'
+        })
       }
     },
-    serchlist(vap) {
-      // 改变页数
-      this.currentPage = vap;
-      this.getdevice();
-    },
-    handleCurrentChange(val) {
-      // 改变默认的页数
-      this.currentPage = val;
-      // 切换页码时，要获取每页显示的条数
-      this.getdevice(this.PageSize, val * this.pageSize);
-    },
     getrest() {
-      this.getrest2();
+      this.getrest2()
       axios({
         headers: {
           'User-Info': JSON.parse(sessionStorage.getItem('SESSION_USER'))
-              .loginId,
+            .loginId,
           'Authorization': JSON.parse(sessionStorage.getItem('SESSION_USER'))
-              .sessionId,
+            .sessionId
         },
         method: 'post',
         url: '/hlkt/admin/kalendar/getKalendarList.action',
         data: {
-          sid: JSON.parse(sessionStorage.getItem('SESSION_USER')).sid,
-        },
+          sid: JSON.parse(sessionStorage.getItem('SESSION_USER')).sid
+        }
       }).then((res) => {
         if (res.data.resultCode == '200') {
-          this.calendarData = res.data.resultData.slice(3);
+          this.calendarData = res.data.resultData.slice(3)
 
           if (this.calendarData.length >= 3) {
-            this.disabled=false;
-            this.tableData = res.data.resultData.slice(0, 3); // 前三那哥日历。
-            this.form.value1 = this.tableData[0].date;
-            this.form.value2 = this.tableData[1].date;
-            this.form.value3 = this.tableData[2].date;
+            this.disabled = false
+            this.tableData = res.data.resultData.slice(0, 3) // 前三那哥日历。
+            this.form.value1 = this.tableData[0].date
+            this.form.value2 = this.tableData[1].date
+            this.form.value3 = this.tableData[2].date
           }
         } else {
           this.$message({
             type: 'error',
-            message: res.data.resultMsg,
-          });
+            message: res.data.resultMsg
+          })
         }
-      });
+      })
     },
     getrest2() {
       axios({
         headers: {
           'User-Info': JSON.parse(sessionStorage.getItem('SESSION_USER'))
-              .loginId,
+            .loginId,
           'Authorization': JSON.parse(sessionStorage.getItem('SESSION_USER'))
-              .sessionId,
+            .sessionId
         },
         method: 'post',
         url: '/hlkt/admin/kalendar/specialKalendar.action',
         data: {
           sid: JSON.parse(sessionStorage.getItem('SESSION_USER')).sid,
           pageSize: 5,
-          pageNum: this.currentPage,
-        },
+          pageNum: this.currentPage
+        }
       }).then((res) => {
         if (res.data.resultCode == '200') {
-          this.elseData = res.data.resultData.list;
-          this.count=res.data.resultData.total;
-          console.log(res.data.resultData);
+          this.elseData = res.data.resultData.list
+          this.count = res.data.resultData.total
+          console.log(res.data.resultData)
         } else {
-          this.elseData = [];
+          this.elseData = []
         }
-      });
-    },
+      })
+    }
   },
 
   components: {},
   created() {
     // console.log(addfrom);
-    this.getrest();
-  },
-};
+    this.getrest()
+  }
+}
 </script>
 <style scoped lang="scss">
 	@import "src/plugins/px2vw";

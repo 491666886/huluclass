@@ -20,7 +20,7 @@
     <a>|</a>
 
     <div v-if="this.admin" class="set" @click="goadmin">
-      <i class="el-icon-s-custom"></i>  管理员系统
+      <i class="el-icon-s-custom"></i> 管理员系统
     </div>
 
     <a v-if="this.admin">|</a>
@@ -37,76 +37,73 @@ export default {
     return {
       input3: '',
       admin: false,
-	  login: false,
-    };
+      login: false
+    }
   },
 
   methods: {
     goadmin() {
       const routeUrl = this.$router.resolve({
-        path: '/admin/video',
-
-      });
-      window.open(routeUrl .href, '_blank');
+        path: '/admin/video'
+      })
+      window.open(routeUrl.href, '_blank')
     },
     search() {
       if (this.input3.length == 0) {
         this.$message({
-			  type: 'error',
-			  message: '请输入搜索内容',
-        });
+          type: 'error',
+          message: '请输入搜索内容'
+        })
       } else {
         const routeUrl = this.$router.resolve({
-			     path: `/search/${this.input3}`,
-
-        });
-        window.open(routeUrl .href, '_blank');
+          path: `/search/${this.input3}`
+        })
+        window.open(routeUrl.href, '_blank')
       }
     },
     quitid() {
       this.$confirm('此操作将退出系统, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning',
+        type: 'warning'
       })
-          .then(() => {
-            sessionStorage.clear();
-            localStorage.removeItem('Flag'); // 清除保存的登陆状态
-            this.$router.push(`/`);
+        .then(() => {
+          sessionStorage.clear()
+          localStorage.removeItem('Flag') // 清除保存的登陆状态
+          this.$router.push(`/`)
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消'
           })
-          .catch(() => {
-            this.$message({
-              type: 'info',
-              message: '已取消',
-            });
-          });
+        })
     },
     user() {
-      if (this.$route.path== '/collect') {
-        history.go(0);
+      if (this.$route.path == '/collect') {
+        history.go(0)
       } else {
         const routeUrl = this.$router.resolve({
-			     path: '/collect',
-
-        });
-        window.open(routeUrl .href, '_blank');
-			 // this.$router.push("/collect");
+          path: '/collect'
+        })
+        window.open(routeUrl.href, '_blank')
+        // this.$router.push("/collect");
       }
     },
     home() {
-      this.$router.push('/login');
-    },
-  },
-  created() {
-	  if (JSON.parse(sessionStorage.getItem('SESSION_USER')).roleId == 0) {
-		  this.admin =true;
-	  }
-
-    if (this.message1 != undefined) {
-      this.input3 = this.message1;
+      this.$router.push('/login')
     }
   },
-};
+  created() {
+    if (JSON.parse(sessionStorage.getItem('SESSION_USER')).roleId == 0) {
+      this.admin = true
+    }
+
+    if (this.message1 != undefined) {
+      this.input3 = this.message1
+    }
+  }
+}
 </script>
 <style lang="scss" scoped>
 @import "src/plugins/px2vw";
@@ -157,7 +154,7 @@ a {
   height: px2vw(37px);
   width: px2vw(172px);
   float: left;
-   cursor: pointer;
+  cursor: pointer;
 }
 .header {
   position: absolute;

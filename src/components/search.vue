@@ -1,13 +1,13 @@
 <template>
   <div class="search">
-    <search-header :message1="input"  v-if="update"></search-header>
+    <search-header :message1="input" v-if="update"></search-header>
 
     <div class="main">
       <div class="dan">
         <el-radio-group v-model="radio1" class="line" @change="getValue">
           <div class="grate">学科:</div>
-          <el-radio-button label='' >不限</el-radio-button>
-          <el-radio-button :label="item.subjects"  :key="item.subjects"  v-for="item in subjects"></el-radio-button>
+          <el-radio-button label>不限</el-radio-button>
+          <el-radio-button :label="item.subjects" :key="item.subjects" v-for="item in subjects"></el-radio-button>
         </el-radio-group>
       </div>
 
@@ -39,22 +39,17 @@
             ></el-option>
           </el-select>
         </el-radio-group>
-		<div class="button">
-			<el-button class="add" size="small" type="primary" @click='retry()'>重置</el-button>
-		</div>
+        <div class="button">
+          <el-button class="add" size="small" type="primary" @click="retry()">重置</el-button>
+        </div>
       </div>
       <div v-if="videolist.length ===0" class="error">该选项下暂无视频</div>
-      <div
-        class="videolist"
-        v-for="video in videolist"
-        :key="video.d"
+      <div class="videolist" v-for="video in videolist" :key="video.d">
+        <img :src="'http://'+video.site" @click="getDescribe(video.id)" />
 
-      >
-        <img :src="'http://'+video.site"  @click="getDescribe(video.id)" />
-
-          <p  @click="getDescribe(video.id)" >{{video.name}}</p>
-          <a  @click="getDescribe(video.id)" >{{video.teacherId}}</a>
-          <b  @click="getDescribe(video.id)" >{{video.creationTime.split(" ")[0]}}</b>
+        <p @click="getDescribe(video.id)">{{video.name}}</p>
+        <a @click="getDescribe(video.id)">{{video.teacherId}}</a>
+        <b @click="getDescribe(video.id)">{{video.creationTime.split(" ")[0]}}</b>
         <br />
         <div class="c">
           <img src="./img/ci.png" />
@@ -64,9 +59,9 @@
         </div>
       </div>
       <el-pagination
-      hide-on-single-pagemessage1
+        hide-on-single-pagemessage1
         class="page"
-          layout="total, prev, pager, next"
+        layout="total, prev, pager, next"
         :page-size="12"
         :current-page="currentPage"
         @current-change="handleCurrentChange"
@@ -77,27 +72,27 @@
   </div>
 </template>
 <script>
-import axios from 'axios';
-import searchHeader from './common/search-header';
-import pageHeader from './common/page-header';
-import pageFooter from './common/page-footer';
+import axios from 'axios'
+import searchHeader from './common/search-header'
+import pageHeader from './common/page-header'
+import pageFooter from './common/page-footer'
 export default {
   components: {
     pageHeader,
     searchHeader,
-    pageFooter,
+    pageFooter
   },
   data: function() {
     return {
       years: [
         {
           value: '2019',
-          label: '2019',
+          label: '2019'
         },
         {
           value: '2020',
-          label: '2020',
-        },
+          label: '2020'
+        }
       ],
 
       year: '',
@@ -115,77 +110,77 @@ export default {
       tableData: [],
       disabled: false,
       username: JSON.parse(sessionStorage.getItem('SESSION_USER')).name,
-      loginId: JSON.parse(sessionStorage.getItem('SESSION_USER')).loginId,
-    };
+      loginId: JSON.parse(sessionStorage.getItem('SESSION_USER')).loginId
+    }
   },
   methods: {
-	  retry() {
-      this.value='';
-		  this.year='';
-		  this.getValue()();
+    retry() {
+      this.value = ''
+      this.year = ''
+      this.getValue()()
     },
     reload() {
       // 移除组件
-      this.update = false;
+      this.update = false
       // 在组件移除后，重新渲染组件
       // this.$nextTick可实现在DOM 状态更新后，执行传入的方法。
       this.$nextTick(() => {
-        this.update = true;
-      });
+        this.update = true
+      })
     },
     getsubgect() {
       axios({
         headers: {
           'User-Info': JSON.parse(sessionStorage.getItem('SESSION_USER'))
-              .loginId,
+            .loginId,
           'Authorization': JSON.parse(sessionStorage.getItem('SESSION_USER'))
-              .sessionId,
+            .sessionId
         },
         method: 'post',
         url: '/hlkt/resource/findStairNavigation.action',
         data: {
-          sid: JSON.parse(sessionStorage.getItem('SESSION_USER')).sid,
-        },
+          sid: JSON.parse(sessionStorage.getItem('SESSION_USER')).sid
+        }
       }).then((res) => {
         if (res.data.resultCode == '200') {
-          (this.subjects = res.data.resultData), console.log(this.subjects);
+          (this.subjects = res.data.resultData), console.log(this.subjects)
         } else {
         }
-      });
+      })
       axios({
         headers: {
           'User-Info': JSON.parse(sessionStorage.getItem('SESSION_USER'))
-              .loginId,
+            .loginId,
           'Authorization': JSON.parse(sessionStorage.getItem('SESSION_USER'))
-              .sessionId,
+            .sessionId
         },
         method: 'post',
         url: '/hlkt/resource/findSecondNavigation.action',
         data: {
           sid: JSON.parse(sessionStorage.getItem('SESSION_USER')).sid,
-          subjects: this.radio1,
-        },
+          subjects: this.radio1
+        }
       }).then((res) => {
         if (res.data.resultCode == '200') {
-          this.grades = res.data.resultData;
+          this.grades = res.data.resultData
         } else {
         }
-      });
+      })
     },
     getDescribe(id) {
       this.$router.push({
-        path: `/describe/${id}`,
-      });
+        path: `/describe/${id}`
+      })
     },
     getValue() {
-      this.getteacher();
+      this.getteacher()
       // if(this.$route.params.id=)
       axios({
         headers: {
           'User-Info': JSON.parse(sessionStorage.getItem('SESSION_USER'))
-              .loginId,
+            .loginId,
           'Authorization': JSON.parse(sessionStorage.getItem('SESSION_USER'))
-              .sessionId,
+            .sessionId
         },
         method: 'post',
         url: '/hlkt/api/v1/user/search/videos.action',
@@ -197,54 +192,54 @@ export default {
           teacher: this.value,
           curriculum: this.radio1,
           sid: JSON.parse(sessionStorage.getItem('SESSION_USER')).sid,
-          nj: this.radio2,
-        },
+          nj: this.radio2
+        }
       }).then((res) => {
         if (res.data.resultCode == '200') {
-          this.count = res.data.resultData.total;
+          this.count = res.data.resultData.total
 
-          this.videolist = res.data.resultData.list;
-          this.getteacher();
+          this.videolist = res.data.resultData.list
+          this.getteacher()
         } else {
-          this.videolist = [];
+          this.videolist = []
         }
-      });
+      })
     },
 
     getteacher() {
       axios({
         headers: {
           'User-Info': JSON.parse(sessionStorage.getItem('SESSION_USER'))
-              .loginId,
+            .loginId,
           'Authorization': JSON.parse(sessionStorage.getItem('SESSION_USER'))
-              .sessionId,
+            .sessionId
         },
         method: 'post',
         url: '/hlkt/resource/findTeacher.action',
         data: {
           job: this.radio1,
-          sid: JSON.parse(sessionStorage.getItem('SESSION_USER')).sid,
-        },
+          sid: JSON.parse(sessionStorage.getItem('SESSION_USER')).sid
+        }
       }).then((res) => {
         if (res.data.resultCode == '200') {
-          this.options = res.data.resultData;
+          this.options = res.data.resultData
         } else {
           // this.$message({
           //   type: "error",
           //   message: res.data.resultMsg
           // });
         }
-      });
+      })
     },
     search() {
       // 高级搜索进入页面执行和点击搜索按键
-      console.log(this.$route.params.id);
+      console.log(this.$route.params.id)
       axios({
         headers: {
           'User-Info': JSON.parse(sessionStorage.getItem('SESSION_USER'))
-              .loginId,
+            .loginId,
           'Authorization': JSON.parse(sessionStorage.getItem('SESSION_USER'))
-              .sessionId,
+            .sessionId
         },
         method: 'post',
         url: '/hlkt/api/v1/user/search/videos.action',
@@ -254,54 +249,54 @@ export default {
           pageSize: 15,
           keywords: this.$route.params.id,
 
-          sid: JSON.parse(sessionStorage.getItem('SESSION_USER')).sid,
+          sid: JSON.parse(sessionStorage.getItem('SESSION_USER')).sid
           //    teacher: this.value,
           // subjects: this.radio1,
           // grade: this.radio2
-        },
+        }
       }).then((res) => {
         if (res.data.resultCode == '200') {
-          this.count = res.data.resultData.total;
+          this.count = res.data.resultData.total
 
-          this.videolist = res.data.resultData.list;
-          this.getteacher();
+          this.videolist = res.data.resultData.list
+          this.getteacher()
           // if (res.data.cName != "") {
           //   //判断搜索结果是否返回学科  true是
 
           // this.radio1 = res.data.cName;
           // this.$route.params.id = "";
           // this.input ='';
-          this.reload();
+          this.reload()
           // }
         } else {
-          this.videolist = [];
+          this.videolist = []
         }
-      });
+      })
     },
     handleCurrentChange(val) {
       // 改变默认的页数
-      this.currentPage = val;
+      this.currentPage = val
       // 切换页码时，要获取每页显示的条数
-      this.getuserlist(this.PageSize, val * this.pageSize);
-    },
+      this.getuserlist(this.PageSize, val * this.pageSize)
+    }
   },
   watch: {
     $route: {
       handler: function(val, oldVal) {
-        this.radio1 = '';
-        this.radio2 = '';
-        this.search();
+        this.radio1 = ''
+        this.radio2 = ''
+        this.search()
       },
       // 深度观察监听
-      deep: true,
-    },
+      deep: true
+    }
   },
   created() {
-    this.getteacher();
-    this.search();
-    this.getsubgect();
-  },
-};
+    this.getteacher()
+    this.search()
+    this.getsubgect()
+  }
+}
 </script>
 <style scoped lang="scss">
 @import "src/plugins/px2vw";
@@ -447,13 +442,13 @@ export default {
   height: 150vh;
 }
 .button {
-			margin-top: px2vw(5px);
-			margin-left: px2vw(12px);
-			width: px2vw(63px);
-			height: px2vw(35px);
-			    float: right;
-			margin-right: px2vw(400px);
-		}
+  margin-top: px2vw(5px);
+  margin-left: px2vw(12px);
+  width: px2vw(63px);
+  height: px2vw(35px);
+  float: right;
+  margin-right: px2vw(400px);
+}
 </style>
 <style lang="less" scoped>
 /deep/ .el-radio-button__inner {

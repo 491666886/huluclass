@@ -16,22 +16,22 @@ export default {
   data: function() {
     return {
       input3: '',
-      admin: true,
-    };
+      admin: true
+    }
   },
   methods: {
 	  search() {
 	  	if (this.input3.length == 0) {
 	  		this.$message({
 	  		  type: 'error',
-	  		  message: '请输入搜索内容',
-	  		});
+	  		  message: '请输入搜索内容'
+	  		})
 	  	} else {
 	  		const routeUrl = this.$router.resolve({
-	  		     path: `/search/${this.input3}`,
+	  		     path: `/search/${this.input3}`
 
-	  		});
-	  		window.open(routeUrl .href, '_blank');
+	  		})
+	  		window.open(routeUrl.href, '_blank')
 	  	}
 	  },
 
@@ -39,38 +39,38 @@ export default {
       this.$confirm('此操作将退出系统, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning',
+        type: 'warning'
       })
-          .then(() => {
-            sessionStorage.clear();
-            localStorage.removeItem('Flag'); // 清除保存的登陆状态
-            this.$router.push(`/`);
+        .then(() => {
+          sessionStorage.clear()
+          localStorage.removeItem('Flag') // 清除保存的登陆状态
+          this.$router.push(`/`)
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消'
           })
-          .catch(() => {
-            this.$message({
-              type: 'info',
-              message: '已取消',
-            });
-          });
+        })
     },
     user() {
       const routeUrl = this.$router.resolve({
-        path: '/collect',
+        path: '/collect'
 
-      });
-      window.open(routeUrl .href, '_blank');
+      })
+      window.open(routeUrl.href, '_blank')
       // this.$router.push("/collect");
     },
     home() {
-      this.$router.push('/login');
-    },
+      this.$router.push('/login')
+    }
   },
   created() {
     if (this.message1 != undefined) {
-      this.input3 = this.message1;
+      this.input3 = this.message1
     }
-  },
-};
+  }
+}
 </script>
 <style lang="scss" scoped>
 @import "src/plugins/px2vw";

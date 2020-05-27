@@ -105,21 +105,20 @@
 </template>
 
 <script>
-import axios from 'axios';
-import qs from 'qs';
-import MD5 from 'md5';
+import axios from 'axios'
+import qs from 'qs'
+import MD5 from 'md5'
 
-import pageHeader from './common/page-header';
-import pageFooter from './common/page-footer';
-import contactUs from './common/contact-us';
-
+import pageHeader from './common/page-header'
+import pageFooter from './common/page-footer'
+import contactUs from './common/contact-us'
 
 export default {
   name: 'login-page',
   components: {
     pageHeader,
     pageFooter,
-    contactUs,
+    contactUs
 
   },
   data: function() {
@@ -134,86 +133,83 @@ export default {
       loginForm: {
         username: '',
         password: '',
-        securityCode: '',
+        securityCode: ''
       },
       rules: {
         username: [
-          {required: true, message: '请输入用户名', trigger: 'blur'},
+          { required: true, message: '请输入用户名', trigger: 'blur' }
         ],
-        password: [{required: true, message: '请输入密码', trigger: 'blur'}],
+        password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
         securityCode: [
-          {required: true, message: '请输入验证码', trigger: 'blur'},
-        ],
-      },
-    };
+          { required: true, message: '请输入验证码', trigger: 'blur' }
+        ]
+      }
+    }
   },
-
 
   methods: {
     replaceSpace(key) {
-      this.loginForm[key] = this.loginForm[key].replace(/\s/g, '');
+      this.loginForm[key] = this.loginForm[key].replace(/\s/g, '')
     },
     submitForm(formName) {
-      this.showerror=false;
-      this.loading=true;
+      this.showerror = false
+      this.loading = true
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          this.login();
+          this.login()
         } else {
           //
-          return false;
+          return false
         }
-      });
+      })
     },
     login() {
       axios({
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         method: 'post',
         url: '/uc/sso/clientlogin.do?client_id=f19838dfc34f4b6989b9ae65d1b0ej78',
         data: {
           login_name: this.loginForm.username,
-          password: MD5(this.loginForm.password),
-        },
+          password: MD5(this.loginForm.password)
+        }
       }).then((res) => {
-        console.log(res.data.data.type);
+        console.log(res.data.data.type)
         if (res.data.status == 'success') {
-          this.loading=false;
-          sessionStorage.setItem('SESSION_USER', JSON.stringify(res.data.data));
-          sessionStorage.setItem('isLogin', true);
+          this.loading = false
+          sessionStorage.setItem('SESSION_USER', JSON.stringify(res.data.data))
+          sessionStorage.setItem('isLogin', true)
           //                        this.token(JSON.stringify(res.data.data))
-          this.$store.dispatch('userLogin', true);
-          localStorage.setItem('Flag', 'isLogin');// 储存登陆信息
-          if (res.data.data.type == '1') {// 跳转到管理员页面
-            this.$router.push('/collect');
-          } else {// 用户中心页
-            console.log(res.data.data.type);
-            this.$router.push(`/account`);
+          this.$store.dispatch('userLogin', true)
+          localStorage.setItem('Flag', 'isLogin')// 储存登陆信息
+          if (res.data.data.type == '1') { // 跳转到管理员页面
+            this.$router.push('/collect')
+          } else { // 用户中心页
+            console.log(res.data.data.type)
+            this.$router.push(`/account`)
           }
           //                        this.$store.commit('save_userinfo',res.data.data)
           //                        console.log(sessionStorage.getItem('SESSION_USER'))
           // //                        this.$router.push(`/account`)
-        } else {//
-          this.loginerror =res.data.msg;
-          this.showerror = true;
-          this.loading=false;
+        } else { //
+          this.loginerror = res.data.msg
+          this.showerror = true
+          this.loading = false
         }
       })
-          .catch((err) => {
-            this.loading=false;
-            this.$message({
-              type: 'success',
-              message: (err),
-            });
-          });
-    },
-  },
+        .catch((err) => {
+          this.loading = false
+          this.$message({
+            type: 'success',
+            message: (err)
+          })
+        })
+    }
+  }
 
-
-};
+}
 </script>
-
 
 <style scoped lang="scss">
     @import "src/plugins/px2vw";
