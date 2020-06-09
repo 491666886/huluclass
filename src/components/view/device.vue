@@ -75,7 +75,7 @@
               class='input'
               placeholder='请输入数字'
               v-model='form.classNo'
-              onkeyup='this.value=this.value.replace(/[^\d.]/g,'');'
+            onkeyup="this.value=this.value.replace(/[^\d.]/g,'');"
               maxlength='2'
             ></el-input>班
           </el-form-item>

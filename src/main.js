@@ -9,6 +9,7 @@ import axios from 'axios'// 引入axios
 Vue.prototype.$axios = axios// 把axios挂载到vue上
 axios.defaults.withCredentials = true
 
+
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 
