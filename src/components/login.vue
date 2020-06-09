@@ -81,7 +81,35 @@ export default {
       })
     },
     login() {
-    
+      axios({
+        headers: {
+          'Content-Type': 'application/json',
+          'User-Info': encodeURI(this.loginForm.username)
+        },
+        method: 'post',
+        url: '/hlkt/user/login.action',
+        data: {
+          loginId: this.loginForm.username,
+          password: this.loginForm.password
+        }
+      })
+        .then((res) => {
+          if (res.data.resultCode == '200') {
+            this.loading = false
+            sessionStorage.setItem(
+              'SESSION_USER',
+              JSON.stringify(res.data.resultData)
+            )
+            sessionStorage.setItem('isLogin', true)
+            this.$store.dispatch('userLogin', true)
+            localStorage.setItem('Flag', 'isLogin') // 储存登陆信息
+            this.$router.push('/login')
+          } else {
+            this.loginerror = res.data.resultMsg
+            this.showerror = true
+            this.loading = false
+          }
+        })
         .catch((err) => {
           this.loading = false
           this.$message({
