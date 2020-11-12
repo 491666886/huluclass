@@ -506,13 +506,13 @@ export default {
     serchlist(vap) {
       // 改变页数
       this.currentPage = vap
-      this.getuserlist()
+      this.getvideo()
     },
     handleCurrentChange(val) {
       // 改变默认的页数
       this.currentPage = val
       // 切换页码时，要获取每页显示的条数
-      this.getuserlist(this.PageSize, val * this.pageSize)
+      this.getvideo(this.PageSize, val * this.pageSize)
     },
     del(row) {
       axios({
@@ -540,7 +540,6 @@ export default {
       })
     },
     edit(row) {
-      console.log(this.form)
       this.vId = this.form.id
       axios({
         headers: {
@@ -766,7 +765,6 @@ export default {
         if (res.data.resultCode == '200') {
           this.tableData = res.data.resultData.list
           this.count = res.data.resultData.total
-          console.log(this.tableData)
         } else {
           this.tableData = []
           this.$message({
